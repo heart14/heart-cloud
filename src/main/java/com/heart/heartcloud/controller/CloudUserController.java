@@ -23,13 +23,32 @@ public class CloudUserController {
     @Autowired
     private CloudUserService cloudUserService;
 
+    /**
+     * 获取用户信息
+     */
     @RequestMapping("/user")
-    public void getCloudUser() {
+    public CloudResponse getCloudUser() {
 
+        CloudResponse cloudResponse = new CloudResponse();
+        cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
+        cloudResponse.setSign("");
+        cloudResponse.setErrMessage("查询失败。");
+        cloudResponse.setData("");
 
-
+        CloudUser cloudUserByPrimaryKey = cloudUserService.findCloudUserByPrimaryKey(1);
+        if (cloudUserByPrimaryKey != null) {
+            cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
+            cloudResponse.setSign("");
+            cloudResponse.setErrMessage("查询成功。");
+            cloudResponse.setData(JSON.toJSONString(cloudUserByPrimaryKey));
+        }
+        return cloudResponse;
     }
 
+    /**
+     * 获取所有用户信息
+     * @return
+     */
     @RequestMapping("/users")
     public CloudResponse getCloudUserList() {
 
@@ -49,6 +68,10 @@ public class CloudUserController {
         return cloudResponse;
     }
 
+    /**
+     * 添加用户
+     * @return
+     */
     @RequestMapping("/save")
     public CloudResponse saveCloudUser() {
 
@@ -75,6 +98,11 @@ public class CloudUserController {
         return cloudResponse;
     }
 
+    /**
+     * 删除用户
+     * @param userId
+     * @return
+     */
     @RequestMapping("/remove")
     public CloudResponse removeCloudUser(int userId) {
 
@@ -97,6 +125,11 @@ public class CloudUserController {
         return cloudResponse;
     }
 
+    /**
+     * 修改用户信息
+     * @param userId
+     * @return
+     */
     @RequestMapping("/edit")
     public CloudResponse editCloudUser(int userId) {
 
