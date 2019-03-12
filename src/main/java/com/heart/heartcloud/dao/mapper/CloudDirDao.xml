@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heart.heartcloud.dao.CloudDirDao">
+    <resultMap id="BaseResultMap" type="com.heart.heartcloud.domain.CloudDir">
+        <id column="cloud_dir_id" jdbcType="INTEGER" property="cloudDirId"/>
+        <result column="cloud_dir_name" jdbcType="VARCHAR" property="cloudDirName"/>
+        <result column="cloud_dir_size" jdbcType="VARCHAR" property="cloudDirSize"/>
+        <result column="cloud_dir_create_date" jdbcType="TIMESTAMP" property="cloudDirCreateDate"/>
+        <result column="cloud_dir_update_date" jdbcType="TIMESTAMP" property="cloudDirUpdateDate"/>
+        <result column="cloud_dir_status" jdbcType="VARCHAR" property="cloudDirStatus"/>
+        <result column="cloud_dir_user_id" jdbcType="INTEGER" property="cloudDirUserId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    cloud_dir_id, cloud_dir_name, cloud_dir_size, cloud_dir_create_date, cloud_dir_update_date, 
+    cloud_dir_status, cloud_dir_user_id
+  </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cloud_dir
+        where cloud_dir_id = #{cloudDirId,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_cloud_dir
+    where cloud_dir_id = #{cloudDirId,jdbcType=INTEGER}
+  </delete>
+
+    <insert id="insert" parameterType="com.heart.heartcloud.domain.CloudDir" useGeneratedKeys="true" keyProperty="cloudDirId">
+        insert into t_cloud_dir
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cloudDirId != null">
+                cloud_dir_id,
+            </if>
+            <if test="cloudDirName != null">
+                cloud_dir_name,
+            </if>
+            <if test="cloudDirSize != null">
+                cloud_dir_size,
+            </if>
+            <if test="cloudDirCreateDate != null">
+                cloud_dir_create_date,
+            </if>
+            <if test="cloudDirUpdateDate != null">
+                cloud_dir_update_date,
+            </if>
+            <if test="cloudDirStatus != null">
+                cloud_dir_status,
+            </if>
+            <if test="cloudDirUserId != null">
+                cloud_dir_user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cloudDirId != null">
+                #{cloudDirId,jdbcType=INTEGER},
+            </if>
+            <if test="cloudDirName != null">
+                #{cloudDirName,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudDirSize != null">
+                #{cloudDirSize,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudDirCreateDate != null">
+                #{cloudDirCreateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cloudDirUpdateDate != null">
+                #{cloudDirUpdateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cloudDirStatus != null">
+                #{cloudDirStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudDirUserId != null">
+                #{cloudDirUserId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.heart.heartcloud.domain.CloudDir">
+        update t_cloud_dir
+        <set>
+            <if test="cloudDirName != null">
+                cloud_dir_name = #{cloudDirName,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudDirSize != null">
+                cloud_dir_size = #{cloudDirSize,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudDirCreateDate != null">
+                cloud_dir_create_date = #{cloudDirCreateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cloudDirUpdateDate != null">
+                cloud_dir_update_date = #{cloudDirUpdateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cloudDirStatus != null">
+                cloud_dir_status = #{cloudDirStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudDirUserId != null">
+                cloud_dir_user_id = #{cloudDirUserId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where cloud_dir_id = #{cloudDirId,jdbcType=INTEGER}
+    </update>
+
+</mapper>

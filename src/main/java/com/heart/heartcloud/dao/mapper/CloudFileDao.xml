@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heart.heartcloud.dao.CloudFileDao">
+    <resultMap id="BaseResultMap" type="com.heart.heartcloud.domain.CloudFile">
+        <id column="cloud_file_id" jdbcType="INTEGER" property="cloudFileId"/>
+        <result column="cloud_file_name" jdbcType="VARCHAR" property="cloudFileName"/>
+        <result column="cloud_file_size" jdbcType="VARCHAR" property="cloudFileSize"/>
+        <result column="cloud_file_create_date" jdbcType="TIMESTAMP" property="cloudFileCreateDate"/>
+        <result column="cloud_file_update_date" jdbcType="TIMESTAMP" property="cloudFileUpdateDate"/>
+        <result column="cloud_file_type" jdbcType="VARCHAR" property="cloudFileType"/>
+        <result column="cloud_file_status" jdbcType="VARCHAR" property="cloudFileStatus"/>
+        <result column="cloud_file_url" jdbcType="VARCHAR" property="cloudFileUrl"/>
+        <result column="cloud_file_dir_id" jdbcType="INTEGER" property="cloudFileDirId"/>
+        <result column="cloud_file_user_id" jdbcType="INTEGER" property="cloudFileUserId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    cloud_file_id, cloud_file_name, cloud_file_size, cloud_file_create_date, cloud_file_update_date, 
+    cloud_file_type, cloud_file_status, cloud_file_url, cloud_file_dir_id, cloud_file_user_id
+  </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cloud_file
+        where cloud_file_id = #{cloudFileId,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_cloud_file
+    where cloud_file_id = #{cloudFileId,jdbcType=INTEGER}
+  </delete>
+
+    <insert id="insert" parameterType="com.heart.heartcloud.domain.CloudFile" useGeneratedKeys="true" keyProperty="cloudFiledId">
+        insert into t_cloud_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cloudFileId != null">
+                cloud_file_id,
+            </if>
+            <if test="cloudFileName != null">
+                cloud_file_name,
+            </if>
+            <if test="cloudFileSize != null">
+                cloud_file_size,
+            </if>
+            <if test="cloudFileCreateDate != null">
+                cloud_file_create_date,
+            </if>
+            <if test="cloudFileUpdateDate != null">
+                cloud_file_update_date,
+            </if>
+            <if test="cloudFileType != null">
+                cloud_file_type,
+            </if>
+            <if test="cloudFileStatus != null">
+                cloud_file_status,
+            </if>
+            <if test="cloudFileUrl != null">
+                cloud_file_url,
+            </if>
+            <if test="cloudFileDirId != null">
+                cloud_file_dir_id,
+            </if>
+            <if test="cloudFileUserId != null">
+                cloud_file_user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cloudFileId != null">
+                #{cloudFileId,jdbcType=INTEGER},
+            </if>
+            <if test="cloudFileName != null">
+                #{cloudFileName,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileSize != null">
+                #{cloudFileSize,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileCreateDate != null">
+                #{cloudFileCreateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cloudFileUpdateDate != null">
+                #{cloudFileUpdateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cloudFileType != null">
+                #{cloudFileType,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileStatus != null">
+                #{cloudFileStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileUrl != null">
+                #{cloudFileUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileDirId != null">
+                #{cloudFileDirId,jdbcType=INTEGER},
+            </if>
+            <if test="cloudFileUserId != null">
+                #{cloudFileUserId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.heart.heartcloud.domain.CloudFile">
+        update t_cloud_file
+        <set>
+            <if test="cloudFileName != null">
+                cloud_file_name = #{cloudFileName,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileSize != null">
+                cloud_file_size = #{cloudFileSize,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileCreateDate != null">
+                cloud_file_create_date = #{cloudFileCreateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cloudFileUpdateDate != null">
+                cloud_file_update_date = #{cloudFileUpdateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cloudFileType != null">
+                cloud_file_type = #{cloudFileType,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileStatus != null">
+                cloud_file_status = #{cloudFileStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileUrl != null">
+                cloud_file_url = #{cloudFileUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileDirId != null">
+                cloud_file_dir_id = #{cloudFileDirId,jdbcType=INTEGER},
+            </if>
+            <if test="cloudFileUserId != null">
+                cloud_file_user_id = #{cloudFileUserId,jdbcType=INTEGER},
+            </if>
+        </set>
+        where cloud_file_id = #{cloudFileId,jdbcType=INTEGER}
+    </update>
+</mapper>
