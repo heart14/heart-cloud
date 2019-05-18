@@ -73,7 +73,7 @@ public class CloudUserController {
      * @return
      */
     @RequestMapping("/save")
-    public CloudResponse saveCloudUser() {
+    public CloudResponse saveCloudUser(CloudUser cloudUser) {
 
         CloudResponse cloudResponse = new CloudResponse();
         cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
@@ -81,7 +81,6 @@ public class CloudUserController {
         cloudResponse.setErrMessage("添加失败。");
         cloudResponse.setData("");
 
-        CloudUser cloudUser = new CloudUser();
         cloudUser.setUserName("Heartdd");
         cloudUser.setUserPass("123456");
         cloudUser.setUserRole("normal");
@@ -100,11 +99,11 @@ public class CloudUserController {
 
     /**
      * 删除用户
-     * @param userId
+     * @param cloudUserId
      * @return
      */
     @RequestMapping("/remove")
-    public CloudResponse removeCloudUser(int userId) {
+    public CloudResponse removeCloudUser(int cloudUserId) {
 
         CloudResponse cloudResponse = new CloudResponse();
         cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
@@ -112,7 +111,7 @@ public class CloudUserController {
         cloudResponse.setErrMessage("删除失败。");
         cloudResponse.setData("");
 
-        CloudUser cloudUserByPrimaryKey = cloudUserService.findCloudUserByPrimaryKey(userId);
+        CloudUser cloudUserByPrimaryKey = cloudUserService.findCloudUserByPrimaryKey(cloudUserId);
         cloudUserByPrimaryKey.setUserStatus("0");
         int editCloudUserByPrimaryKey = cloudUserService.editCloudUserByPrimaryKey(cloudUserByPrimaryKey);
 
@@ -127,11 +126,11 @@ public class CloudUserController {
 
     /**
      * 修改用户信息
-     * @param userId
+     * @param cloudUser
      * @return
      */
     @RequestMapping("/edit")
-    public CloudResponse editCloudUser(int userId) {
+    public CloudResponse editCloudUser(CloudUser cloudUser) {
 
         CloudResponse cloudResponse = new CloudResponse();
         cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
@@ -139,7 +138,7 @@ public class CloudUserController {
         cloudResponse.setErrMessage("修改失败。");
         cloudResponse.setData("");
 
-        CloudUser cloudUserByPrimaryKey = cloudUserService.findCloudUserByPrimaryKey(userId);
+        CloudUser cloudUserByPrimaryKey = cloudUserService.findCloudUserByPrimaryKey(cloudUser.getUserId());
         cloudUserByPrimaryKey.setUserPass("123456");
         cloudUserByPrimaryKey.setUserStatus("1");
         int editCloudUserByPrimaryKey = cloudUserService.editCloudUserByPrimaryKey(cloudUserByPrimaryKey);

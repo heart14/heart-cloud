@@ -2,6 +2,8 @@ package com.heart.heartcloud.service;
 
 import com.heart.heartcloud.domain.CloudDir;
 
+import java.util.List;
+
 /**
  * @Description:
  * @Author: Heart
@@ -9,12 +11,44 @@ import com.heart.heartcloud.domain.CloudDir;
  */
 public interface CloudDirService {
 
+    /**
+     * 新增文件夹
+     *
+     * @param cloudDir
+     * @return
+     */
     int saveCloudDir(CloudDir cloudDir);
 
+    /**
+     * 删除文件夹（物理删除）
+     *
+     * @param cloudDirId
+     * @return
+     */
     int removeCloudDirByPrimaryKey(Integer cloudDirId);
 
+    /**
+     * 修改文件夹信息（根据主键）
+     *
+     * @param cloudDir
+     * @return
+     */
     int editCloudDirByPrimaryKey(CloudDir cloudDir);
 
+    /**
+     * 查询文件夹信息（根据主键）
+     *
+     * @param cloudDirId
+     * @return
+     */
     CloudDir findCloudDirByPrimaryKey(Integer cloudDirId);
+
+    /**
+     * 查询文件夹信息（根据用户ID）
+     *
+     * @param cloudUserId
+     * @return
+     */
+    List<CloudDir> findCloudDirsByCloudUserId(Integer cloudUserId);
 
 }

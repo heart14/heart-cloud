@@ -11,13 +11,42 @@ import java.util.List;
  */
 public interface CloudUserService {
 
+    /**
+     * 新增用户
+     *
+     * @param cloudUser
+     * @return
+     */
     int saveCloudUser(CloudUser cloudUser);
 
+    /**
+     * 删除用户
+     *
+     * @param userId
+     * @return
+     */
     int removeCloudUserByPrimaryKey(Integer userId);
 
+    /**
+     * 更新用户
+     *
+     * @param cloudUser
+     * @return
+     */
     int editCloudUserByPrimaryKey(CloudUser cloudUser);
 
+    /**
+     * 查询用户
+     *
+     * @param userId
+     * @return
+     */
     CloudUser findCloudUserByPrimaryKey(Integer userId);
 
+    /**
+     * 查询所有用户
+     *
+     * @return
+     */
     List<CloudUser> findAllUser();
 }
