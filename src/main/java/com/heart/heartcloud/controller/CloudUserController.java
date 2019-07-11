@@ -47,6 +47,7 @@ public class CloudUserController {
 
     /**
      * 获取所有用户信息
+     *
      * @return
      */
     @RequestMapping("/users")
@@ -70,6 +71,7 @@ public class CloudUserController {
 
     /**
      * 添加用户
+     *
      * @return
      */
     @RequestMapping("/save")
@@ -99,11 +101,12 @@ public class CloudUserController {
 
     /**
      * 删除用户
+     *
      * @param cloudUserId
      * @return
      */
     @RequestMapping("/remove")
-    public CloudResponse removeCloudUser(int cloudUserId) {
+    public CloudResponse removeCloudUser(Integer cloudUserId) {
 
         CloudResponse cloudResponse = new CloudResponse();
         cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
@@ -111,21 +114,25 @@ public class CloudUserController {
         cloudResponse.setErrMessage("删除失败。");
         cloudResponse.setData("");
 
+        //魔法删除
         CloudUser cloudUserByPrimaryKey = cloudUserService.findCloudUserByPrimaryKey(cloudUserId);
-        cloudUserByPrimaryKey.setUserStatus("0");
-        int editCloudUserByPrimaryKey = cloudUserService.editCloudUserByPrimaryKey(cloudUserByPrimaryKey);
+        if (cloudUserByPrimaryKey != null) {
+            cloudUserByPrimaryKey.setUserStatus("0");
+            int editCloudUserByPrimaryKey = cloudUserService.editCloudUserByPrimaryKey(cloudUserByPrimaryKey);
 
-        if (editCloudUserByPrimaryKey == 1) {
-            cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-            cloudResponse.setSign("");
-            cloudResponse.setErrMessage("删除成功。");
-            cloudResponse.setData("");
+            if (editCloudUserByPrimaryKey == 1) {
+                cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
+                cloudResponse.setSign("");
+                cloudResponse.setErrMessage("删除成功。");
+                cloudResponse.setData("");
+            }
         }
         return cloudResponse;
     }
 
     /**
      * 修改用户信息
+     *
      * @param cloudUser
      * @return
      */

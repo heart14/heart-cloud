@@ -8,13 +8,13 @@ import java.util.List;
 @Repository
 public interface CloudUserDao {
 
+    int insert(CloudUser record);
+
     int deleteByPrimaryKey(Integer userId);
 
-    int insert(CloudUser record);
+    int updateByPrimaryKey(CloudUser record);
 
     CloudUser selectByPrimaryKey(Integer userId);
 
     List<CloudUser> selectAllUser();
-
-    int updateByPrimaryKey(CloudUser record);
 }

@@ -44,7 +44,7 @@ public interface CloudDirService {
     CloudDir findCloudDirByPrimaryKey(Integer cloudDirId);
 
     /**
-     * 查询文件夹信息（根据用户ID）
+     * 查询用戶文件夹（根据用户ID）
      *
      * @param cloudUserId
      * @return

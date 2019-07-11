@@ -36,7 +36,7 @@ public interface CloudUserService {
     int editCloudUserByPrimaryKey(CloudUser cloudUser);
 
     /**
-     * 查询用户
+     * 查询用户（根据主键）
      *
      * @param userId
      * @return

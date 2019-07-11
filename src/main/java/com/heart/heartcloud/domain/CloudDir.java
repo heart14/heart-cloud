@@ -3,6 +3,7 @@ package com.heart.heartcloud.domain;
 import java.util.Date;
 
 public class CloudDir {
+
     private Integer cloudDirId;
 
     private String cloudDirName;

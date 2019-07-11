@@ -1,6 +1,7 @@
 package com.heart.heartcloud.domain;
 
 public class CloudUser {
+
     private Integer userId;
 
     private String userName;

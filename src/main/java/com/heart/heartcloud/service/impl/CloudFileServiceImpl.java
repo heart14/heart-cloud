@@ -6,6 +6,8 @@ import com.heart.heartcloud.service.CloudFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Description:
  * @Author: Heart
@@ -36,5 +38,15 @@ public class CloudFileServiceImpl implements CloudFileService {
     @Override
     public CloudFile findCloudFileByPrimaryKey(Integer cloudFileId) {
         return cloudFileDao.selectByPrimaryKey(cloudFileId);
+    }
+
+    @Override
+    public List<CloudFile> fincCloudFilesByCloudDirId(Integer cloudDirId) {
+        return cloudFileDao.selectByCloudDirId(cloudDirId);
+    }
+
+    @Override
+    public List<CloudFile> findCloudFilesByCloudUserId(Integer cloudUserId) {
+        return cloudFileDao.selectByCloudUserId(cloudUserId);
     }
 }

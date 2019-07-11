@@ -6,6 +6,8 @@ import com.heart.heartcloud.service.CloudDirService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Description:
  * @Author: Heart
@@ -36,5 +38,10 @@ public class CloudDirServiceImpl implements CloudDirService {
     @Override
     public CloudDir findCloudDirByPrimaryKey(Integer cloudDirId) {
         return cloudDirDao.selectByPrimaryKey(cloudDirId);
+    }
+
+    @Override
+    public List<CloudDir> findCloudDirsByCloudUserId(Integer cloudUserId) {
+        return cloudDirDao.selectByCloudUserId(cloudUserId);
     }
 }

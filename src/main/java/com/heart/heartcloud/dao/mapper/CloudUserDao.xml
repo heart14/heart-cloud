@@ -10,8 +10,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    user_id, user_name, user_pass, user_role, user_status
-  </sql>
+        user_id, user_name, user_pass, user_role, user_status
+    </sql>
 
     <select id="selectAllUser" resultMap="BaseResultMap">
         select
@@ -29,9 +29,9 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from t_cloud_user
-    where user_id = #{userId,jdbcType=INTEGER}
-  </delete>
+        delete from t_cloud_user
+        where user_id = #{userId,jdbcType=INTEGER}
+    </delete>
 
     <insert id="insert" parameterType="com.heart.heartcloud.domain.CloudUser" useGeneratedKeys="true" keyProperty="userId">
         insert into t_cloud_user
