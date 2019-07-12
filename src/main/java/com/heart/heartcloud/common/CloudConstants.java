@@ -7,7 +7,11 @@ package com.heart.heartcloud.common;
  */
 public class CloudConstants {
 
-    public static final String ERR_CODE_SUCCESS = "0";
+    public static final int ERR_CODE_SUCCESS = 0;
 
-    public static final String ERR_CODE_FAIL = "1";
+    public static final int ERR_CODE_FAIL = 1;
+
+    public static final String ERR_MSG_SUCCESS = "SUCCESS";
+
+    public static final String ERR_MSG_FAIL = "FAIL";
 }

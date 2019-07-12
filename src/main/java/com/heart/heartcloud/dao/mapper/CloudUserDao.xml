@@ -5,27 +5,77 @@
         <id column="user_id" jdbcType="INTEGER" property="userId"/>
         <result column="user_name" jdbcType="VARCHAR" property="userName"/>
         <result column="user_pass" jdbcType="VARCHAR" property="userPass"/>
-        <result column="user_role" jdbcType="VARCHAR" property="userRole"/>
+        <result column="user_salt" jdbcType="VARCHAR" property="userSalt"/>
         <result column="user_status" jdbcType="VARCHAR" property="userStatus"/>
+        <result column="user_create_date" jdbcType="TIMESTAMP" property="userCreateDate"/>
+        <result column="user_update_date" jdbcType="TIMESTAMP" property="userUpdateDate"/>
+    </resultMap>
+    
+    <resultMap id="FullResultMap" type="com.heart.heartcloud.domain.CloudUser">
+        <id column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_pass" jdbcType="VARCHAR" property="userPass"/>
+        <result column="user_salt" jdbcType="VARCHAR" property="userSalt"/>
+        <result column="user_status" jdbcType="VARCHAR" property="userStatus"/>
+        <result column="user_create_date" jdbcType="TIMESTAMP" property="userCreateDate"/>
+        <result column="user_update_date" jdbcType="TIMESTAMP" property="userUpdateDate"/>
+        <collection property="userRoles" ofType="CloudRole">
+            <id column="role_id" jdbcType="INTEGER" property="roleId"/>
+            <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+            <result column="role_desc" jdbcType="VARCHAR" property="roleDesc"/>
+        </collection>
+        <collection property="userPermissions" ofType="CloudPermission">
+            <id column="permission_id" jdbcType="INTEGER" property="permissionId"/>
+            <result column="permission_name" jdbcType="VARCHAR" property="permissionName"/>
+            <result column="permission_desc" jdbcType="VARCHAR" property="permissionDesc"/>
+            <result column="permission_url" jdbcType="VARCHAR" property="permissionUrl"/>
+            <result column="permission_parent_id" jdbcType="INTEGER" property="permissionParentId"/>
+        </collection>
     </resultMap>
 
     <sql id="Base_Column_List">
-        user_id, user_name, user_pass, user_role, user_status
+        user_id, user_name, user_pass, user_salt, user_status, user_create_date, user_update_date
     </sql>
 
-    <select id="selectAllUser" resultMap="BaseResultMap">
+    <sql id="Full_Column_List">
+        user_id, user_name, user_pass, user_salt, user_status, user_create_date, user_update_date,
+        role_id, role_name, role_desc,
+        permission_id, permission_name, permission_desc, permission_url, permission_parent_id
+    </sql>
+
+    <select id="selectAllUser" resultMap="FullResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from t_cloud_user
-        where user_status = "1"
+        <include refid="Full_Column_List"/>
+        from t_cloud_user u
+        left join t_cloud_user_role ur on ur.user_id = u.user_id
+        left join t_cloud_role r on r.role_id = ur.role_id
+        left join t_cloud_role_permission rp on rp.role_id = r.role_id
+        left join t_cloud_permission p on p.permission_id = rp.permission_id
+        where u.user_status = "1"
     </select>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="FullResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from t_cloud_user
-        where user_id = #{userId,jdbcType=INTEGER}
-        and user_status = "1"
+        <include refid="Full_Column_List"/>
+        from t_cloud_user u
+        left join t_cloud_user_role ur on ur.user_id = u.user_id
+        left join t_cloud_role r on r.role_id = ur.role_id
+        left join t_cloud_role_permission rp on rp.role_id = r.role_id
+        left join t_cloud_permission p on p.permission_id = rp.permission_id
+        where u.user_id = #{userId,jdbcType=INTEGER}
+        and u.user_status = "1"
+    </select>
+
+    <select id="selectByUserName" parameterType="java.lang.String" resultMap="FullResultMap">
+        select
+        <include refid="Full_Column_List"/>
+        from t_cloud_user u
+        left join t_cloud_user_role ur on ur.user_id = u.user_id
+        left join t_cloud_role r on r.role_id = ur.role_id
+        left join t_cloud_role_permission rp on rp.role_id = r.role_id
+        left join t_cloud_permission p on p.permission_id = rp.permission_id
+        where u.user_name = #{userName,jdbcType=INTEGER}
+        and u.user_status = "1"
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -45,11 +95,17 @@
             <if test="userPass != null">
                 user_pass,
             </if>
-            <if test="userRole != null">
-                user_role,
+            <if test="userSalt != null">
+                user_salt,
             </if>
             <if test="userStatus != null">
                 user_status,
+            </if>
+            <if test="userCreateDate != null">
+                user_create_date,
+            </if>
+            <if test="userUpdateDate != null">
+                user_update_date,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -62,11 +118,17 @@
             <if test="userPass != null">
                 #{userPass,jdbcType=VARCHAR},
             </if>
-            <if test="userRole != null">
-                #{userRole,jdbcType=VARCHAR},
+            <if test="userSalt != null">
+                #{userSalt,jdbcType=VARCHAR},
             </if>
             <if test="userStatus != null">
                 #{userStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="userCreateDate != null">
+                #{userCreateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userUpdateDate != null">
+                #{userUpdateDate,jdbcType=TIMESTAMP},
             </if>
         </trim>
     </insert>
@@ -80,11 +142,17 @@
             <if test="userPass != null">
                 user_pass = #{userPass,jdbcType=VARCHAR},
             </if>
-            <if test="userRole != null">
-                user_role = #{userRole,jdbcType=VARCHAR},
+            <if test="userSalt != null">
+                user_salt = #{userSalt,jdbcType=VARCHAR},
             </if>
             <if test="userStatus != null">
                 user_status = #{userStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="userCreateDate != null">
+                user_create_date = #{userCreateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userUpdateDate != null">
+                user_update_date = #{userUpdateDate,jdbcType=TIMESTAMP},
             </if>
         </set>
         where user_id = #{userId,jdbcType=INTEGER}

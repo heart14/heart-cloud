@@ -1,15 +1,13 @@
 package com.heart.heartcloud.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.heart.heartcloud.common.CloudConstants;
 import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudUserService;
+import com.heart.heartcloud.utils.CloudResponseUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Description:
@@ -20,29 +18,20 @@ import java.util.List;
 @RestController
 public class CloudUserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CloudUserController.class);
+
     @Autowired
     private CloudUserService cloudUserService;
 
     /**
-     * 获取用户信息
+     * 查询用户信息
      */
-    @RequestMapping("/user")
-    public CloudResponse getCloudUser() {
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    public CloudResponse getCloudUser(@RequestParam("cloudUserId") Integer cloudUserId) {
 
-        CloudResponse cloudResponse = new CloudResponse();
-        cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-        cloudResponse.setSign("");
-        cloudResponse.setErrMessage("查询失败。");
-        cloudResponse.setData("");
+        logger.info("查询用户信息 :cloudUserId => {}", cloudUserId);
 
-        CloudUser cloudUserByPrimaryKey = cloudUserService.findCloudUserByPrimaryKey(1);
-        if (cloudUserByPrimaryKey != null) {
-            cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-            cloudResponse.setSign("");
-            cloudResponse.setErrMessage("查询成功。");
-            cloudResponse.setData(JSON.toJSONString(cloudUserByPrimaryKey));
-        }
-        return cloudResponse;
+        return CloudResponseUtil.success(null);
     }
 
     /**
@@ -50,23 +39,12 @@ public class CloudUserController {
      *
      * @return
      */
-    @RequestMapping("/users")
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public CloudResponse getCloudUserList() {
 
-        CloudResponse cloudResponse = new CloudResponse();
-        cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-        cloudResponse.setSign("");
-        cloudResponse.setErrMessage("查询失败。");
-        cloudResponse.setData("");
+        logger.info("查询所有用户信息");
 
-        List<CloudUser> allUser = cloudUserService.findAllUser();
-        if (allUser != null && allUser.size() > 0) {
-            cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-            cloudResponse.setSign("");
-            cloudResponse.setErrMessage("查询成功。");
-            cloudResponse.setData(JSON.toJSONString(allUser));
-        }
-        return cloudResponse;
+        return CloudResponseUtil.success(null);
     }
 
     /**
@@ -74,29 +52,12 @@ public class CloudUserController {
      *
      * @return
      */
-    @RequestMapping("/save")
-    public CloudResponse saveCloudUser(CloudUser cloudUser) {
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public CloudResponse saveCloudUser(@RequestBody CloudUser cloudUser) {
 
-        CloudResponse cloudResponse = new CloudResponse();
-        cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-        cloudResponse.setSign("");
-        cloudResponse.setErrMessage("添加失败。");
-        cloudResponse.setData("");
+        logger.info("保存用户 :cloudUser => {}", cloudUser);
 
-        cloudUser.setUserName("Heartdd");
-        cloudUser.setUserPass("123456");
-        cloudUser.setUserRole("normal");
-        cloudUser.setUserStatus("1");
-
-        int saveCloudUser = cloudUserService.saveCloudUser(cloudUser);
-
-        if (saveCloudUser == 1) {
-            cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-            cloudResponse.setSign("");
-            cloudResponse.setErrMessage("添加成功。");
-            cloudResponse.setData("");
-        }
-        return cloudResponse;
+        return CloudResponseUtil.success();
     }
 
     /**
@@ -105,29 +66,12 @@ public class CloudUserController {
      * @param cloudUserId
      * @return
      */
-    @RequestMapping("/remove")
+    @RequestMapping(value = "/remove", method = RequestMethod.GET)
     public CloudResponse removeCloudUser(Integer cloudUserId) {
 
-        CloudResponse cloudResponse = new CloudResponse();
-        cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-        cloudResponse.setSign("");
-        cloudResponse.setErrMessage("删除失败。");
-        cloudResponse.setData("");
+        logger.info("删除用户 :cloudUserId => {}", cloudUserId);
 
-        //魔法删除
-        CloudUser cloudUserByPrimaryKey = cloudUserService.findCloudUserByPrimaryKey(cloudUserId);
-        if (cloudUserByPrimaryKey != null) {
-            cloudUserByPrimaryKey.setUserStatus("0");
-            int editCloudUserByPrimaryKey = cloudUserService.editCloudUserByPrimaryKey(cloudUserByPrimaryKey);
-
-            if (editCloudUserByPrimaryKey == 1) {
-                cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-                cloudResponse.setSign("");
-                cloudResponse.setErrMessage("删除成功。");
-                cloudResponse.setData("");
-            }
-        }
-        return cloudResponse;
+        return CloudResponseUtil.success();
     }
 
     /**
@@ -136,27 +80,12 @@ public class CloudUserController {
      * @param cloudUser
      * @return
      */
-    @RequestMapping("/edit")
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public CloudResponse editCloudUser(CloudUser cloudUser) {
 
-        CloudResponse cloudResponse = new CloudResponse();
-        cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-        cloudResponse.setSign("");
-        cloudResponse.setErrMessage("修改失败。");
-        cloudResponse.setData("");
+        logger.info("修改用户信息 :cloudUser => {}", cloudUser);
 
-        CloudUser cloudUserByPrimaryKey = cloudUserService.findCloudUserByPrimaryKey(cloudUser.getUserId());
-        cloudUserByPrimaryKey.setUserPass("123456");
-        cloudUserByPrimaryKey.setUserStatus("1");
-        int editCloudUserByPrimaryKey = cloudUserService.editCloudUserByPrimaryKey(cloudUserByPrimaryKey);
-
-        if (editCloudUserByPrimaryKey == 1) {
-            cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-            cloudResponse.setSign("");
-            cloudResponse.setErrMessage("修改成功。");
-            cloudResponse.setData("");
-        }
-        return cloudResponse;
+        return CloudResponseUtil.success();
     }
 
 }

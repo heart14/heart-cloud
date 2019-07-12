@@ -1,37 +1,38 @@
 package com.heart.heartcloud.response;
 
-import java.io.Serializable;
-
 /**
  * @Description:
  * @Author: Heart
  * @Date: 2019/3/11 15:17
  */
-public class CloudResponse implements Serializable {
+public class CloudResponse<T> {
 
-    private String errCode;
-
-    private String sign;
+    private Integer errCode;
 
     private String errMessage;
 
-    private String data;
+    private T data;
 
-    public String getErrCode() {
+    public CloudResponse() {
+    }
+
+    public CloudResponse(Integer errCode, String errMessage) {
+        this.errCode = errCode;
+        this.errMessage = errMessage;
+    }
+
+    public CloudResponse(Integer errCode, String errMessage, T data) {
+        this.errCode = errCode;
+        this.errMessage = errMessage;
+        this.data = data;
+    }
+
+    public Integer getErrCode() {
         return errCode;
     }
 
-    public CloudResponse setErrCode(String errCode) {
+    public CloudResponse<T> setErrCode(Integer errCode) {
         this.errCode = errCode;
-        return this;
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public CloudResponse setSign(String sign) {
-        this.sign = sign;
         return this;
     }
 
@@ -39,16 +40,16 @@ public class CloudResponse implements Serializable {
         return errMessage;
     }
 
-    public CloudResponse setErrMessage(String errMessage) {
+    public CloudResponse<T> setErrMessage(String errMessage) {
         this.errMessage = errMessage;
         return this;
     }
 
-    public String getData() {
+    public T getData() {
         return data;
     }
 
-    public CloudResponse setData(String data) {
+    public CloudResponse<T> setData(T data) {
         this.data = data;
         return this;
     }
@@ -56,10 +57,9 @@ public class CloudResponse implements Serializable {
     @Override
     public String toString() {
         return "CloudResponse{" +
-                "errCode='" + errCode + '\'' +
-                ", sign='" + sign + '\'' +
+                "errCode=" + errCode +
                 ", errMessage='" + errMessage + '\'' +
-                ", data='" + data + '\'' +
+                ", data=" + data +
                 '}';
     }
 }

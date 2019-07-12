@@ -44,6 +44,14 @@ public interface CloudUserService {
     CloudUser findCloudUserByPrimaryKey(Integer userId);
 
     /**
+     * 查询用户（根据用户名）
+     *
+     * @param userName
+     * @return
+     */
+    CloudUser findCloudUserByUserName(String userName);
+
+    /**
      * 查询所有用户
      *
      * @return

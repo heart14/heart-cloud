@@ -41,6 +41,11 @@ public class CloudUserServiceImpl implements CloudUserService {
     }
 
     @Override
+    public CloudUser findCloudUserByUserName(String userName) {
+        return cloudUserDao.selectByUserName(userName);
+    }
+
+    @Override
     public CloudUser findCloudUserByPrimaryKey(Integer userId) {
         return cloudUserDao.selectByPrimaryKey(userId);
     }

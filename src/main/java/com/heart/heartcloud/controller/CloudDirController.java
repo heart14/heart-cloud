@@ -26,7 +26,7 @@ public class CloudDirController {
      * @param cloudDir
      * @return
      */
-    @RequestMapping(name = "/save", method = RequestMethod.POST)
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     public CloudResponse saveCloudDir(CloudDir cloudDir) {
         return null;
     }
@@ -37,7 +37,7 @@ public class CloudDirController {
      * @param cloudDirId
      * @return
      */
-    @RequestMapping(name = "/remove", method = RequestMethod.POST)
+    @RequestMapping(value = "/remove", method = RequestMethod.POST)
     public CloudResponse removeCloudDir(Integer cloudDirId) {
         return null;
     }
@@ -48,7 +48,7 @@ public class CloudDirController {
      * @param cloudUserId
      * @return
      */
-    @RequestMapping(name = "/removeAll", method = RequestMethod.POST)
+    @RequestMapping(value = "/removeAll", method = RequestMethod.POST)
     public CloudResponse removeCloudDirs(Integer cloudUserId) {
         return null;
     }
@@ -59,7 +59,7 @@ public class CloudDirController {
      * @param cloudDir
      * @return
      */
-    @RequestMapping(name = "/edit", method = RequestMethod.POST)
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public CloudResponse editCloudDir(CloudDir cloudDir) {
         return null;
     }
@@ -70,7 +70,7 @@ public class CloudDirController {
      * @param cloudDirId
      * @return
      */
-    @RequestMapping(name = "/find", method = RequestMethod.POST)
+    @RequestMapping(value = "/find", method = RequestMethod.POST)
     public CloudResponse findCloudDir(Integer cloudDirId) {
         return null;
     }
@@ -81,7 +81,7 @@ public class CloudDirController {
      * @param cloudUserId
      * @return
      */
-    @RequestMapping(name = "/findAll", method = RequestMethod.POST)
+    @RequestMapping(value = "/findAll", method = RequestMethod.POST)
     public CloudResponse findCloudDirs(Integer cloudUserId) {
         return null;
     }
