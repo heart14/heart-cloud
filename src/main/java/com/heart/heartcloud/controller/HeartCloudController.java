@@ -1,6 +1,8 @@
 package com.heart.heartcloud.controller;
 
+import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.domain.CloudUser;
+import com.heart.heartcloud.exception.CloudException;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudUserService;
 import com.heart.heartcloud.utils.CloudResponseUtil;
@@ -74,8 +76,16 @@ public class HeartCloudController {
      * @return
      */
     @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public ModelAndView index() {
-        return new ModelAndView("index");
+    public ModelAndView index(HttpServletRequest request) {
+        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
+        if (currentCloudUser == null) {
+            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+        }
+        logger.info("HEART CLOUD首页 :cloudUser => {}", currentCloudUser);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("index");
+        modelAndView.addObject("cloudUser", currentCloudUser);
+        return modelAndView;
     }
 
     /**
@@ -101,9 +111,12 @@ public class HeartCloudController {
     }
 
     @RequestMapping(value = "/reg", method = RequestMethod.POST)
+    @ResponseBody
     public CloudResponse userReg(@RequestBody CloudUser cloudUser) {
+
         logger.info("用户注册 :cloudUser => {}", cloudUser);
-        return null;
+
+        return CloudResponseUtil.success(cloudUserService.userReg(cloudUser));
     }
 
     /**
@@ -114,7 +127,9 @@ public class HeartCloudController {
      */
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public ModelAndView userLogout(HttpServletRequest request) {
+
         logger.info("系统用户登出 :CurrentCloudUser => {}", request.getSession().getAttribute("CurrentCloudUser"));
+
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
         return new ModelAndView("login");

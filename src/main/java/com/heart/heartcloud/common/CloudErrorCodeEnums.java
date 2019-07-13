@@ -34,9 +34,19 @@ public enum CloudErrorCodeEnums {
     DBException(7004, "数据库操作异常"),
 
     /**
-     * 参数异常，ErrorCode :7005
+     * 用户登录已过期，ErrorCode :7005
      */
-    ParamException(7005, "参数异常");
+    LoginExpiredException(7005, "用户登录已过期"),
+
+    /**
+     * 注册失败，用户已存在，ErrorCode :7011
+     */
+    DuplicateUserException(7011, "注册失败，用户已存在"),
+
+    /**
+     * 参数异常，ErrorCode :7012
+     */
+    ParamException(7012, "参数异常");
 
     private Integer code;
 

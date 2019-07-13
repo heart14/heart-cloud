@@ -45,7 +45,7 @@
 
     <select id="selectAllUser" resultMap="FullResultMap">
         select
-        <include refid="Full_Column_List"/>
+        *
         from t_cloud_user u
         left join t_cloud_user_role ur on ur.user_id = u.user_id
         left join t_cloud_role r on r.role_id = ur.role_id
@@ -56,7 +56,7 @@
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="FullResultMap">
         select
-        <include refid="Full_Column_List"/>
+        *
         from t_cloud_user u
         left join t_cloud_user_role ur on ur.user_id = u.user_id
         left join t_cloud_role r on r.role_id = ur.role_id
@@ -68,7 +68,7 @@
 
     <select id="selectByUserName" parameterType="java.lang.String" resultMap="FullResultMap">
         select
-        <include refid="Full_Column_List"/>
+        *
         from t_cloud_user u
         left join t_cloud_user_role ur on ur.user_id = u.user_id
         left join t_cloud_role r on r.role_id = ur.role_id

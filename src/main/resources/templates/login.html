@@ -12,8 +12,10 @@
     <script th:src="@{/js/jquery.min.js}" type="text/javascript"></script>
     <script>
         function login() {
-            var userName = $("#logname").val();
-            var userPass = $("#logpass").val();
+            // var userName = $("#logname").val();
+            // var userPass = $("#logpass").val();
+            var userName = "heart7";
+            var userPass = "123456";
 
             console.log("loginName:" + userName + "/loginPass:" + userPass);
             $.ajax({
@@ -25,7 +27,7 @@
                     console.log(result);
                     // var respObj = JSON.stringify(result);
                     var respObj = eval(result);
-                    if (respObj.code === "7000") {
+                    if (respObj.errCode === 7000) {
                         window.location.href = "http://localhost:8081/index";
                     } else {
                         alert("登录失败，请重试。");
@@ -48,9 +50,19 @@
                 "success": function (result) {
                     console.log(result);
                     var respObj = JSON.stringify(result);
-                    if (respObj.code == "10000") {
-                        alert("注册成功！请登录");
-                    } else {
+                    if (respObj.errCode === 7000) {
+                        alert("respObj.errCode === 7000");
+                    }
+                    if (respObj.errCode == 7000) {
+                        alert("respObj.errCode == 7000");
+                    }
+                    if (respObj.errCode === '7000') {
+                        alert("respObj.errCode === '7000'");
+                    }
+                    if (respObj.errCode == '7000') {
+                        alert("respObj.errCode == '7000'");
+                    }
+                    else {
                         alert("注册失败！请重试");
                     }
                     location.reload();
@@ -68,14 +80,11 @@
                 <form action="#" name="f" method="post">
                     <div class="input_outer">
                         <span class="u_user"></span>
-                        <input id="logname" name="username" class="text" style="color: #FFFFFF !important" type="text"
-                               placeholder="请输入账户">
+                        <input id="logname" name="username" class="text" style="color: #FFFFFF !important" type="text" placeholder="请输入账户" autocomplete="off">
                     </div>
                     <div class="input_outer">
                         <span class="us_uer"></span>
-                        <input id="logpass" name="password" class="text"
-                               style="color: #FFFFFF !important; position:absolute; z-index:100;" value=""
-                               type="password" placeholder="请输入密码">
+                        <input id="logpass" name="password" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;" value="" type="password" placeholder="请输入密码" autocomplete="off">
                     </div>
                     <div class="mb2"><a class="act-but submit" href="javascript: login();" style="color: #FFFFFF">登录</a>
                     </div>

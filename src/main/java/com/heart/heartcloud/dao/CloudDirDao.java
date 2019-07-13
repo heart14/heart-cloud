@@ -37,6 +37,13 @@ public interface CloudDirDao {
     CloudDir selectByPrimaryKey(Integer cloudDirId);
 
     /**
+     * 查询子文件夹（根据父文件夹ID）
+     * @param cloudDirParentId
+     * @return
+     */
+    List<CloudDir> selectByParentId(Integer cloudDirParentId);
+
+    /**
      * 查询文件夹（根据用户ID）
      * @param cloudUserId
      * @return

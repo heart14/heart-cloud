@@ -31,7 +31,7 @@ public class CloudUserController {
 
         logger.info("查询用户信息 :cloudUserId => {}", cloudUserId);
 
-        return CloudResponseUtil.success(null);
+        return CloudResponseUtil.success(cloudUserService.findCloudUserByPrimaryKey(cloudUserId));
     }
 
     /**
@@ -44,7 +44,7 @@ public class CloudUserController {
 
         logger.info("查询所有用户信息");
 
-        return CloudResponseUtil.success(null);
+        return CloudResponseUtil.success(cloudUserService.findAllUser());
     }
 
     /**
@@ -70,6 +70,7 @@ public class CloudUserController {
     public CloudResponse removeCloudUser(Integer cloudUserId) {
 
         logger.info("删除用户 :cloudUserId => {}", cloudUserId);
+        cloudUserService.removeCloudUserByPrimaryKey(cloudUserId);
 
         return CloudResponseUtil.success();
     }
@@ -84,6 +85,7 @@ public class CloudUserController {
     public CloudResponse editCloudUser(CloudUser cloudUser) {
 
         logger.info("修改用户信息 :cloudUser => {}", cloudUser);
+        cloudUserService.editCloudUserByPrimaryKey(cloudUser);
 
         return CloudResponseUtil.success();
     }

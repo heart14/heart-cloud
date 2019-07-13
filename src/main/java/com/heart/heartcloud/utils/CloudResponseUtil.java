@@ -1,6 +1,7 @@
 package com.heart.heartcloud.utils;
 
 import com.heart.heartcloud.common.CloudConstants;
+import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.response.CloudResponse;
 
 /**
@@ -17,8 +18,8 @@ public class CloudResponseUtil {
 
     public static CloudResponse<Object> success(Object object) {
         CloudResponse<Object> cloudResponse = new CloudResponse<>();
-        cloudResponse.setErrCode(CloudConstants.ERR_CODE_SUCCESS);
-        cloudResponse.setErrMessage(CloudConstants.ERR_MSG_SUCCESS);
+        cloudResponse.setErrCode(CloudErrorCodeEnums.SUCCESS.getCode());
+        cloudResponse.setErrMessage(CloudErrorCodeEnums.SUCCESS.getMsg());
         cloudResponse.setData(object);
         return cloudResponse;
     }

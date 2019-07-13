@@ -1,6 +1,7 @@
 package com.heart.heartcloud.service;
 
 import com.heart.heartcloud.domain.CloudUser;
+import com.heart.heartcloud.response.CloudResponse;
 
 import java.util.List;
 
@@ -57,4 +58,12 @@ public interface CloudUserService {
      * @return
      */
     List<CloudUser> findAllUser();
+
+    /**
+     * 用户注册
+     *
+     * @param cloudUser
+     * @return
+     */
+    CloudUser userReg(CloudUser cloudUser);
 }

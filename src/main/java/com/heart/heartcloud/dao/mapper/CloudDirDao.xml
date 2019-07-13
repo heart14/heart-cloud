@@ -8,12 +8,13 @@
         <result column="cloud_dir_create_date" jdbcType="TIMESTAMP" property="cloudDirCreateDate"/>
         <result column="cloud_dir_update_date" jdbcType="TIMESTAMP" property="cloudDirUpdateDate"/>
         <result column="cloud_dir_status" jdbcType="VARCHAR" property="cloudDirStatus"/>
+        <result column="cloud_dir_parent_id" jdbcType="INTEGER" property="cloudDirParentId"/>
         <result column="cloud_dir_user_id" jdbcType="INTEGER" property="cloudDirUserId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         cloud_dir_id, cloud_dir_name, cloud_dir_size, cloud_dir_create_date, cloud_dir_update_date,
-        cloud_dir_status, cloud_dir_user_id
+        cloud_dir_status, cloud_dir_parent_id, cloud_dir_user_id
     </sql>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -23,11 +24,19 @@
         where cloud_dir_id = #{cloudDirId,jdbcType=INTEGER}
     </select>
 
+    <select id="selectByParentId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cloud_dir
+        where cloud_dir_parent_id = #{cloudDirParentId,jdbcType=INTEGER}
+    </select>
+
     <select id="selectByCloudUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_cloud_dir
         where cloud_dir_user_id = #{cloudUserId,jdbcType=INTEGER}
+        and cloud_dir_parent_id = 0
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

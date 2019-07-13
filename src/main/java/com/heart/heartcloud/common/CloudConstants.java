@@ -7,11 +7,24 @@ package com.heart.heartcloud.common;
  */
 public class CloudConstants {
 
+    /**
+     * 状态码
+     */
     public static final int ERR_CODE_SUCCESS = 0;
 
     public static final int ERR_CODE_FAIL = 1;
 
+    /**
+     * 状态值
+     */
     public static final String ERR_MSG_SUCCESS = "SUCCESS";
 
     public static final String ERR_MSG_FAIL = "FAIL";
+
+    /**
+     * 系统中STATUS定义
+     */
+    public static final String STATUS_YES = "1";
+
+    public static final String STATUS_NO = "0";
 }

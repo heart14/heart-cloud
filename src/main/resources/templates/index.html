@@ -1,10 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>HEART CLOUD</title>
+    <script th:src="@{/js/jquery-3.4.1.js}" type="text/javascript"></script>
+    <script th:src="@{/js/bootstrap.min.js}" type="text/javascript"></script>
+    <link th:href="@{/css/bootstrap.min.css}" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" th:inline="javascript">
+        $(function () {
+
+            var cloudUser = [[${cloudUser}]];
+            console.log(cloudUser);
+
+            $.ajax({
+                "type": "post",
+                "url": "/clouddir/findall",
+                "contentType": "application/json;chartset=utf-8",
+                "success": function (result) {
+                    console.log(result);
+                },
+                "error":function (result) {
+                    console.log(result);
+                }
+            });
+
+            $.ajax({
+                "type": "post",
+                "url": "/clouddir/findchild",
+                "data": {
+                    "cloudDirId":0
+                },
+                "contentType": "application/x-www-form-urlencoded;chartset=utf-8",
+                "success": function (result) {
+                    console.log(result);
+                },
+                "error":function (result) {
+                    console.log(result);
+                }
+            });
+
+        });
+    </script>
+    <style>
+        body {
+            padding-top: 70px;
+        }
+
+        .navbar-default {
+            border-radius: 0;
+        }
+
+        .features-btn button {
+            margin-right: 10px;
+        }
+
+        .content-container {
+            margin: 0;
+            padding: 0;
+        }
+
+        table td .glyphicon {
+            margin: 0 15px 0 15px;
+        }
+
+    </style>
 </head>
 <body>
-世界聚焦于你，77777
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">
+                <img th:src="@{/img/logo.png}">
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">网盘 <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">图片</a></li>
+                        <li><a href="#">文档</a></li>
+                        <li><a href="#">视频</a></li>
+                        <!--<li role="separator" class="divider"></li>-->
+                        <li><a href="#">种子</a></li>
+                        <!--<li role="separator" class="divider"></li>-->
+                        <li><a href="#">音乐</a></li>
+                        <li><a href="#">其它</a></li>
+                    </ul>
+                </li>
+                <!--<li><a href="#">上传</a></li>-->
+                <!--<li><a href="#">下载</a></li>-->
+            </ul>
+            <form class="navbar-form navbar-left">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search File" style="border-radius: 24px">
+                </div>
+                <button type="submit" class="btn btn-default" style="border-radius: 24px">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown" th:if="${cloudUser!=null}">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false"><span th:text="${cloudUser.userName}"></span>
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">个人资料</a></li>
+                        <li><a href="#">帮助中心</a></li>
+                        <li><a href="#">Something else</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">退出登录</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">会员中心</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+<nav class="navbar navbar-default" style="margin-bottom: 0">
+    <div class="container-fluid features-btn">
+        <button type="button" class="btn btn-primary navbar-btn">上传</button>
+        <button type="button" class="btn btn-primary navbar-btn">下载</button>
+        <button type="button" class="btn btn-primary navbar-btn">新建文件夹</button>
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="content-container">
+    <ol class="breadcrumb" style="margin-bottom: 0">
+        <li style="float: right">已全部加载，共<span></span>个</li>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Library</a></li>
+        <li class="active">Data</li>
+    </ol>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th> 文件名</th>
+            <th>大小</th>
+            <th>修改日期</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><span class="glyphicon glyphicon-folder-open"></span> 已购资源</td>
+            <td> -</td>
+            <td> -</td>
+        </tr>
+        <tr>
+            <td><span class="glyphicon glyphicon-folder-open"></span> 我的卡包</td>
+            <td> -</td>
+            <td> -</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>
