@@ -45,8 +45,13 @@ public class CloudDirController {
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public CloudResponse saveCloudDir(CloudDir cloudDir) {
-        return null;
+    public CloudResponse saveCloudDir(HttpServletRequest request, @RequestBody CloudDir cloudDir) {
+        CloudUser cloudUser = getCloudUserFromSession(request);
+        logger.info("新建文件夹 :cloudUser => {}", cloudUser);
+        logger.info("新建文件夹 :cloudDir => {}", cloudDir);
+        cloudDir.setCloudDirUserId(cloudUser.getUserId());
+        cloudDirService.saveCloudDir(cloudDir);
+        return CloudResponseUtil.success();
     }
 
     /**
@@ -101,10 +106,7 @@ public class CloudDirController {
      */
     @RequestMapping(value = "/findall", method = RequestMethod.POST)
     public CloudResponse findCloudDirs(HttpServletRequest request) {
-        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
-        if (currentCloudUser == null) {
-            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
-        }
+        CloudUser currentCloudUser = getCloudUserFromSession(request);
         logger.info("查询文件夹（根据用户ID） :cloudUser => {}", currentCloudUser);
         List<CloudDir> cloudDirsByCloudUserId = cloudDirService.findCloudDirsByCloudUserId(currentCloudUser.getUserId());
         logger.info("查询文件夹（根据用户ID） :cloudDirs => {}", cloudDirsByCloudUserId);
@@ -120,10 +122,7 @@ public class CloudDirController {
      */
     @RequestMapping(value = "/findchild", method = RequestMethod.POST)
     public CloudResponse findChildDirsAndFiles(HttpServletRequest request, Integer cloudDirId) {
-        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
-        if (currentCloudUser == null) {
-            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
-        }
+        CloudUser currentCloudUser = getCloudUserFromSession(request);
         logger.info("查询文件夹子文件夹和文件 :cloudUser => {}", currentCloudUser);
         logger.info("查询文件夹子文件夹和文件 :cloudDirId => {}", cloudDirId);
         List<CloudDir> dirsByParentId = cloudDirService.findCloudDirByParentId(cloudDirId);
@@ -131,5 +130,19 @@ public class CloudDirController {
         CloudDirFiles cloudDirFiles = new CloudDirFiles(dirsByParentId, filesByCloudDirId);
         logger.info("查询文件夹子文件夹和文件 :cloudDirFiles => {}", cloudDirFiles);
         return CloudResponseUtil.success(cloudDirFiles);
+    }
+
+    /**
+     * 从SESSION中获取当前登录用户
+     *
+     * @param request
+     * @return
+     */
+    private CloudUser getCloudUserFromSession(HttpServletRequest request) {
+        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
+        if (currentCloudUser == null) {
+            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+        }
+        return currentCloudUser;
     }
 }

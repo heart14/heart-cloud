@@ -25,10 +25,8 @@
                 "contentType": "application/json;chartset=utf-8",
                 "success": function (result) {
                     console.log(result);
-                    // var respObj = JSON.stringify(result);
-                    var respObj = eval(result);
-                    if (respObj.errCode === 7000) {
-                        window.location.href = "http://localhost:8081/index";
+                    if (result.errCode === 7000) {
+                        window.location.href = "http://192.168.0.107:8081/index";
                     } else {
                         alert("登录失败，请重试。");
                         location.reload();
@@ -49,20 +47,9 @@
                 "contentType": "application/json;chartset=utf-8",
                 "success": function (result) {
                     console.log(result);
-                    var respObj = JSON.stringify(result);
-                    if (respObj.errCode === 7000) {
-                        alert("respObj.errCode === 7000");
-                    }
-                    if (respObj.errCode == 7000) {
-                        alert("respObj.errCode == 7000");
-                    }
-                    if (respObj.errCode === '7000') {
-                        alert("respObj.errCode === '7000'");
-                    }
-                    if (respObj.errCode == '7000') {
-                        alert("respObj.errCode == '7000'");
-                    }
-                    else {
+                    if (result.errCode === 7000) {
+                        alert("注册成功！请登录");
+                    } else {
                         alert("注册失败！请重试");
                     }
                     location.reload();

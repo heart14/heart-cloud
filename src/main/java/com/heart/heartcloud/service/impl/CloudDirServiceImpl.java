@@ -1,5 +1,6 @@
 package com.heart.heartcloud.service.impl;
 
+import com.heart.heartcloud.common.CloudConstants;
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.dao.CloudDirDao;
 import com.heart.heartcloud.domain.CloudDir;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,6 +31,17 @@ public class CloudDirServiceImpl implements CloudDirService {
 
     @Override
     public int saveCloudDir(CloudDir cloudDir) {
+        if (null == cloudDir.getCloudDirParentId() || CloudStringUtils.isBlank(cloudDir.getCloudDirName())) {
+            logger.error("保存失败 :参数异常");
+            throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
+        }
+        if (cloudDirDao.selectByDirName(cloudDir.getCloudDirName()) != null) {
+            logger.error("保存失败 :文件夹已存在");
+            throw new CloudException(CloudErrorCodeEnums.ServiceException.getCode(), CloudErrorCodeEnums.ServiceException.getMsg());
+        }
+        cloudDir.setCloudDirId(CloudStringUtils.getId());
+        cloudDir.setCloudDirStatus(CloudConstants.STATUS_YES);
+        cloudDir.setCloudDirCreateDate(new Date());
         return cloudDirDao.insert(cloudDir);
     }
 
@@ -49,7 +62,7 @@ public class CloudDirServiceImpl implements CloudDirService {
 
     @Override
     public List<CloudDir> findCloudDirByParentId(Integer cloudDirParentId) {
-        if (null == cloudDirParentId|| CloudStringUtils.isBlank(cloudDirParentId.toString())) {
+        if (null == cloudDirParentId || CloudStringUtils.isBlank(cloudDirParentId.toString())) {
             logger.error("查询失败 :参数异常");
             throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
         }

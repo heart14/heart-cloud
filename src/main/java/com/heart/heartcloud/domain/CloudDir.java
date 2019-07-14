@@ -16,6 +16,8 @@ public class CloudDir {
 
     private String cloudDirStatus;
 
+    private Integer cloudDirParentId;
+
     private Integer cloudDirUserId;
 
     public Integer getCloudDirId() {
@@ -31,7 +33,7 @@ public class CloudDir {
     }
 
     public void setCloudDirName(String cloudDirName) {
-        this.cloudDirName = cloudDirName == null ? null : cloudDirName.trim();
+        this.cloudDirName = cloudDirName;
     }
 
     public String getCloudDirSize() {
@@ -39,7 +41,7 @@ public class CloudDir {
     }
 
     public void setCloudDirSize(String cloudDirSize) {
-        this.cloudDirSize = cloudDirSize == null ? null : cloudDirSize.trim();
+        this.cloudDirSize = cloudDirSize;
     }
 
     public Date getCloudDirCreateDate() {
@@ -63,7 +65,15 @@ public class CloudDir {
     }
 
     public void setCloudDirStatus(String cloudDirStatus) {
-        this.cloudDirStatus = cloudDirStatus == null ? null : cloudDirStatus.trim();
+        this.cloudDirStatus = cloudDirStatus;
+    }
+
+    public Integer getCloudDirParentId() {
+        return cloudDirParentId;
+    }
+
+    public void setCloudDirParentId(Integer cloudDirParentId) {
+        this.cloudDirParentId = cloudDirParentId;
     }
 
     public Integer getCloudDirUserId() {
@@ -83,6 +93,7 @@ public class CloudDir {
                 ", cloudDirCreateDate=" + cloudDirCreateDate +
                 ", cloudDirUpdateDate=" + cloudDirUpdateDate +
                 ", cloudDirStatus='" + cloudDirStatus + '\'' +
+                ", cloudDirParentId=" + cloudDirParentId +
                 ", cloudDirUserId=" + cloudDirUserId +
                 '}';
     }

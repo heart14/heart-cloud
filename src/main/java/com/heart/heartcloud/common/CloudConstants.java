@@ -27,4 +27,9 @@ public class CloudConstants {
     public static final String STATUS_YES = "1";
 
     public static final String STATUS_NO = "0";
+
+    /**
+     * 文件上传保存根路径
+     */
+    public static final String ROOT_DIR = "E:\\HEARTCLOUD\\";
 }

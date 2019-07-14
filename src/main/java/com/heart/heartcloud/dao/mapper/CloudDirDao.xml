@@ -24,6 +24,13 @@
         where cloud_dir_id = #{cloudDirId,jdbcType=INTEGER}
     </select>
 
+    <select id="selectByDirName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cloud_dir
+        where cloud_dir_name = #{cloudDirName,jdbcType=VARCHAR}
+    </select>
+
     <select id="selectByParentId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -65,6 +72,9 @@
             <if test="cloudDirStatus != null">
                 cloud_dir_status,
             </if>
+            <if test="cloudDirParentId != null">
+                cloud_dir_parent_id,
+            </if>
             <if test="cloudDirUserId != null">
                 cloud_dir_user_id,
             </if>
@@ -87,6 +97,9 @@
             </if>
             <if test="cloudDirStatus != null">
                 #{cloudDirStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudDirParentId != null">
+                #{cloudDirParentId,jdbcType=INTEGER},
             </if>
             <if test="cloudDirUserId != null">
                 #{cloudDirUserId,jdbcType=INTEGER},
@@ -111,6 +124,9 @@
             </if>
             <if test="cloudDirStatus != null">
                 cloud_dir_status = #{cloudDirStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudDirParentId != null">
+                cloud_dir_parent_id = #{cloudDirParentId,jdbcType=INTEGER},
             </if>
             <if test="cloudDirUserId != null">
                 cloud_dir_user_id = #{cloudDirUserId,jdbcType=INTEGER},
