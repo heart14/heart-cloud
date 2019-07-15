@@ -28,7 +28,7 @@ public class CloudDiskServiceImpl implements CloudDiskService {
 
     @Override
     public void removeDiskDir(File targetFile) {
-
+        logger.info("删除本地文件（夹） :targetFile => {}", targetFile.getPath());
         if (targetFile.isFile()) {
             targetFile.delete();
         } else {

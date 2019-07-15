@@ -8,16 +8,14 @@ import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.exception.CloudException;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudDirService;
+import com.heart.heartcloud.service.CloudDiskService;
 import com.heart.heartcloud.service.CloudFileService;
 import com.heart.heartcloud.utils.CloudResponseUtil;
 import com.heart.heartcloud.utils.CloudStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +40,18 @@ public class CloudFileController {
     @Autowired
     private CloudDirService cloudDirService;
 
+    @Autowired
+    private CloudDiskService cloudDiskService;
+
+    /**
+     * 上传文件
+     *
+     * @param multipartFiles
+     * @param cloudDirId
+     * @param request
+     * @return
+     * @throws IOException
+     */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public CloudResponse uploadCloudFile(@RequestParam("multipartFiles") MultipartFile[] multipartFiles, @RequestParam("cloudDirId") Integer cloudDirId, HttpServletRequest request) throws IOException {
         CloudUser cloudUser = getCloudUserFromSession(request);
@@ -73,6 +83,59 @@ public class CloudFileController {
             cloudFileService.saveCloudFile(cloudFile);
         }
 
+        return CloudResponseUtil.success();
+    }
+
+    //TODO 修改文件夹、文件时 同步修改本地存储中的文件信息
+    //TODO 修改文件时，文件后缀名应保持不变（现在的逻辑修改完后缀名会丢失）
+    //TODO 上传、删除文件和删除文件夹（包含文件夹内文件）时，同步修改文件夹大小字段
+    //TODO 文件表中URL字段有待考虑
+
+    /**
+     * 删除文件
+     *
+     * @param cloudFileId
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/remove", method = RequestMethod.POST)
+    public CloudResponse removeFile(@RequestParam Integer cloudFileId, HttpServletRequest request) {
+        CloudUser cloudUser = getCloudUserFromSession(request);
+        logger.info("文件删除 :cloudDirId => {}", cloudFileId);
+
+        CloudFile cloudFileByPrimaryKey = cloudFileService.findCloudFileByPrimaryKey(cloudFileId);
+        if (cloudFileByPrimaryKey != null) {
+            Integer cloudFileDirId = cloudFileByPrimaryKey.getCloudFileDirId();
+            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudFileDirId);
+            logger.info("parentPath :{}", parentDirPath);
+            String filePath = CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString();
+            File file = new File(filePath + cloudFileByPrimaryKey.getCloudFileName());
+            cloudDiskService.removeDiskDir(file);
+            cloudFileService.removeCloudFileByPrimaryKey(cloudFileId);
+            return CloudResponseUtil.success();
+        } else {
+            return CloudResponseUtil.success();
+        }
+    }
+
+    /**
+     * 修改文件
+     *
+     * @param cloudFile
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    public CloudResponse editCloudFile(@RequestBody CloudFile cloudFile, HttpServletRequest request) {
+        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        logger.info("修改文件 :cloudUser => {}", currentCloudUser);
+        logger.info("修改文件 :cloudFile => {}", cloudFile);
+
+        CloudFile cloudFileByPrimaryKey = cloudFileService.findCloudFileByPrimaryKey(cloudFile.getCloudFileId());
+        cloudFileByPrimaryKey.setCloudFileName(cloudFile.getCloudFileName());
+        cloudFileByPrimaryKey.setCloudFileUpdateDate(new Date());
+        cloudFileService.editCloudFileByPrimaryKey(cloudFileByPrimaryKey);
         return CloudResponseUtil.success();
     }
 

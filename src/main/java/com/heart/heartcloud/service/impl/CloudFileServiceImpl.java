@@ -44,6 +44,10 @@ public class CloudFileServiceImpl implements CloudFileService {
 
     @Override
     public CloudFile findCloudFileByPrimaryKey(Integer cloudFileId) {
+        if (null == cloudFileId|| CloudStringUtils.isBlank(cloudFileId.toString())) {
+            logger.error("查询失败 :参数异常");
+            throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
+        }
         return cloudFileDao.selectByPrimaryKey(cloudFileId);
     }
 
