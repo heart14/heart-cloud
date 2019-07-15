@@ -2,10 +2,12 @@ package com.heart.heartcloud.controller;
 
 import com.heart.heartcloud.common.CloudConstants;
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
+import com.heart.heartcloud.domain.CloudDir;
 import com.heart.heartcloud.domain.CloudFile;
 import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.exception.CloudException;
 import com.heart.heartcloud.response.CloudResponse;
+import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudFileService;
 import com.heart.heartcloud.utils.CloudResponseUtil;
 import com.heart.heartcloud.utils.CloudStringUtils;
@@ -37,12 +39,19 @@ public class CloudFileController {
     @Autowired
     private CloudFileService cloudFileService;
 
+    @Autowired
+    private CloudDirService cloudDirService;
+
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public CloudResponse uploadCloudFile(@RequestParam("multipartFiles") MultipartFile[] multipartFiles, @RequestParam("cloudDirId") Integer cloudDirId, HttpServletRequest request) throws IOException {
         CloudUser cloudUser = getCloudUserFromSession(request);
         logger.info("文件上传 :cloudDirId => {}", cloudDirId);
 
-        String filePath = CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\";
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudDirId);
+        logger.info("parentPath :{}", parentDirPath);
+        String filePath = CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString();
+
         for (MultipartFile multipartFile : multipartFiles) {
             File targetPath = new File(filePath);
             if (!targetPath.exists()) {
@@ -125,6 +134,27 @@ public class CloudFileController {
                 return "应用程序";
             default:
                 return "其它";
+        }
+    }
+
+    private StringBuilder getParentDirPath(StringBuilder stringBuilder, Integer cloudDirId) {
+        CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
+        if (cloudDirByPrimaryKey != null) {
+            stringBuilder.append(cloudDirByPrimaryKey.getCloudDirName());
+            stringBuilder.append("_");
+            if (cloudDirByPrimaryKey.getCloudDirParentId() != 0) {
+                return getParentDirPath(stringBuilder, cloudDirByPrimaryKey.getCloudDirParentId());
+            } else {
+                String[] split = stringBuilder.toString().split("_");
+                StringBuilder sb = new StringBuilder();
+                for (int i = split.length - 1; i >= 0; i--) {
+                    sb.append(split[i]);
+                    sb.append("\\");
+                }
+                return sb;
+            }
+        } else {
+            return stringBuilder;
         }
     }
 }

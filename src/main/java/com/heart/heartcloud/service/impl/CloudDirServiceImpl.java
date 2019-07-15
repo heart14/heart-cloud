@@ -72,12 +72,12 @@ public class CloudDirServiceImpl implements CloudDirService {
     }
 
     @Override
-    public List<CloudDir> findCloudDirByParentId(Integer cloudDirParentId) {
+    public List<CloudDir> findCloudDirByParentId(Integer cloudDirParentId, Integer cloudUserId) {
         if (null == cloudDirParentId || CloudStringUtils.isBlank(cloudDirParentId.toString())) {
             logger.error("查询失败 :参数异常");
             throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
         }
-        return cloudDirDao.selectByParentId(cloudDirParentId);
+        return cloudDirDao.selectByParentId(cloudDirParentId, cloudUserId);
     }
 
     @Override

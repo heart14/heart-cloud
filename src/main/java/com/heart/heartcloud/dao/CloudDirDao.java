@@ -48,7 +48,7 @@ public interface CloudDirDao {
      * @param cloudDirParentId
      * @return
      */
-    List<CloudDir> selectByParentId(Integer cloudDirParentId);
+    List<CloudDir> selectByParentId(Integer cloudDirParentId,Integer cloudUserId);
 
     /**
      * 查询文件夹（根据用户ID）

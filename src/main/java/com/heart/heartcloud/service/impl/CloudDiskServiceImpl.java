@@ -1,6 +1,8 @@
 package com.heart.heartcloud.service.impl;
 
 import com.heart.heartcloud.service.CloudDiskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -13,8 +15,12 @@ import java.io.File;
  */
 @Service
 public class CloudDiskServiceImpl implements CloudDiskService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CloudDiskServiceImpl.class);
+
     @Override
     public void createDiskDir(File file) {
+        logger.info("创建本地文件夹 :filePath => {}", file.getPath());
         if (!file.exists()) {
             file.mkdirs();
         }

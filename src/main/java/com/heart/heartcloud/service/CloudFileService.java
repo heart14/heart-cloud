@@ -49,7 +49,7 @@ public interface CloudFileService {
      * @param cloudDirId
      * @return
      */
-    List<CloudFile> fincCloudFilesByCloudDirId(Integer cloudDirId);
+    List<CloudFile> fincCloudFilesByCloudDirId(Integer cloudDirId, Integer cloudUserId);
 
     /**
      * 查询文件（根据用户ID）

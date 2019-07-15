@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>HEART CLOUD</title>
     <script th:src="@{/js/jquery-3.4.1.js}" type="text/javascript"></script>
-    <script th:src="@{/js/bootstrap.min.js}" type="text/javascript"></script>
-    <link th:href="@{/css/bootstrap.min.css}" type="text/css" rel="stylesheet"/>
+    <script th:src="@{/js/bootstrap.js}" type="text/javascript"></script>
+    <link th:href="@{/css/bootstrap.css}" type="text/css" rel="stylesheet"/>
     <script type="text/javascript" th:inline="javascript">
         $(function () {
 
@@ -170,9 +170,8 @@
                 <form class="form-horizontal">
                     <div class="form-group">
                         <label for="newDirInput" class="col-sm-2 control-label">新文件夹</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="newDirInput" placeholder="请输入文件夹名"
-                                   autocomplete="off">
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="newDirInput" placeholder="请输入文件夹名" autocomplete="off">
                         </div>
                     </div>
                 </form>
@@ -199,9 +198,8 @@
                     <div class="form-group">
                         <label for="editDirInput" class="col-sm-2 control-label"></label>
                         <label for="editDirId" class="col-sm-2 control-label"></label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="editDirInput" placeholder="请输入文件夹名"
-                                   autocomplete="off">
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="editDirInput" placeholder="请输入文件夹名" autocomplete="off">
                             <input type="hidden" id="editDirId">
                         </div>
                     </div>
@@ -361,7 +359,7 @@
                             innerHtml2 += "<tr><td><span class='glyphicon glyphicon-file'></span> "
                                 + cloudFile.cloudFileName + "</a></td><td>"
                                 + cloudFile.cloudFileSize + "</td><td>"
-                                + dateFormater(new Date(cloudFile.cloudFileUpdateDate)) + "<td></td>"
+                                + dateFormater(new Date(cloudFile.cloudFileUpdateDate)) + "</td><td>"
                                 + "<button type='button' class='btn btn-default' aria-label='Edit'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span>"
                                 + "<button type='button' class='btn btn-default' aria-label='Remove'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>"
                                 + "</td></tr>"
@@ -383,7 +381,13 @@
     function createNewDir() {
         var parentDirId = $("#currentDirId").text();
         var dirName = $("#newDirInput").val();
+        if (dirName == null || dirName == '' || dirName === undefined) {
+            $("#tipsContent").text("文件夹名不能为空");
+            $("#tipsModal").modal();
+            return;
+        }
         $("#createNewDirModal").modal('toggle');
+        $("#newDirInput").val('');
         $.ajax({
             "type": "post",
             "url": "/clouddir/save",
@@ -425,9 +429,15 @@
 
         var cloudDirId = $("#editDirId").val();
         var cloudDirName = $("#editDirInput").val();
+        if (cloudDirName == null || cloudDirName === '') {
+            $("#tipsContent").text("文件夹名不能为空");
+            $("#tipsModal").modal();
+            return;
+        }
         console.log("修改文件夹 cloudDirId=" + cloudDirId + "  cloudDirName=" + cloudDirName);
 
         $("#editDirModal").modal('toggle');
+        $("#editDirInput").val('');
         $.ajax({
             type: "POST",
             url: "/clouddir/edit",
@@ -526,7 +536,7 @@
                     $("#tipsModal").modal();
                     setTimeout(function () {
                         $("#tipsModal").modal('toggle');
-                    }, 5000);
+                    }, 3000);
                     getDirChilds(cloudDirId, cloudDirName);
                 }
             });

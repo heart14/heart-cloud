@@ -58,7 +58,10 @@ public class CloudDirController {
         logger.info("新建文件夹 :cloudDir => {}", cloudDir);
         cloudDir.setCloudDirUserId(cloudUser.getUserId());
         cloudDirService.saveCloudDir(cloudDir);
-        File file = new File(CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + cloudDir.getCloudDirName());
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudDir.getCloudDirId());
+        logger.info("parentPath :{}", parentDirPath);
+        File file = new File(CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString());
         cloudDiskService.createDiskDir(file);
         return CloudResponseUtil.success();
     }
@@ -74,10 +77,12 @@ public class CloudDirController {
         CloudUser cloudUser = getCloudUserFromSession(request);
         logger.info("删除文件夹 :cloudUser => {}", cloudUser);
         logger.info("删除文件夹 :cloudDirId => {}", cloudDirId);
-        CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
-        cloudDirService.removeCloudDirByPrimaryKey(cloudDirId);
-        File targetFile = new File(CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + cloudDirByPrimaryKey.getCloudDirName());
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudDirId);
+        logger.info("parentPath :{}", parentDirPath);
+        File targetFile = new File(CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString());
         cloudDiskService.removeDiskDir(targetFile);
+        cloudDirService.removeCloudDirByPrimaryKey(cloudDirId);
         return CloudResponseUtil.success();
     }
 
@@ -148,8 +153,8 @@ public class CloudDirController {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
         logger.info("查询文件夹子文件夹和文件 :cloudUser => {}", currentCloudUser);
         logger.info("查询文件夹子文件夹和文件 :cloudDirId => {}", cloudDirId);
-        List<CloudDir> dirsByParentId = cloudDirService.findCloudDirByParentId(cloudDirId);
-        List<CloudFile> filesByCloudDirId = cloudFileService.fincCloudFilesByCloudDirId(cloudDirId);
+        List<CloudDir> dirsByParentId = cloudDirService.findCloudDirByParentId(cloudDirId, currentCloudUser.getUserId());
+        List<CloudFile> filesByCloudDirId = cloudFileService.fincCloudFilesByCloudDirId(cloudDirId, currentCloudUser.getUserId());
         CloudDirFiles cloudDirFiles = new CloudDirFiles(dirsByParentId, filesByCloudDirId);
         logger.info("查询文件夹子文件夹和文件 :cloudDirFiles => {}", cloudDirFiles);
         return CloudResponseUtil.success(cloudDirFiles);
@@ -167,5 +172,26 @@ public class CloudDirController {
             throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
         }
         return currentCloudUser;
+    }
+
+    private StringBuilder getParentDirPath(StringBuilder stringBuilder, Integer cloudDirId) {
+        CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
+        if (cloudDirByPrimaryKey != null) {
+            stringBuilder.append(cloudDirByPrimaryKey.getCloudDirName());
+            stringBuilder.append("_");
+            if (cloudDirByPrimaryKey.getCloudDirParentId() != 0) {
+                return getParentDirPath(stringBuilder, cloudDirByPrimaryKey.getCloudDirParentId());
+            } else {
+                String[] split = stringBuilder.toString().split("_");
+                StringBuilder sb = new StringBuilder();
+                for (int i = split.length - 1; i >= 0; i--) {
+                    sb.append(split[i]);
+                    sb.append("\\");
+                }
+                return sb;
+            }
+        } else {
+            return stringBuilder;
+        }
     }
 }

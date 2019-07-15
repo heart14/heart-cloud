@@ -55,7 +55,7 @@ public interface CloudFileDao {
      * @param cloudDirId
      * @return
      */
-    List<CloudFile> selectByCloudDirId(Integer cloudDirId);
+    List<CloudFile> selectByCloudDirId(Integer cloudDirId,Integer cloudUserId);
 
     /**
      * 查询文件（根据用户ID）

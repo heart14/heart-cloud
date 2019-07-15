@@ -11,7 +11,7 @@ public class CloudStringUtils extends StringUtils {
 
     public static Integer getId() {
         Random random = new Random();
-        return random.nextInt();
+        return Math.abs(random.nextInt() + 1);
     }
 
     public static String getShotUuid() {

@@ -36,6 +36,7 @@
         <include refid="Base_Column_List"/>
         from t_cloud_dir
         where cloud_dir_parent_id = #{cloudDirParentId,jdbcType=INTEGER}
+        and cloud_dir_user_id = #{cloudUserId,jdbcType=INTEGER}
     </select>
 
     <select id="selectByCloudUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">

@@ -48,12 +48,12 @@ public class CloudFileServiceImpl implements CloudFileService {
     }
 
     @Override
-    public List<CloudFile> fincCloudFilesByCloudDirId(Integer cloudDirId) {
+    public List<CloudFile> fincCloudFilesByCloudDirId(Integer cloudDirId,Integer cloudUserId) {
         if (null == cloudDirId|| CloudStringUtils.isBlank(cloudDirId.toString())) {
             logger.error("查询失败 :参数异常");
             throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
         }
-        return cloudFileDao.selectByCloudDirId(cloudDirId);
+        return cloudFileDao.selectByCloudDirId(cloudDirId,cloudUserId);
     }
 
     @Override
