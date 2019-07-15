@@ -11,6 +11,13 @@ import java.io.File;
 public interface CloudDiskService {
 
     /**
+     * 在存储服务器上新建文件夹
+     *
+     * @param file
+     */
+    void createDiskDir(File file);
+
+    /**
      * 从存储服务器上物理删除文件夹（包括其中文件）
      *
      * @param file

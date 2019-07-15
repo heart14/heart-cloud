@@ -58,6 +58,8 @@ public class CloudDirController {
         logger.info("新建文件夹 :cloudDir => {}", cloudDir);
         cloudDir.setCloudDirUserId(cloudUser.getUserId());
         cloudDirService.saveCloudDir(cloudDir);
+        File file = new File(CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + cloudDir.getCloudDirName());
+        cloudDiskService.createDiskDir(file);
         return CloudResponseUtil.success();
     }
 
@@ -68,7 +70,7 @@ public class CloudDirController {
      * @return
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
-    public CloudResponse removeCloudDir(HttpServletRequest request,Integer cloudDirId) {
+    public CloudResponse removeCloudDir(HttpServletRequest request, Integer cloudDirId) {
         CloudUser cloudUser = getCloudUserFromSession(request);
         logger.info("删除文件夹 :cloudUser => {}", cloudUser);
         logger.info("删除文件夹 :cloudDirId => {}", cloudDirId);
@@ -97,7 +99,7 @@ public class CloudDirController {
      * @return
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public CloudResponse editCloudDir(@RequestBody CloudDir cloudDir,HttpServletRequest request) {
+    public CloudResponse editCloudDir(@RequestBody CloudDir cloudDir, HttpServletRequest request) {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
         logger.info("修改文件夹 :cloudUser => {}", currentCloudUser);
         logger.info("修改文件夹 :cloudDir => {}", cloudDir);

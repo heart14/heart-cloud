@@ -14,6 +14,13 @@ import java.io.File;
 @Service
 public class CloudDiskServiceImpl implements CloudDiskService {
     @Override
+    public void createDiskDir(File file) {
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+    }
+
+    @Override
     public void removeDiskDir(File targetFile) {
 
         if (targetFile.isFile()) {
