@@ -90,6 +90,7 @@ public class CloudFileController {
     //TODO 修改文件时，文件后缀名应保持不变（现在的逻辑修改完后缀名会丢失）
     //TODO 上传、删除文件和删除文件夹（包含文件夹内文件）时，同步修改文件夹大小字段
     //TODO 文件表中URL字段有待考虑
+    //TODO 文件上传后丢失位置、设备等信息（https://www.jianshu.com/p/c6b413cea2dd）
 
     /**
      * 删除文件
