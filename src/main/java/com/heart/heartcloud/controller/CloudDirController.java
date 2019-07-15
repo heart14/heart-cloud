@@ -1,5 +1,6 @@
 package com.heart.heartcloud.controller;
 
+import com.heart.heartcloud.common.CloudConstants;
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.domain.CloudDir;
 import com.heart.heartcloud.domain.CloudFile;
@@ -8,6 +9,7 @@ import com.heart.heartcloud.entity.CloudDirFiles;
 import com.heart.heartcloud.exception.CloudException;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudDirService;
+import com.heart.heartcloud.service.CloudDiskService;
 import com.heart.heartcloud.service.CloudFileService;
 import com.heart.heartcloud.utils.CloudResponseUtil;
 import org.slf4j.Logger;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,6 +41,9 @@ public class CloudDirController {
 
     @Autowired
     private CloudFileService cloudFileService;
+
+    @Autowired
+    private CloudDiskService cloudDiskService;
 
     /**
      * 新增文件夹
@@ -61,8 +68,15 @@ public class CloudDirController {
      * @return
      */
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
-    public CloudResponse removeCloudDir(Integer cloudDirId) {
-        return null;
+    public CloudResponse removeCloudDir(HttpServletRequest request,Integer cloudDirId) {
+        CloudUser cloudUser = getCloudUserFromSession(request);
+        logger.info("删除文件夹 :cloudUser => {}", cloudUser);
+        logger.info("删除文件夹 :cloudDirId => {}", cloudDirId);
+        CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
+        cloudDirService.removeCloudDirByPrimaryKey(cloudDirId);
+        File targetFile = new File(CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + cloudDirByPrimaryKey.getCloudDirName());
+        cloudDiskService.removeDiskDir(targetFile);
+        return CloudResponseUtil.success();
     }
 
     /**
@@ -83,8 +97,15 @@ public class CloudDirController {
      * @return
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public CloudResponse editCloudDir(CloudDir cloudDir) {
-        return null;
+    public CloudResponse editCloudDir(@RequestBody CloudDir cloudDir,HttpServletRequest request) {
+        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        logger.info("修改文件夹 :cloudUser => {}", currentCloudUser);
+        logger.info("修改文件夹 :cloudDir => {}", cloudDir);
+        CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDir.getCloudDirId());
+        cloudDirByPrimaryKey.setCloudDirName(cloudDir.getCloudDirName());
+        cloudDirByPrimaryKey.setCloudDirUpdateDate(new Date());
+        cloudDirService.editCloudDirByPrimaryKey(cloudDirByPrimaryKey);
+        return CloudResponseUtil.success();
     }
 
     /**
@@ -109,7 +130,7 @@ public class CloudDirController {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
         logger.info("查询文件夹（根据用户ID） :cloudUser => {}", currentCloudUser);
         List<CloudDir> cloudDirsByCloudUserId = cloudDirService.findCloudDirsByCloudUserId(currentCloudUser.getUserId());
-        logger.info("查询文件夹（根据用户ID） :cloudDirs => {}", cloudDirsByCloudUserId);
+        logger.info("查询文件夹（根据用户ID） :cloudDirs <= {}", cloudDirsByCloudUserId);
         return CloudResponseUtil.success(cloudDirsByCloudUserId);
     }
 

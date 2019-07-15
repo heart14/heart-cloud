@@ -23,6 +23,20 @@ public interface CloudFileDao {
     int deleteByPrimaryKey(Integer cloudFileId);
 
     /**
+     * 删除文件（根据文件夹ID，物理删除）
+     * @param cloudDirId
+     * @return
+     */
+    int deleteByCloudDirId(Integer cloudDirId);
+
+    /**
+     * 删除文件（根据用户ID，物理删除）
+     * @param cloudUserId
+     * @return
+     */
+    int deleteByCloudUserrId(Integer cloudUserId);
+
+    /**
      * 更新文件信息（根据主键）
      * @param record
      * @return

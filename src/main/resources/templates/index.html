@@ -117,13 +117,15 @@
     </div><!-- /.container-fluid -->
 </nav>
 <div class="content-container">
-    <ol class="breadcrumb" id="dirNavBar" style="margin-bottom: 0">
-        <li style="float: right">
-            <span>已全部加载，共<span id="currentItemCount"></span>个</span>
+    <ol class="breadcrumb" style="float: right">
+        <li>
+            <span>已全部加载，共<span id="currentItemCount">0</span>个</span>
             <span id="currentDirId" hidden="hidden">0</span>
             <span id="currentDirName" hidden="hidden">0</span>
         </li>
-        <li><a href="#" onclick="initDirsTable()">Home</a></li>
+    </ol>
+    <ol class="breadcrumb" id="dirNavBar" style="margin-bottom: 0">
+        <li><a href="javascript:void(0)" onclick="initDirsTable()">HOME</a></li>
         <!--<li><a href="#">Library</a></li>-->
         <!--<li class="active">Data</li>-->
     </ol>
@@ -133,6 +135,7 @@
             <th> 文件名</th>
             <th>大小</th>
             <th>修改日期</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody>
@@ -140,9 +143,11 @@
             <td><span class="glyphicon glyphicon-folder-open"></span> 已购资源</td>
             <td> -</td>
             <td> -</td>
+            <td> -</td>
         </tr>
         <tr>
             <td><span class="glyphicon glyphicon-folder-open"></span> 我的卡包</td>
+            <td> -</td>
             <td> -</td>
             <td> -</td>
         </tr>
@@ -175,6 +180,57 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 <button type="button" class="btn btn-primary" onclick="createNewDir()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--修改文件夹弹窗-->
+<div class="modal fade" id="editDirModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel3">重命名文件夹</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="editDirInput" class="col-sm-2 control-label"></label>
+                        <label for="editDirId" class="col-sm-2 control-label"></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="editDirInput" placeholder="请输入文件夹名"
+                                   autocomplete="off">
+                            <input type="hidden" id="editDirId">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="editDirNameSubmit()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--删除文件夹确认/取消弹窗-->
+<div class="modal fade" id="confirmRemoveDirModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <!--<h4 class="modal-title" id="myModalLabel4">新建文件夹</h4>-->
+            </div>
+            <div class="modal-body" style="text-align: center">
+                <span>确认删除该文件夹？</span>
+                <input type="hidden" id="removeDirId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="removeDirSubmit()">删除</button>
             </div>
         </div>
     </div>
@@ -236,47 +292,36 @@
 
     //查询当前用户所有根目录文件夹和文件
     function initDirsTable() {
-        // $.ajax({
-        //     "type": "post",
-        //     "url": "/clouddir/findall",
-        //     "contentType": "application/json;chartset=utf-8",
-        //     "success": function (result) {
-        //         console.log(result);
-        //         if (result.errCode === 7000) {
-        //             var cloudDirs = result.data;
-        //             var $table = $("table tbody");
-        //             var innerHtml = "";
-        //             for (var i = 0; i < cloudDirs.length; i++) {
-        //                 var cloudDir = cloudDirs[i];
-        //                 innerHtml += "<tr><td><span class='glyphicon glyphicon-folder-open'></span> "
-        //                     + "<a onclick='getDirChilds(" + cloudDir.cloudDirId + "," + cloudDir.cloudDirName + ")'>"
-        //                     + cloudDir.cloudDirName + "</a></td><td>"
-        //                     + cloudDir.cloudDirSize + "</td><td>"
-        //                     + dateFormater(new Date(cloudDir.cloudDirUpdateDate)) + "</td></tr>"
-        //             }
-        //             $table.html(innerHtml);
-        //
-        //             $("#currentItemCount").text(cloudDirs.length);
-        //         }
-        //     },
-        //     "error": function (result) {
-        //         console.log(result);
-        //     }
-        // });
         getDirChilds(0, 'HOME');
     }
 
     //查询当前文件夹下所有文件夹和文件
+    var navBarItems = [];
+    navBarItems.push("0_HOME");
+
     function getDirChilds(cloudDirId, cloudDirName) {
         var currentCloudDirId = $("#currentDirId").text();
         $("#currentDirId").text(cloudDirId);
         $("#currentDirName").text(cloudDirName);
-        if (cloudDirId !== 0 && cloudDirId !== currentCloudDirId) {
-            $("#dirNavBar").append("<li class='active'><a id='" + cloudDirId + "' onclick='getDirChilds(" + cloudDirId + ",\"" + cloudDirName + "\")'>" + cloudDirName + "</a></li>");
-            $("#dirNavBar a").each(function () {
-                $(this).attr("onclick", true);
-            });
-            $("#dirNavBar #" + cloudDirId).attr("onclick", false);
+
+
+        if (cloudDirId != currentCloudDirId) {
+            navBarItems.push(cloudDirId + "_" + cloudDirName);
+
+            var navBarItemsHtmls = "";
+            for (var i = 0; i < navBarItems.length; i++) {
+                var navBarItem = navBarItems[i];
+                var dirId = navBarItem.split("_")[0];
+                var dirName = navBarItem.split("_")[1];
+                console.log("拼接导航条 dirId=" + dirId + "  dirName=" + dirName);
+                navBarItemsHtmls += "<li class='active'><a id='" + dirId + "' onclick='getDirChilds(" + dirId + ",\"" + dirName + "\")'>" + dirName + "</a></li>";
+                if (dirId == cloudDirId) {
+                    break;
+                }
+            }
+            $("#dirNavBar").html(navBarItemsHtmls);
+            $("#dirNavBar .active a").removeAttr('disabled');
+            $("#dirNavBar #" + cloudDirId).attr('disabled', "true");
         }
         $.ajax({
             "type": "post",
@@ -305,7 +350,10 @@
                                 + "<a onclick='getDirChilds(" + cloudDir.cloudDirId + ",\"" + cloudDir.cloudDirName + "\")'>"
                                 + cloudDir.cloudDirName + "</a></td><td>"
                                 + cloudDir.cloudDirSize + "</td><td>"
-                                + dateFormater(new Date(cloudDir.cloudDirUpdateDate)) + "</td></tr>"
+                                + dateFormater(new Date(cloudDir.cloudDirUpdateDate)) + "</td><td>"
+                                + "<button type='button' class='btn btn-default' aria-label='Edit' onclick='editDirName(" + cloudDir.cloudDirId + ")'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>"
+                                + "<button type='button' class='btn btn-default' aria-label='Remove' onclick='removeDir(" + cloudDir.cloudDirId + ")'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>"
+                                + "</td></tr>"
                         }
 
                         for (var j = 0; j < cloudFiles.length; j++) {
@@ -313,7 +361,10 @@
                             innerHtml2 += "<tr><td><span class='glyphicon glyphicon-file'></span> "
                                 + cloudFile.cloudFileName + "</a></td><td>"
                                 + cloudFile.cloudFileSize + "</td><td>"
-                                + dateFormater(new Date(cloudFile.cloudFileUpdateDate)) + "</td></tr>"
+                                + dateFormater(new Date(cloudFile.cloudFileUpdateDate)) + "<td></td>"
+                                + "<button type='button' class='btn btn-default' aria-label='Edit'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span>"
+                                + "<button type='button' class='btn btn-default' aria-label='Remove'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>"
+                                + "</td></tr>"
                         }
                         innerHtml = innerHtml1 + innerHtml2;
                     }
@@ -332,8 +383,6 @@
     function createNewDir() {
         var parentDirId = $("#currentDirId").text();
         var dirName = $("#newDirInput").val();
-        console.log(parentDirId);
-        console.log(dirName);
         $("#createNewDirModal").modal('toggle');
         $.ajax({
             "type": "post",
@@ -351,7 +400,7 @@
                 setTimeout(function () {
                     $("#tipsModal").modal('toggle');
                 }, 3000);
-                initDirsTable();
+                getDirChilds(parentDirId, dirName);
             },
             "error": function (result) {
                 console.log("新建文件夹 :" + result);
@@ -359,7 +408,78 @@
                 setTimeout(function () {
                     $("#tipsModal").modal('toggle');
                 }, 3000);
-                initDirsTable();
+                getDirChilds(parentDirId, dirName);
+            }
+        });
+    }
+
+    //修改文件夹
+    function editDirName(cloudDirId) {
+        $("#editDirModal").modal();
+        $("#editDirId").val(cloudDirId);
+    }
+
+    function editDirNameSubmit() {
+        var currentCloudDirId = $("#currentDirId").text();
+        var currentCloudDirName = $("#currentDirName").text();
+
+        var cloudDirId = $("#editDirId").val();
+        var cloudDirName = $("#editDirInput").val();
+        console.log("修改文件夹 cloudDirId=" + cloudDirId + "  cloudDirName=" + cloudDirName);
+
+        $("#editDirModal").modal('toggle');
+        $.ajax({
+            type: "POST",
+            url: "/clouddir/edit",
+            data: "{\"cloudDirId\":\"" + cloudDirId + "\",\"cloudDirName\":\"" + cloudDirName + "\"}",
+            contentType: "application/json;chartset=utf-8",
+            success: function (result) {
+                console.log(result);
+                if (result.errCode === 7000) {
+                    $("#tipsContent").text("重命名文件夹成功");
+                } else {
+                    $("#tipsContent").text("重命名文件夹失败");
+                }
+                $("#tipsModal").modal();
+                setTimeout(function () {
+                    $("#tipsModal").modal('toggle');
+                }, 3000);
+                getDirChilds(currentCloudDirId, currentCloudDirName);
+            }
+        });
+    }
+
+    //删除文件夹
+    function removeDir(cloudDirId) {
+        $("#confirmRemoveDirModal").modal();
+        $("#removeDirId").val(cloudDirId);
+    }
+
+    function removeDirSubmit() {
+        var currentCloudDirId = $("#currentDirId").text();
+        var currentCloudDirName = $("#currentDirName").text();
+
+        var cloudDirId = $("#removeDirId").val();
+        $("#confirmRemoveDirModal").modal('toggle');
+        $.ajax({
+            type: "POST",
+            url: "/clouddir/remove",
+            data: {
+                "cloudDirId": cloudDirId
+            },
+            contentType: "application/x-www-form-urlencoded;chartset=utf-8",
+            success: function (result) {
+                console.log(result);
+                if (result.errCode === 7000) {
+                    $("#tipsContent").text("删除文件夹成功");
+                } else {
+                    $("#tipsContent").text("删除文件夹失败");
+                }
+                $("#tipsModal").modal();
+                setTimeout(function () {
+                    $("#tipsModal").modal('toggle');
+                }, 3000);
+                getDirChilds(currentCloudDirId, currentCloudDirName);
             }
         });
     }
@@ -399,15 +519,15 @@
                     });
                     $("#uploadNewFileModal").modal('toggle');
                     if (result.errCode === 7000) {
-                        $("#tipsContent").text("文件上传成功nnnn");
+                        $("#tipsContent").text("文件上传成功");
                     } else {
-                        $("#tipsContent").text("文件上传失败nnnn");
+                        $("#tipsContent").text("文件上传失败");
                     }
                     $("#tipsModal").modal();
                     setTimeout(function () {
                         $("#tipsModal").modal('toggle');
                     }, 5000);
-                    initDirsTable(cloudDirId, cloudDirName);
+                    getDirChilds(cloudDirId, cloudDirName);
                 }
             });
         } else {

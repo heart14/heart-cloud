@@ -3,6 +3,7 @@ package com.heart.heartcloud.service.impl;
 import com.heart.heartcloud.common.CloudConstants;
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.dao.CloudDirDao;
+import com.heart.heartcloud.dao.CloudFileDao;
 import com.heart.heartcloud.domain.CloudDir;
 import com.heart.heartcloud.exception.CloudException;
 import com.heart.heartcloud.service.CloudDirService;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -20,7 +22,7 @@ import java.util.List;
  * @Author: Heart
  * @Date: 2019/3/11 14:12
  */
-
+@Transactional(rollbackFor = Exception.class)
 @Service
 public class CloudDirServiceImpl implements CloudDirService {
 
@@ -28,6 +30,9 @@ public class CloudDirServiceImpl implements CloudDirService {
 
     @Autowired
     private CloudDirDao cloudDirDao;
+
+    @Autowired
+    private CloudFileDao cloudFileDao;
 
     @Override
     public int saveCloudDir(CloudDir cloudDir) {
@@ -41,12 +46,14 @@ public class CloudDirServiceImpl implements CloudDirService {
         }
         cloudDir.setCloudDirId(CloudStringUtils.getId());
         cloudDir.setCloudDirStatus(CloudConstants.STATUS_YES);
+        cloudDir.setCloudDirSize(String.valueOf(0L));
         cloudDir.setCloudDirCreateDate(new Date());
         return cloudDirDao.insert(cloudDir);
     }
 
     @Override
     public int removeCloudDirByPrimaryKey(Integer cloudDirId) {
+        cloudFileDao.deleteByCloudDirId(cloudDirId);
         return cloudDirDao.deleteByPrimaryKey(cloudDirId);
     }
 
@@ -57,6 +64,10 @@ public class CloudDirServiceImpl implements CloudDirService {
 
     @Override
     public CloudDir findCloudDirByPrimaryKey(Integer cloudDirId) {
+        if (null == cloudDirId || CloudStringUtils.isBlank(cloudDirId.toString())) {
+            logger.error("查询失败 :参数异常");
+            throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
+        }
         return cloudDirDao.selectByPrimaryKey(cloudDirId);
     }
 

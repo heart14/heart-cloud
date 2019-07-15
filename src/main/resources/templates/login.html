@@ -14,7 +14,7 @@
         function login() {
             // var userName = $("#logname").val();
             // var userPass = $("#logpass").val();
-            var userName = "heart7";
+            var userName = "heart777";
             var userPass = "123456";
 
             console.log("loginName:" + userName + "/loginPass:" + userPass);
@@ -26,7 +26,8 @@
                 "success": function (result) {
                     console.log(result);
                     if (result.errCode === 7000) {
-                        window.location.href = "http://192.168.0.107:8081/index";
+                        window.location.href = "http://127.0.0.1:8081/index";
+                        // window.location.href = "http://192.168.0.107:8081/index";
                     } else {
                         alert("登录失败，请重试。");
                         location.reload();

@@ -45,6 +45,16 @@
         where cloud_file_id = #{cloudFileId,jdbcType=INTEGER}
     </delete>
 
+    <delete id="deleteByCloudDirId" parameterType="java.lang.Integer">
+        delete from t_cloud_file
+        where cloud_file_dir_id = #{cloudFileDirId,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteByCloudUserId" parameterType="java.lang.Integer">
+        delete from t_cloud_file
+        where cloud_file_user_id = #{cloudFileUserId,jdbcType=INTEGER}
+    </delete>
+
     <insert id="insert" parameterType="com.heart.heartcloud.domain.CloudFile" useGeneratedKeys="true" keyProperty="cloudFiledId">
         insert into t_cloud_file
         <trim prefix="(" suffix=")" suffixOverrides=",">
