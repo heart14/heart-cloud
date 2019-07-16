@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Description:
@@ -180,8 +181,9 @@ public class CloudFileController {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
         logger.info("搜索文件 :cloudUser => {}", currentCloudUser);
         logger.info("搜索文件 :searchFileName => {}", searchFileName);
-
-        return CloudResponseUtil.success(cloudFileService.findCloudFileLikeName(searchFileName, currentCloudUser.getUserId()));
+        List<CloudFile> cloudFileLikeName = cloudFileService.findCloudFileLikeName(searchFileName, currentCloudUser.getUserId());
+        logger.info("搜索文件 :cloudFile <= {}", cloudFileLikeName);
+        return CloudResponseUtil.success(cloudFileLikeName);
     }
 
 
