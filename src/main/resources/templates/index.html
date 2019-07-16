@@ -76,11 +76,12 @@
                 <!--<li><a href="#">上传</a></li>-->
                 <!--<li><a href="#">下载</a></li>-->
             </ul>
-            <form class="navbar-form navbar-left">
+            <form class="navbar-form navbar-left" disabled="true">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search File" style="border-radius: 24px">
+                    <input type="text" class="form-control" id="searchAllFileInput" placeholder="Search File.."
+                           style="border-radius: 24px">
                 </div>
-                <button type="submit" class="btn btn-default" style="border-radius: 24px">
+                <button class="btn btn-default" style="border-radius: 24px" onclick="searchAllFile()">
                     <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                 </button>
             </form>
@@ -104,55 +105,58 @@
     </div><!-- /.container-fluid -->
 </nav>
 
-
-<nav class="navbar navbar-default" style="margin-bottom: 0">
-    <div class="container-fluid features-btn">
-        <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#uploadNewFileModal"
-                onclick="showUploadInput()">上传
-        </button>
-        <button type="button" class="btn btn-primary navbar-btn" onclick="testJson()">下载</button>
-        <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#createNewDirModal">
-            新建文件夹
-        </button>
-    </div><!-- /.container-fluid -->
-</nav>
-<div class="content-container">
-    <ol class="breadcrumb" style="float: right">
-        <li>
-            <span>已全部加载，共<span id="currentItemCount">0</span>个</span>
-            <span id="currentDirId" hidden="hidden">0</span>
-            <span id="currentDirName" hidden="hidden">0</span>
-        </li>
-    </ol>
-    <ol class="breadcrumb" id="dirNavBar" style="margin-bottom: 0">
-        <li><a href="javascript:void(0)" onclick="initDirsTable()">HOME</a></li>
-        <!--<li><a href="#">Library</a></li>-->
-        <!--<li class="active">Data</li>-->
-    </ol>
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th> 文件名</th>
-            <th>大小</th>
-            <th>修改日期</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td><span class="glyphicon glyphicon-folder-open"></span> 已购资源</td>
-            <td> -</td>
-            <td> -</td>
-            <td> -</td>
-        </tr>
-        <tr>
-            <td><span class="glyphicon glyphicon-folder-open"></span> 我的卡包</td>
-            <td> -</td>
-            <td> -</td>
-            <td> -</td>
-        </tr>
-        </tbody>
-    </table>
+<div id="pageContainer">
+    <nav class="navbar navbar-default" style="margin-bottom: 0">
+        <div class="container-fluid features-btn">
+            <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal"
+                    data-target="#uploadNewFileModal"
+                    onclick="showUploadInput()">上传
+            </button>
+            <button type="button" class="btn btn-primary navbar-btn" onclick="">下载</button>
+            <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal"
+                    data-target="#createNewDirModal">
+                新建文件夹
+            </button>
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="content-container">
+        <ol class="breadcrumb" style="float: right">
+            <li>
+                <span>已全部加载，共<span id="currentItemCount">0</span>个</span>
+                <span id="currentDirId" hidden="hidden">0</span>
+                <span id="currentDirName" hidden="hidden">0</span>
+            </li>
+        </ol>
+        <ol class="breadcrumb" id="dirNavBar" style="margin-bottom: 0">
+            <li><a href="javascript:void(0)" onclick="initDirsTable()">HOME</a></li>
+            <!--<li><a href="#">Library</a></li>-->
+            <!--<li class="active">Data</li>-->
+        </ol>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th> 文件名</th>
+                <th>大小</th>
+                <th>修改日期</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><span class="glyphicon glyphicon-folder-open"></span> 已购资源</td>
+                <td> -</td>
+                <td> -</td>
+                <td> -</td>
+            </tr>
+            <tr>
+                <td><span class="glyphicon glyphicon-folder-open"></span> 我的卡包</td>
+                <td> -</td>
+                <td> -</td>
+                <td> -</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
@@ -320,7 +324,6 @@
     </div>
 </div>
 
-
 <!--操作成功/失败提示弹窗-->
 <div class="modal fade" id="tipsModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm" role="document">
@@ -341,9 +344,25 @@
 
 <script type="text/javascript" th:inline="javascript">
 
-    //查询当前用户所有根目录文件夹和文件
+    //初始化页面内容
     function initDirsTable() {
         getDirChilds(0, 'HOME');
+    }
+
+    //全局文件搜索
+    function searchAllFile() {
+        var searchAllFileByName = $("#searchAllFileInput").val();
+        $.ajax({
+            type: "GET",
+            url: "/cloudfile/search",
+            data: {
+                "searchFileName": searchAllFileByName,
+            },
+            contentType: "application/x-www-form-urlencoded;chartset=utf-8",
+            success: function (result) {
+
+            }
+        });
     }
 
     //查询当前文件夹下所有文件夹和文件

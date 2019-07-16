@@ -167,6 +167,24 @@ public class CloudFileController {
         return CloudResponseUtil.success();
     }
 
+    //TODO 关于文件和目录的XML文件里貌似没有设置status
+
+    /**
+     * 查询文件（根据文件名，模糊查询）
+     *
+     * @param searchFileName
+     * @return
+     */
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public CloudResponse searchFileByName(@RequestParam("searchFileName") String searchFileName, HttpServletRequest request) {
+        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        logger.info("搜索文件 :cloudUser => {}", currentCloudUser);
+        logger.info("搜索文件 :searchFileName => {}", searchFileName);
+
+        return CloudResponseUtil.success(cloudFileService.findCloudFileLikeName(searchFileName, currentCloudUser.getUserId()));
+    }
+
+
     /**
      * 从SESSION中获取当前登录用户
      *
@@ -181,6 +199,12 @@ public class CloudFileController {
         return currentCloudUser;
     }
 
+    /**
+     * 根据后缀名获取文件类型
+     *
+     * @param filePrefix
+     * @return
+     */
     private String getCloudFileType(String filePrefix) {
         switch (filePrefix) {
             case "jpg":

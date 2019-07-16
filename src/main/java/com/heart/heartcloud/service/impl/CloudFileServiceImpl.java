@@ -64,4 +64,15 @@ public class CloudFileServiceImpl implements CloudFileService {
     public List<CloudFile> findCloudFilesByCloudUserId(Integer cloudUserId) {
         return cloudFileDao.selectByCloudUserId(cloudUserId);
     }
+
+    @Override
+    public List<CloudFile> findCloudFileLikeName(String searchFileName, Integer cloudUserId) {
+        if (CloudStringUtils.isBlank(searchFileName)) {
+            //如果没有输入文件名，则查询该用户所有文件
+            return cloudFileDao.selectByCloudUserId(cloudUserId);
+        }
+        //按文件名模糊查询
+        String cloudFileName = "%" + searchFileName + "%";
+        return cloudFileDao.selectByCloudFileNameLike(cloudFileName,cloudUserId);
+    }
 }

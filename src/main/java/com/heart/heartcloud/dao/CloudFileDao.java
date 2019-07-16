@@ -73,4 +73,13 @@ public interface CloudFileDao {
      * @return
      */
     List<CloudFile> selectByCloudUserId(Integer cloudUserId);
+
+    /**
+     * 查询文件（根据文件名，模糊查询）
+     *
+     * @param cloudFileName
+     * @param cloudUserId
+     * @return
+     */
+    List<CloudFile> selectByCloudFileNameLike(@Param("cloudFileName") String cloudFileName, @Param("cloudUserId") Integer cloudUserId);
 }
