@@ -23,9 +23,10 @@ public interface CloudDirService {
      * 删除文件夹（物理删除）
      *
      * @param cloudDirId
+     * @param cloudUserId
      * @return
      */
-    int removeCloudDirByPrimaryKey(Integer cloudDirId);
+    int removeCloudDirByPrimaryKey(Integer cloudDirId, Integer cloudUserId);
 
     /**
      * 修改文件夹信息（根据主键）

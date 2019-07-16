@@ -48,7 +48,8 @@
 
     <delete id="deleteByCloudDirId" parameterType="java.lang.Integer">
         delete from t_cloud_file
-        where cloud_file_dir_id = #{cloudFileDirId,jdbcType=INTEGER}
+        where cloud_file_dir_id = #{cloudDirId,jdbcType=INTEGER}
+        and cloud_file_user_id = #{cloudUserId,jdbcType=INTEGER}
     </delete>
 
     <delete id="deleteByCloudUserId" parameterType="java.lang.Integer">

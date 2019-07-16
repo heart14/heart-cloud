@@ -1,6 +1,7 @@
 package com.heart.heartcloud.dao;
 
 import com.heart.heartcloud.domain.CloudDir;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public interface CloudDirDao {
      * @param cloudDirParentId
      * @return
      */
-    List<CloudDir> selectByParentId(Integer cloudDirParentId,Integer cloudUserId);
+    List<CloudDir> selectByParentId(@Param("cloudDirParentId") Integer cloudDirParentId, @Param("cloudUserId") Integer cloudUserId);
 
     /**
      * 查询文件夹（根据用户ID）

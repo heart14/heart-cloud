@@ -110,7 +110,7 @@
         <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#uploadNewFileModal"
                 onclick="showUploadInput()">上传
         </button>
-        <button type="button" class="btn btn-primary navbar-btn">下载</button>
+        <button type="button" class="btn btn-primary navbar-btn" onclick="testJson()">下载</button>
         <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#createNewDirModal">
             新建文件夹
         </button>
@@ -391,7 +391,7 @@
                     var $table = $("table tbody");
                     var innerHtml = "";
                     if (cloudDirs.length === 0 && cloudFiles.length === 0) {
-                        innerHtml = "<tr style='text-align: center'><td colspan='3'>空空如也</td></tr>";
+                        innerHtml = "<tr style='text-align: center'><td colspan='4'>空空如也</td></tr>";
                     } else {
                         var innerHtml1 = "";
                         var innerHtml2 = "";

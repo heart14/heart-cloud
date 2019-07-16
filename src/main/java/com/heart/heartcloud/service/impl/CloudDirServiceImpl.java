@@ -52,9 +52,19 @@ public class CloudDirServiceImpl implements CloudDirService {
     }
 
     @Override
-    public int removeCloudDirByPrimaryKey(Integer cloudDirId) {
-        cloudFileDao.deleteByCloudDirId(cloudDirId);
-        return cloudDirDao.deleteByPrimaryKey(cloudDirId);
+    public int removeCloudDirByPrimaryKey(Integer cloudDirId, Integer cloudUserId) {
+        List<CloudDir> childDirs = cloudDirDao.selectByParentId(cloudDirId, cloudUserId);
+        if (childDirs != null && childDirs.size() > 0) {
+            for (CloudDir childDir : childDirs) {
+                cloudDirDao.deleteByPrimaryKey(cloudDirId);
+                cloudFileDao.deleteByCloudDirId(cloudDirId, cloudUserId);
+                removeCloudDirByPrimaryKey(childDir.getCloudDirId(), cloudUserId);
+            }
+        } else {
+            cloudDirDao.deleteByPrimaryKey(cloudDirId);
+            cloudFileDao.deleteByCloudDirId(cloudDirId, cloudUserId);
+        }
+        return 0;
     }
 
     @Override

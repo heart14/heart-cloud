@@ -77,12 +77,26 @@ public class CloudDirController {
         CloudUser cloudUser = getCloudUserFromSession(request);
         logger.info("删除文件夹 :cloudUser => {}", cloudUser);
         logger.info("删除文件夹 :cloudDirId => {}", cloudDirId);
+
+        CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
+        long cloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
+        Integer cloudDirParentId = cloudDirByPrimaryKey.getCloudDirParentId();
+
+        if (cloudDirParentId!=0) {
+            CloudDir parentDir = cloudDirService.findCloudDirByPrimaryKey(cloudDirParentId);
+            long parentDirSize = Long.parseLong(parentDir.getCloudDirSize());
+            parentDir.setCloudDirSize(String.valueOf(parentDirSize - cloudDirSize));
+            parentDir.setCloudDirUpdateDate(new Date());
+            cloudDirService.editCloudDirByPrimaryKey(parentDir);
+        }
+
         StringBuilder stringBuilder = new StringBuilder();
         StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudDirId);
         logger.info("parentPath :{}", parentDirPath);
         File targetFile = new File(CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString());
         cloudDiskService.removeDiskDir(targetFile);
-        cloudDirService.removeCloudDirByPrimaryKey(cloudDirId);
+
+        cloudDirService.removeCloudDirByPrimaryKey(cloudDirId, cloudUser.getUserId());
         return CloudResponseUtil.success();
     }
 
@@ -109,9 +123,26 @@ public class CloudDirController {
         logger.info("修改文件夹 :cloudUser => {}", currentCloudUser);
         logger.info("修改文件夹 :cloudDir => {}", cloudDir);
         CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDir.getCloudDirId());
+
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudDir.getCloudDirId());
+        String oldDirPath = CloudConstants.ROOT_DIR + currentCloudUser.getUserName() + "\\" + parentDirPath.toString();
+        String newDirPath = oldDirPath.replace(cloudDirByPrimaryKey.getCloudDirName(), cloudDir.getCloudDirName());
+
         cloudDirByPrimaryKey.setCloudDirName(cloudDir.getCloudDirName());
         cloudDirByPrimaryKey.setCloudDirUpdateDate(new Date());
         cloudDirService.editCloudDirByPrimaryKey(cloudDirByPrimaryKey);
+
+        boolean renameTo = new File(oldDirPath).renameTo(new File(newDirPath));
+        logger.info("修改文件夹 :同步修改本地存储{}", renameTo ? "成功" : "失败");
+
+        List<CloudFile> cloudFiles = cloudFileService.fincCloudFilesByCloudDirId(cloudDirByPrimaryKey.getCloudDirId(), currentCloudUser.getUserId());
+        for (CloudFile cloudFile : cloudFiles) {
+            cloudFile.setCloudFileUrl(newDirPath + cloudFile.getCloudFileName());
+            cloudFileService.editCloudFileByPrimaryKey(cloudFile);
+        }
+        logger.info("修改文件夹 :同步修改文件表中URL成功");
+
         return CloudResponseUtil.success();
     }
 
@@ -174,6 +205,13 @@ public class CloudDirController {
         return currentCloudUser;
     }
 
+    /**
+     * 根据文件夹ID，获取当前文件夹及所有父文件夹目录路径
+     *
+     * @param stringBuilder
+     * @param cloudDirId
+     * @return
+     */
     private StringBuilder getParentDirPath(StringBuilder stringBuilder, Integer cloudDirId) {
         CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
         if (cloudDirByPrimaryKey != null) {

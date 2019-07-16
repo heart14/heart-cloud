@@ -1,6 +1,7 @@
 package com.heart.heartcloud.dao;
 
 import com.heart.heartcloud.domain.CloudFile;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,6 +11,7 @@ public interface CloudFileDao {
 
     /**
      * 新增文件
+     *
      * @param record
      * @return
      */
@@ -17,6 +19,7 @@ public interface CloudFileDao {
 
     /**
      * 删除文件（根据主键，物理删除）
+     *
      * @param cloudFileId
      * @return
      */
@@ -24,13 +27,16 @@ public interface CloudFileDao {
 
     /**
      * 删除文件（根据文件夹ID，物理删除）
+     *
      * @param cloudDirId
+     * @param cloudUserId
      * @return
      */
-    int deleteByCloudDirId(Integer cloudDirId);
+    int deleteByCloudDirId(@Param("cloudDirId") Integer cloudDirId, @Param("cloudUserId") Integer cloudUserId);
 
     /**
      * 删除文件（根据用户ID，物理删除）
+     *
      * @param cloudUserId
      * @return
      */
@@ -38,6 +44,7 @@ public interface CloudFileDao {
 
     /**
      * 更新文件信息（根据主键）
+     *
      * @param record
      * @return
      */
@@ -45,6 +52,7 @@ public interface CloudFileDao {
 
     /**
      * 查询文件（根据主键）
+     *
      * @param cloudFileId
      * @return
      */
@@ -52,13 +60,15 @@ public interface CloudFileDao {
 
     /**
      * 查询文件（根据文件夹ID）
+     *
      * @param cloudDirId
      * @return
      */
-    List<CloudFile> selectByCloudDirId(Integer cloudDirId,Integer cloudUserId);
+    List<CloudFile> selectByCloudDirId(@Param("cloudDirId") Integer cloudDirId, @Param("cloudUserId") Integer cloudUserId);
 
     /**
      * 查询文件（根据用户ID）
+     *
      * @param cloudUserId
      * @return
      */

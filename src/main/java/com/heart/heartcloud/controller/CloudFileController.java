@@ -81,15 +81,21 @@ public class CloudFileController {
             cloudFile.setCloudFileUserId(cloudUser.getUserId());
             cloudFile.setCloudFileCreateDate(new Date());
             cloudFileService.saveCloudFile(cloudFile);
+
+            CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
+            long cloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
+            cloudDirByPrimaryKey.setCloudDirSize(String.valueOf(cloudDirSize + multipartFile.getSize()));
+            cloudDirByPrimaryKey.setCloudDirUpdateDate(new Date());
+            cloudDirService.editCloudDirByPrimaryKey(cloudDirByPrimaryKey);
         }
 
         return CloudResponseUtil.success();
     }
 
-    //TODO 修改文件夹、文件时 同步修改本地存储中的文件信息
-    //TODO 修改文件时，文件后缀名应保持不变（现在的逻辑修改完后缀名会丢失）
-    //TODO 上传、删除文件和删除文件夹（包含文件夹内文件）时，同步修改文件夹大小字段
-    //TODO 文件表中URL字段有待考虑
+    //TODO 修改文件夹、文件时 同步修改本地存储中的文件信息 OK
+    //TODO 修改文件时，文件后缀名应保持不变（现在的逻辑修改完后缀名会丢失） OK
+    //TODO 上传、删除文件和删除文件夹（包含文件夹内文件）时，同步修改文件夹大小字段 上传OK  删除时只修改了直接父文件夹的大小  没有递归更新父父...文件夹的大小
+    //TODO 文件表中URL字段有待考虑 OK
     //TODO 文件上传后丢失位置、设备等信息（https://www.jianshu.com/p/c6b413cea2dd）
 
     /**
@@ -107,12 +113,21 @@ public class CloudFileController {
         CloudFile cloudFileByPrimaryKey = cloudFileService.findCloudFileByPrimaryKey(cloudFileId);
         if (cloudFileByPrimaryKey != null) {
             Integer cloudFileDirId = cloudFileByPrimaryKey.getCloudFileDirId();
+
+            CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudFileDirId);
+            long oldCloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
+            long cloudFileSize = Long.parseLong(cloudFileByPrimaryKey.getCloudFileSize());
+            cloudDirByPrimaryKey.setCloudDirSize(String.valueOf(oldCloudDirSize - cloudFileSize));
+            cloudDirByPrimaryKey.setCloudDirUpdateDate(new Date());
+            cloudDirService.editCloudDirByPrimaryKey(cloudDirByPrimaryKey);
+
             StringBuilder stringBuilder = new StringBuilder();
             StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudFileDirId);
             logger.info("parentPath :{}", parentDirPath);
             String filePath = CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString();
             File file = new File(filePath + cloudFileByPrimaryKey.getCloudFileName());
             cloudDiskService.removeDiskDir(file);
+
             cloudFileService.removeCloudFileByPrimaryKey(cloudFileId);
             return CloudResponseUtil.success();
         } else {
@@ -134,9 +149,21 @@ public class CloudFileController {
         logger.info("修改文件 :cloudFile => {}", cloudFile);
 
         CloudFile cloudFileByPrimaryKey = cloudFileService.findCloudFileByPrimaryKey(cloudFile.getCloudFileId());
-        cloudFileByPrimaryKey.setCloudFileName(cloudFile.getCloudFileName());
+
+        String cloudFileUrl = cloudFileByPrimaryKey.getCloudFileUrl();
+
+        String cloudFileName = cloudFileByPrimaryKey.getCloudFileName();
+        String substring = cloudFileName.substring(cloudFileName.lastIndexOf("."));
+        String newFileName = CloudStringUtils.isBlank(substring) ? cloudFile.getCloudFileName() : cloudFile.getCloudFileName() + substring;
+
+        cloudFileByPrimaryKey.setCloudFileName(newFileName);
         cloudFileByPrimaryKey.setCloudFileUpdateDate(new Date());
+        cloudFileByPrimaryKey.setCloudFileUrl(cloudFileUrl.replace(cloudFileName, newFileName));
         cloudFileService.editCloudFileByPrimaryKey(cloudFileByPrimaryKey);
+
+        boolean renameTo = new File(cloudFileUrl).renameTo(new File(cloudFileByPrimaryKey.getCloudFileUrl()));
+        logger.info("修改文件 :同步修改本地存储{}", renameTo ? "成功" : "失败");
+
         return CloudResponseUtil.success();
     }
 
@@ -201,6 +228,13 @@ public class CloudFileController {
         }
     }
 
+    /**
+     * 根据文件夹ID，获取当前文件夹及所有父文件夹目录路径
+     *
+     * @param stringBuilder
+     * @param cloudDirId
+     * @return
+     */
     private StringBuilder getParentDirPath(StringBuilder stringBuilder, Integer cloudDirId) {
         CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
         if (cloudDirByPrimaryKey != null) {
