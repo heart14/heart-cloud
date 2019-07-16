@@ -84,19 +84,18 @@ public class CloudFileController {
             cloudFileService.saveCloudFile(cloudFile);
 
             CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
-            long cloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
-            cloudDirByPrimaryKey.setCloudDirSize(String.valueOf(cloudDirSize + multipartFile.getSize()));
-            cloudDirByPrimaryKey.setCloudDirUpdateDate(new Date());
-            cloudDirService.editCloudDirByPrimaryKey(cloudDirByPrimaryKey);
+            if (cloudDirByPrimaryKey != null) {
+                long cloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
+                cloudDirByPrimaryKey.setCloudDirSize(String.valueOf(cloudDirSize + multipartFile.getSize()));
+                cloudDirByPrimaryKey.setCloudDirUpdateDate(new Date());
+                cloudDirService.editCloudDirByPrimaryKey(cloudDirByPrimaryKey);
+            }
         }
 
         return CloudResponseUtil.success();
     }
 
-    //TODO 修改文件夹、文件时 同步修改本地存储中的文件信息 OK
-    //TODO 修改文件时，文件后缀名应保持不变（现在的逻辑修改完后缀名会丢失） OK
-    //TODO 上传、删除文件和删除文件夹（包含文件夹内文件）时，同步修改文件夹大小字段 上传OK  删除时只修改了直接父文件夹的大小  没有递归更新父父...文件夹的大小
-    //TODO 文件表中URL字段有待考虑 OK
+    //TODO 上传、删除文件和删除文件夹（包含文件夹内文件）时，没有递归更新父父...文件夹的大小
     //TODO 文件上传后丢失位置、设备等信息（https://www.jianshu.com/p/c6b413cea2dd）
 
     /**
@@ -116,11 +115,13 @@ public class CloudFileController {
             Integer cloudFileDirId = cloudFileByPrimaryKey.getCloudFileDirId();
 
             CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudFileDirId);
-            long oldCloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
-            long cloudFileSize = Long.parseLong(cloudFileByPrimaryKey.getCloudFileSize());
-            cloudDirByPrimaryKey.setCloudDirSize(String.valueOf(oldCloudDirSize - cloudFileSize));
-            cloudDirByPrimaryKey.setCloudDirUpdateDate(new Date());
-            cloudDirService.editCloudDirByPrimaryKey(cloudDirByPrimaryKey);
+            if (cloudDirByPrimaryKey != null) {
+                long oldCloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
+                long cloudFileSize = Long.parseLong(cloudFileByPrimaryKey.getCloudFileSize());
+                cloudDirByPrimaryKey.setCloudDirSize(String.valueOf(oldCloudDirSize - cloudFileSize));
+                cloudDirByPrimaryKey.setCloudDirUpdateDate(new Date());
+                cloudDirService.editCloudDirByPrimaryKey(cloudDirByPrimaryKey);
+            }
 
             StringBuilder stringBuilder = new StringBuilder();
             StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudFileDirId);
@@ -208,46 +209,49 @@ public class CloudFileController {
      * @return
      */
     private String getCloudFileType(String filePrefix) {
-        switch (filePrefix) {
-            case "jpg":
+        logger.info("filePrefix :{}", filePrefix);
+        switch (filePrefix.toLowerCase()) {
+            case ".jpg":
                 return "图片";
-            case "jpeg":
+            case ".jpeg":
                 return "图片";
-            case "png":
+            case ".png":
                 return "图片";
-            case "bmp":
+            case ".bmp":
                 return "图片";
-            case "gif":
+            case ".gif":
                 return "图片";
-            case "mp3":
+            case ".mp3":
                 return "音乐";
-            case "wav":
+            case ".wav":
                 return "音乐";
-            case "flac":
+            case ".flac":
                 return "音乐";
-            case "mp4":
+            case ".mp4":
                 return "视频";
-            case "flv":
+            case ".flv":
                 return "视频";
-            case "avi":
+            case ".avi":
                 return "视频";
-            case "mkv":
+            case ".mkv":
                 return "视频";
-            case "rmvb":
+            case ".mov":
                 return "视频";
-            case "wmv":
+            case ".rmvb":
                 return "视频";
-            case "txt":
+            case ".wmv":
+                return "视频";
+            case ".txt":
                 return "文档";
-            case "md":
+            case ".md":
                 return "文档";
-            case "doc":
+            case ".doc":
                 return "文档";
-            case "docx":
+            case ".docx":
                 return "文档";
-            case "pdf":
+            case ".pdf":
                 return "文档";
-            case "exe":
+            case ".exe":
                 return "应用程序";
             default:
                 return "其它";
