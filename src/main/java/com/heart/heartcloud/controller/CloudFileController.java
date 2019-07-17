@@ -10,7 +10,7 @@ import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudDiskService;
 import com.heart.heartcloud.service.CloudFileService;
-import com.heart.heartcloud.utils.CloudResponseUtil;
+import com.heart.heartcloud.utils.CloudResponseUtils;
 import com.heart.heartcloud.utils.CloudStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +92,7 @@ public class CloudFileController {
             }
         }
 
-        return CloudResponseUtil.success();
+        return CloudResponseUtils.success();
     }
 
     //TODO 上传、删除文件和删除文件夹（包含文件夹内文件）时，没有递归更新父父...文件夹的大小
@@ -131,9 +131,9 @@ public class CloudFileController {
             cloudDiskService.removeDiskDir(file);
 
             cloudFileService.removeCloudFileByPrimaryKey(cloudFileId);
-            return CloudResponseUtil.success();
+            return CloudResponseUtils.success();
         } else {
-            return CloudResponseUtil.success();
+            return CloudResponseUtils.success();
         }
     }
 
@@ -166,7 +166,7 @@ public class CloudFileController {
         boolean renameTo = new File(cloudFileUrl).renameTo(new File(cloudFileByPrimaryKey.getCloudFileUrl()));
         logger.info("修改文件 :同步修改本地存储{}", renameTo ? "成功" : "失败");
 
-        return CloudResponseUtil.success();
+        return CloudResponseUtils.success();
     }
 
     //TODO 关于文件和目录的XML文件里貌似没有设置status
@@ -184,7 +184,7 @@ public class CloudFileController {
         logger.info("搜索文件 :searchFileName => {}", searchFileName);
         List<CloudFile> cloudFileLikeName = cloudFileService.findCloudFileLikeName(searchFileName, currentCloudUser.getUserId());
         logger.info("搜索文件 :cloudFile <= {}", cloudFileLikeName);
-        return CloudResponseUtil.success(cloudFileLikeName);
+        return CloudResponseUtils.success(cloudFileLikeName);
     }
 
 

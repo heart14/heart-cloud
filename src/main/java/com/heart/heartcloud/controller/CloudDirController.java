@@ -11,10 +11,11 @@ import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudDiskService;
 import com.heart.heartcloud.service.CloudFileService;
-import com.heart.heartcloud.utils.CloudResponseUtil;
+import com.heart.heartcloud.utils.CloudResponseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,6 +36,9 @@ import java.util.List;
 public class CloudDirController {
 
     private static final Logger logger = LoggerFactory.getLogger(CloudDirController.class);
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private CloudDirService cloudDirService;
@@ -63,7 +67,16 @@ public class CloudDirController {
         logger.info("parentPath :{}", parentDirPath);
         File file = new File(CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString());
         cloudDiskService.createDiskDir(file);
-        return CloudResponseUtil.success();
+
+        //Redis测试
+        String key1 = "heart";
+        String key2 = "cloud";
+        String value = (String) redisTemplate.opsForValue().get(key1);
+        List<CloudUser> userList = (List<CloudUser>) redisTemplate.opsForValue().get(key2);
+        System.out.println("Redis :Key = " + key1 + ", Value = " + value);
+        System.out.println("Redis :Key = " + key2 + ", Value = " + userList);
+
+        return CloudResponseUtils.success();
     }
 
     /**
@@ -97,7 +110,7 @@ public class CloudDirController {
         cloudDiskService.removeDiskDir(targetFile);
 
         cloudDirService.removeCloudDirByPrimaryKey(cloudDirId, cloudUser.getUserId());
-        return CloudResponseUtil.success();
+        return CloudResponseUtils.success();
     }
 
     /**
@@ -143,7 +156,7 @@ public class CloudDirController {
         }
         logger.info("修改文件夹 :同步修改文件表中URL成功");
 
-        return CloudResponseUtil.success();
+        return CloudResponseUtils.success();
     }
 
     /**
@@ -169,7 +182,7 @@ public class CloudDirController {
         logger.info("查询文件夹（根据用户ID） :cloudUser => {}", currentCloudUser);
         List<CloudDir> cloudDirsByCloudUserId = cloudDirService.findCloudDirsByCloudUserId(currentCloudUser.getUserId());
         logger.info("查询文件夹（根据用户ID） :cloudDirs <= {}", cloudDirsByCloudUserId);
-        return CloudResponseUtil.success(cloudDirsByCloudUserId);
+        return CloudResponseUtils.success(cloudDirsByCloudUserId);
     }
 
     /**
@@ -188,7 +201,7 @@ public class CloudDirController {
         List<CloudFile> filesByCloudDirId = cloudFileService.fincCloudFilesByCloudDirId(cloudDirId, currentCloudUser.getUserId());
         CloudDirFiles cloudDirFiles = new CloudDirFiles(dirsByParentId, filesByCloudDirId);
         logger.info("查询文件夹子文件夹和文件 :cloudDirFiles => {}", cloudDirFiles);
-        return CloudResponseUtil.success(cloudDirFiles);
+        return CloudResponseUtils.success(cloudDirFiles);
     }
 
     /**

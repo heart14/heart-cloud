@@ -1,6 +1,5 @@
 package com.heart.heartcloud.utils;
 
-import com.heart.heartcloud.common.CloudConstants;
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.response.CloudResponse;
 
@@ -10,7 +9,7 @@ import com.heart.heartcloud.response.CloudResponse;
  * @Author: Heart
  * @Date: 2019/7/12 13:08
  */
-public class CloudResponseUtil {
+public class CloudResponseUtils {
 
     public static CloudResponse success() {
         return success(null);

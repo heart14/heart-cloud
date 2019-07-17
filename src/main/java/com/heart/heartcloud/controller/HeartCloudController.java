@@ -5,7 +5,7 @@ import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.exception.CloudException;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudUserService;
-import com.heart.heartcloud.utils.CloudResponseUtil;
+import com.heart.heartcloud.utils.CloudResponseUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -107,7 +107,7 @@ public class HeartCloudController {
 
         HttpSession session = request.getSession();
         session.setAttribute("CurrentCloudUser", cloudUserService.findCloudUserByUserName(cloudUser.getUserName()));
-        return CloudResponseUtil.success();
+        return CloudResponseUtils.success();
     }
 
     @RequestMapping(value = "/reg", method = RequestMethod.POST)
@@ -116,7 +116,7 @@ public class HeartCloudController {
 
         logger.info("用户注册 :cloudUser => {}", cloudUser);
 
-        return CloudResponseUtil.success(cloudUserService.userReg(cloudUser));
+        return CloudResponseUtils.success(cloudUserService.userReg(cloudUser));
     }
 
     /**

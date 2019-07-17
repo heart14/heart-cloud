@@ -1,7 +1,7 @@
 package com.heart.heartcloud.exception;
 
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
-import com.heart.heartcloud.utils.CloudResponseUtil;
+import com.heart.heartcloud.utils.CloudResponseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,11 +27,11 @@ public class CloudExceptionHandler {
         if (e instanceof CloudException) {
             //自定异常
             CloudException cloudException = (CloudException) e;
-            return CloudResponseUtil.fail(cloudException.getCode(), cloudException.getMessage());
+            return CloudResponseUtils.fail(cloudException.getCode(), cloudException.getMessage());
         } else {
             //如果是系统异常，如空指针，下标越界等
             logger.error("系统异常 :{}", e);
-            return CloudResponseUtil.fail(CloudErrorCodeEnums.SystemException.getCode(), CloudErrorCodeEnums.SystemException.getMsg());
+            return CloudResponseUtils.fail(CloudErrorCodeEnums.SystemException.getCode(), CloudErrorCodeEnums.SystemException.getMsg());
         }
     }
 }

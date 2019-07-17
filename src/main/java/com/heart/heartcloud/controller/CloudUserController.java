@@ -3,7 +3,7 @@ package com.heart.heartcloud.controller;
 import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudUserService;
-import com.heart.heartcloud.utils.CloudResponseUtil;
+import com.heart.heartcloud.utils.CloudResponseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class CloudUserController {
 
         logger.info("查询用户信息 :cloudUserId => {}", cloudUserId);
 
-        return CloudResponseUtil.success(cloudUserService.findCloudUserByPrimaryKey(cloudUserId));
+        return CloudResponseUtils.success(cloudUserService.findCloudUserByPrimaryKey(cloudUserId));
     }
 
     /**
@@ -44,7 +44,7 @@ public class CloudUserController {
 
         logger.info("查询所有用户信息");
 
-        return CloudResponseUtil.success(cloudUserService.findAllUser());
+        return CloudResponseUtils.success(cloudUserService.findAllUser());
     }
 
     /**
@@ -57,7 +57,7 @@ public class CloudUserController {
 
         logger.info("保存用户 :cloudUser => {}", cloudUser);
 
-        return CloudResponseUtil.success();
+        return CloudResponseUtils.success();
     }
 
     /**
@@ -72,7 +72,7 @@ public class CloudUserController {
         logger.info("删除用户 :cloudUserId => {}", cloudUserId);
         cloudUserService.removeCloudUserByPrimaryKey(cloudUserId);
 
-        return CloudResponseUtil.success();
+        return CloudResponseUtils.success();
     }
 
     /**
@@ -87,7 +87,7 @@ public class CloudUserController {
         logger.info("修改用户信息 :cloudUser => {}", cloudUser);
         cloudUserService.editCloudUserByPrimaryKey(cloudUser);
 
-        return CloudResponseUtil.success();
+        return CloudResponseUtils.success();
     }
 
 }
