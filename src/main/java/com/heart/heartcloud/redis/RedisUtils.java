@@ -111,12 +111,38 @@ public class RedisUtils {
     }
 
     /**
-     * https://github.com/whvcse/RedisUtil
+     * 获取key的剩余过期时间
      * @param key
      * @param timeUnit
      * @return
      */
     public Long getExpire(String key, TimeUnit timeUnit) {
         return redisTemplate.getExpire(key, timeUnit);
+    }
+
+    /**
+     * 获取key的剩余过期时间
+     * @param key
+     * @return
+     */
+    public Long getExpire(String key) {
+        return redisTemplate.getExpire(key);
+    }
+
+    /**
+     * 从当前数据库中随机返回一个key
+     * @return
+     */
+    public String rendomKey() {
+        return redisTemplate.randomKey();
+    }
+
+    /**
+     * 修改key的名称
+     * @param oldKey
+     * @param newKey
+     */
+    public void rename(String oldKey, String newKey) {
+        redisTemplate.rename(oldKey, newKey);
     }
 }
