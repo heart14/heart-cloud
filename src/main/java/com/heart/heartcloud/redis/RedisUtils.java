@@ -3,6 +3,7 @@ package com.heart.heartcloud.redis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,7 @@ public class RedisUtils {
 
     /**
      * 删除key
+     *
      * @param key
      * @return
      */
@@ -36,6 +38,7 @@ public class RedisUtils {
 
     /**
      * 批量删除key
+     *
      * @param keys
      * @return
      */
@@ -45,6 +48,7 @@ public class RedisUtils {
 
     /**
      * 序列化key
+     *
      * @param key
      * @return
      */
@@ -54,6 +58,7 @@ public class RedisUtils {
 
     /**
      * 是否存在key
+     *
      * @param key
      * @return
      */
@@ -63,6 +68,7 @@ public class RedisUtils {
 
     /**
      * 设置key过期时间
+     *
      * @param key
      * @param timeout
      * @param timeUnit
@@ -74,6 +80,7 @@ public class RedisUtils {
 
     /**
      * 设置key过期时间
+     *
      * @param key
      * @param date
      * @return
@@ -84,6 +91,7 @@ public class RedisUtils {
 
     /**
      * 查找匹配的key  TODO:匹配规则？
+     *
      * @param pattern
      * @return
      */
@@ -93,6 +101,7 @@ public class RedisUtils {
 
     /**
      * 将当前数据库的key移动到给定的数据库DB中
+     *
      * @param key
      * @param dbIndex
      * @return
@@ -103,6 +112,7 @@ public class RedisUtils {
 
     /**
      * 移除key的过期时间，key将持久保持
+     *
      * @param key
      * @return
      */
@@ -112,6 +122,7 @@ public class RedisUtils {
 
     /**
      * 获取key的剩余过期时间
+     *
      * @param key
      * @param timeUnit
      * @return
@@ -122,6 +133,7 @@ public class RedisUtils {
 
     /**
      * 获取key的剩余过期时间
+     *
      * @param key
      * @return
      */
@@ -131,6 +143,7 @@ public class RedisUtils {
 
     /**
      * 从当前数据库中随机返回一个key
+     *
      * @return
      */
     public String rendomKey() {
@@ -139,10 +152,57 @@ public class RedisUtils {
 
     /**
      * 修改key的名称
+     *
      * @param oldKey
      * @param newKey
      */
     public void rename(String oldKey, String newKey) {
         redisTemplate.rename(oldKey, newKey);
     }
+
+    /**
+     * 当newKey不存在时，将oldKey改名为newKey
+     *
+     * @param oldKey
+     * @param newKey
+     * @return
+     */
+    public Boolean renameIfAbsent(String oldKey, String newKey) {
+        return redisTemplate.renameIfAbsent(oldKey, newKey);
+    }
+
+    /**
+     * 返回key所存储的值的类型
+     *
+     * @param key
+     * @return
+     */
+    public DataType type(String key) {
+        return redisTemplate.type(key);
+    }
+
+    /**
+     * String 相关操作
+     */
+
+    /**
+     * 设置指定key的值
+     *
+     * @param key
+     * @param value
+     */
+    public void set(String key, String value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    /**
+     * 获取指定key的值
+     *
+     * @param key
+     * @return
+     */
+    public String get(String key) {
+        return (String) redisTemplate.opsForValue().get(key);
+    }
+
 }
