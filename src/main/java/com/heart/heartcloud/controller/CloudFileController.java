@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 
@@ -69,18 +69,26 @@ public class CloudFileController {
                 boolean mkdirs = targetPath.mkdirs();
             }
             File file = new File(filePath + multipartFile.getOriginalFilename());
+            String shotUuid = "";
+            String substring = "";
+            if (file.exists()) {
+                substring = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
+                shotUuid = CloudStringUtils.getShotUuid();
+                file = new File(filePath + multipartFile.getOriginalFilename().replace(substring, "") + "_" + shotUuid + substring);
+            }
             multipartFile.transferTo(file);
 
             CloudFile cloudFile = new CloudFile();
             cloudFile.setCloudFileId(CloudStringUtils.getId());
-            cloudFile.setCloudFileName(multipartFile.getOriginalFilename());
+            cloudFile.setCloudFileName(multipartFile.getOriginalFilename() + shotUuid);
             cloudFile.setCloudFileSize(String.valueOf(multipartFile.getSize()));
-            cloudFile.setCloudFileUrl(filePath + multipartFile.getOriginalFilename());
+            cloudFile.setCloudFileUrl(filePath + multipartFile.getOriginalFilename().replace(substring, "") + "_" + shotUuid + substring);
             cloudFile.setCloudFileType(getCloudFileType(multipartFile.getOriginalFilename() != null ? multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf(".")) : ""));
             cloudFile.setCloudFileStatus(CloudConstants.STATUS_YES);
             cloudFile.setCloudFileDirId(cloudDirId);
             cloudFile.setCloudFileUserId(cloudUser.getUserId());
             cloudFile.setCloudFileCreateDate(new Date());
+            cloudFile.setCloudFileUpdateDate(new Date());
             cloudFileService.saveCloudFile(cloudFile);
 
             CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
@@ -93,6 +101,40 @@ public class CloudFileController {
         }
 
         return CloudResponseUtils.success();
+    }
+
+    @RequestMapping(value = "/download", method = RequestMethod.POST)
+    public void downloadFile(@RequestParam Integer cloudFileId, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        CloudUser cloudUser = getCloudUserFromSession(request);
+        logger.info("文件下载 :cloudFileId => {}", cloudFileId);
+
+        CloudFile cloudFileByPrimaryKey = cloudFileService.findCloudFileByPrimaryKey(cloudFileId);
+        if (cloudFileByPrimaryKey == null || CloudStringUtils.isBlank(cloudFileByPrimaryKey.getCloudFileUrl())) {
+            throw new CloudException(CloudErrorCodeEnums.UnknownFileException.getCode(), CloudErrorCodeEnums.UnknownFileException.getMsg());
+        }
+
+        String cloudFileUrl = cloudFileByPrimaryKey.getCloudFileUrl();
+        File file = new File(cloudFileUrl);
+        if (file.exists()) {
+            response.setContentType("application/force-download");
+            response.addHeader("Content-Disposition", "attachment;fileName=" + cloudFileByPrimaryKey.getCloudFileName());
+
+            byte[] buffer = new byte[1024];
+            FileInputStream fis = new FileInputStream(file);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            OutputStream os = response.getOutputStream();
+            int i = bis.read(buffer);
+            while (i != -1) {
+                os.write(buffer, 0, i);
+                i = bis.read(buffer);
+            }
+            os.flush();
+            fis.close();
+            bis.close();
+            os.close();
+        } else {
+            throw new CloudException(CloudErrorCodeEnums.UnknownFileException.getCode(), CloudErrorCodeEnums.UnknownFileException.getMsg());
+        }
     }
 
     //TODO 上传、删除文件和删除文件夹（包含文件夹内文件）时，没有递归更新父父...文件夹的大小

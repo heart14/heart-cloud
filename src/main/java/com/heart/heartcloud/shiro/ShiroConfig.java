@@ -50,6 +50,7 @@ public class ShiroConfig {
 
         //访问静态资源不需要身份验证
         filterChainDefinitionMap.put("/static/**", "anon");
+        filterChainDefinitionMap.put("/local/**", "anon");
         filterChainDefinitionMap.put("/fonts/**", "anon");
         filterChainDefinitionMap.put("/css/**", "anon");
         filterChainDefinitionMap.put("/img/**", "anon");

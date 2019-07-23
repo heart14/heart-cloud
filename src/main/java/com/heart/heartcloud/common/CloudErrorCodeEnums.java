@@ -46,7 +46,12 @@ public enum CloudErrorCodeEnums {
     /**
      * 参数异常，ErrorCode :7012
      */
-    ParamException(7012, "参数异常");
+    ParamException(7012, "参数异常"),
+
+    /**
+     * 文件不存在，ErrorCode :7013
+     */
+    UnknownFileException(7013, "文件不存在");
 
     private Integer code;
 

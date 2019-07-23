@@ -48,6 +48,7 @@ public class CloudDirServiceImpl implements CloudDirService {
         cloudDir.setCloudDirStatus(CloudConstants.STATUS_YES);
         cloudDir.setCloudDirSize(String.valueOf(0L));
         cloudDir.setCloudDirCreateDate(new Date());
+        cloudDir.setCloudDirUpdateDate(new Date());
         return cloudDirDao.insert(cloudDir);
     }
 
