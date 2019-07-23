@@ -77,6 +77,7 @@ public class CloudFileController {
                 file = new File(filePath + multipartFile.getOriginalFilename().replace(substring, "") + "_" + shotUuid + substring);
             }
             multipartFile.transferTo(file);
+            //TODO 文件已存在时文件名与URL处理待完成
 
             CloudFile cloudFile = new CloudFile();
             cloudFile.setCloudFileId(CloudStringUtils.getId());
