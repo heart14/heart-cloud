@@ -88,6 +88,19 @@ public class HeartCloudController {
         return modelAndView;
     }
 
+    @RequestMapping(value = "/vip", method = RequestMethod.GET)
+    public ModelAndView vip(HttpServletRequest request) {
+        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
+        if (currentCloudUser == null) {
+            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+        }
+        logger.info("HEART CLOUD会员中心 :cloudUser => {}", currentCloudUser);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("vip");
+        modelAndView.addObject("cloudUser", currentCloudUser);
+        return modelAndView;
+    }
+
     /**
      * 系统用户登录
      *
