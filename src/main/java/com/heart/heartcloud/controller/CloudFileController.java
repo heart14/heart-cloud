@@ -64,26 +64,30 @@ public class CloudFileController {
         String filePath = CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString();
 
         for (MultipartFile multipartFile : multipartFiles) {
+
+            CloudFile cloudFile = new CloudFile();
+
             File targetPath = new File(filePath);
             if (!targetPath.exists()) {
                 boolean mkdirs = targetPath.mkdirs();
             }
             File file = new File(filePath + multipartFile.getOriginalFilename());
-            String shotUuid = "";
-            String substring = "";
             if (file.exists()) {
-                substring = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
-                shotUuid = CloudStringUtils.getShotUuid();
+                String substring = multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
+                String shotUuid = CloudStringUtils.getShotUuid();
+
                 file = new File(filePath + multipartFile.getOriginalFilename().replace(substring, "") + "_" + shotUuid + substring);
+
+                cloudFile.setCloudFileName(multipartFile.getOriginalFilename().replace(substring, "") + "_" + shotUuid + substring);
+                cloudFile.setCloudFileUrl(filePath + multipartFile.getOriginalFilename().replace(substring, "") + "_" + shotUuid + substring);
+            } else {
+                cloudFile.setCloudFileName(multipartFile.getOriginalFilename());
+                cloudFile.setCloudFileUrl(filePath + multipartFile.getOriginalFilename());
             }
             multipartFile.transferTo(file);
-            //TODO 文件已存在时文件名与URL处理待完成
 
-            CloudFile cloudFile = new CloudFile();
             cloudFile.setCloudFileId(CloudStringUtils.getId());
-            cloudFile.setCloudFileName(multipartFile.getOriginalFilename() + shotUuid);
             cloudFile.setCloudFileSize(String.valueOf(multipartFile.getSize()));
-            cloudFile.setCloudFileUrl(filePath + multipartFile.getOriginalFilename().replace(substring, "") + "_" + shotUuid + substring);
             cloudFile.setCloudFileType(getCloudFileType(multipartFile.getOriginalFilename() != null ? multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf(".")) : ""));
             cloudFile.setCloudFileStatus(CloudConstants.STATUS_YES);
             cloudFile.setCloudFileDirId(cloudDirId);
