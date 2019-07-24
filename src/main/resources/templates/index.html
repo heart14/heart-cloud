@@ -52,7 +52,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="#" onclick="reloadPage();">
                 <img th:src="@{/img/logo.png}">
             </a>
         </div>
@@ -355,6 +355,11 @@
     //初始化页面内容
     function initDirsTable() {
         getDirChilds(0, 'HOME');
+    }
+
+    //刷新页面
+    function reloadPage() {
+        window.location.reload();
     }
 
     //全局文件搜索
