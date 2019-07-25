@@ -10,7 +10,33 @@
     <script type="text/javascript" th:inline="javascript">
 
         function confirmBuyVip() {
+            $("#openVipModal").modal('toggle');
+            var singlePrice = 30;
+            var mon = $("input[name='buyVipRadioOptions']:checked").val();
+            var subject = "百度网盘超级会员";
+            var body = "";
+            if (mon == 1) {
+                body = "连续包月";
+            }
+            if (mon == 3) {
+                body = "连续包季";
+            }
+            if (mon == 12) {
+                body = "连续包年";
+            }
+            var totalamount = singlePrice * mon;
 
+            console.log(mon + ", " + body + ", " + totalamount);
+            $("#totalAmountInput").val(totalamount);
+            $("#subjectInput").val(subject);
+            $("#bodyInput").val(body);
+
+            $("#alipayRequestForm").submit();
+        }
+
+        function changePrice(mon) {
+            var singlePrice = 30;
+            $("#paymentAmount").val("￥" + singlePrice * mon);
         }
     </script>
     <style>
@@ -48,17 +74,13 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">开通时长</label>
                         <div class="col-sm-9">
-                            <label class="radio-inline">
-                                <input type="radio" name="buyVipRadioOptions" id="buySingleMonthRadio" value="0"
-                                       checked> 单月购买
+                            <label class="radio-inline" onclick="changePrice(1);">
+                                <input type="radio" name="buyVipRadioOptions" id="buyWithMonthRadio" value="1" checked> 连续包月
                             </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="buyVipRadioOptions" id="buyWithMonthRadio" value="1"> 连续包月
-                            </label>
-                            <label class="radio-inline">
+                            <label class="radio-inline" onclick="changePrice(3);">
                                 <input type="radio" name="buyVipRadioOptions" id="buyWithSeasonRadio" value="3"> 连续包季
                             </label>
-                            <label class="radio-inline">
+                            <label class="radio-inline" onclick="changePrice(12);">
                                 <input type="radio" name="buyVipRadioOptions" id="buyWithYearRadio" value="12"> 连续包年
                             </label>
                         </div>
@@ -88,6 +110,14 @@
             </div>
         </div>
     </div>
+</div>
+
+<div style="display: none;">
+    <form id="alipayRequestForm" method="post" action="/cloudpay/pay" enctype="application/x-www-form-urlencoded">
+        <input type="text" id="totalAmountInput" name="totalAmount"/>
+        <input type="text" id="subjectInput" name="subject"/>
+        <input type="text" id="bodyInput" name="body"/>
+    </form>
 </div>
 </body>
 </html>

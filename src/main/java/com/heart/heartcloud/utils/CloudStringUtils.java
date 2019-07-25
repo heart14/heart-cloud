@@ -9,11 +9,21 @@ public class CloudStringUtils extends StringUtils {
 
     private static String[] chars = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
+    /**
+     * 获取8位随机数
+     *
+     * @return
+     */
     public static Integer getId() {
         Random random = new Random();
         return Math.abs(random.nextInt() + 1);
     }
 
+    /**
+     * 获取短UUID
+     *
+     * @return
+     */
     public static String getShotUuid() {
         StringBuilder shotUuid = new StringBuilder();
         String uuid = getUuid();
@@ -25,12 +35,33 @@ public class CloudStringUtils extends StringUtils {
         return shotUuid.toString();
     }
 
+    /**
+     * 获取UUID
+     *
+     * @return
+     */
     public static String getUuid() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
+    /**
+     * 获取用户盐
+     *
+     * @param userName
+     * @param userPass
+     * @return
+     */
     public static String getSalt(String userName, String userPass) {
         return userName + "_" + userPass;
+    }
+
+    /**
+     * 获取支付宝支付订单号（商户端订单号）
+     *
+     * @return
+     */
+    public static String getTradeNo() {
+        return "alipaytradeno" + System.currentTimeMillis();
     }
 
 }

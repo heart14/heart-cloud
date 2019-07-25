@@ -88,6 +88,12 @@ public class HeartCloudController {
         return modelAndView;
     }
 
+    /**
+     * 会员中心页面
+     *
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/vip", method = RequestMethod.GET)
     public ModelAndView vip(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
