@@ -4,12 +4,14 @@ import com.heart.heartcloud.common.CloudConstants;
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.domain.CloudDir;
 import com.heart.heartcloud.domain.CloudFile;
+import com.heart.heartcloud.domain.CloudGoods;
 import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.exception.CloudException;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudDiskService;
 import com.heart.heartcloud.service.CloudFileService;
+import com.heart.heartcloud.service.CloudGoodsService;
 import com.heart.heartcloud.utils.CloudResponseUtils;
 import com.heart.heartcloud.utils.CloudStringUtils;
 import org.slf4j.Logger;
@@ -43,6 +45,9 @@ public class CloudFileController {
 
     @Autowired
     private CloudDiskService cloudDiskService;
+
+    @Autowired
+    private CloudGoodsService cloudGoodsService;
 
     /**
      * 上传文件
@@ -92,6 +97,7 @@ public class CloudFileController {
             cloudFile.setCloudFileStatus(CloudConstants.STATUS_YES);
             cloudFile.setCloudFileDirId(cloudDirId);
             cloudFile.setCloudFileUserId(cloudUser.getUserId());
+            cloudFile.setCloudFileSellPrice(CloudConstants.STATUS_NO);
             cloudFile.setCloudFileCreateDate(new Date());
             cloudFile.setCloudFileUpdateDate(new Date());
             cloudFileService.saveCloudFile(cloudFile);
@@ -143,7 +149,7 @@ public class CloudFileController {
     }
 
     //TODO 上传、删除文件和删除文件夹（包含文件夹内文件）时，没有递归更新父父...文件夹的大小
-    //TODO 文件上传后丢失位置、设备等信息（https://www.jianshu.com/p/c6b413cea2dd）
+    //TODO 文件上传后丢失位置、设备等Exif信息（https://www.jianshu.com/p/c6b413cea2dd）
 
     /**
      * 删除文件
@@ -234,6 +240,66 @@ public class CloudFileController {
         return CloudResponseUtils.success(cloudFileLikeName);
     }
 
+    /**
+     * 上架文件
+     *
+     * @param cloudFileId
+     * @param cloudFilePrice
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/sell", method = RequestMethod.POST)
+    public CloudResponse sellFile(@RequestParam("cloudFileId") Integer cloudFileId, @RequestParam("cloudFilePrice") String cloudFilePrice, HttpServletRequest request) {
+        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        logger.info("上架文件 :cloudUser => {}", currentCloudUser);
+        logger.info("上架文件 :cloudFileId => {}, cloudFilePrice => {}", cloudFileId, cloudFilePrice);
+
+        CloudFile cloudFile = cloudFileService.findCloudFileByPrimaryKey(cloudFileId);
+        cloudFile.setCloudFileSellFlag(CloudConstants.STATUS_YES);
+        cloudFile.setCloudFileSellPrice(cloudFilePrice);
+        cloudFile.setCloudFileUpdateDate(new Date());
+        cloudFileService.editCloudFileByPrimaryKey(cloudFile);
+
+        CloudGoods cloudGoods = new CloudGoods();
+        cloudGoods.setCloudGoodsId(CloudStringUtils.getId());
+        cloudGoods.setCloudGoodsFileId(cloudFileId);
+        cloudGoods.setCloudGoodsFilePrice(cloudFilePrice);
+        cloudGoods.setCloudGoodsUrl(cloudFile.getCloudFileUrl());
+        cloudGoods.setCloudGoodsStatus(CloudConstants.STATUS_YES);
+        cloudGoods.setCloudGoodsCreateDate(new Date());
+        cloudGoodsService.saveCloudGoods(cloudGoods);
+
+        logger.info("上架文件 :cloudFile <= {}", cloudFile);
+        logger.info("上架文件 :cloudGoods <= {}", cloudGoods);
+
+        return CloudResponseUtils.success();
+    }
+
+    /**
+     * 下架文件
+     *
+     * @param cloudFileId
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/unsell", method = RequestMethod.POST)
+    public CloudResponse unSellFile(@RequestParam("cloudFileId") Integer cloudFileId, HttpServletRequest request) {
+        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        logger.info("下架文件 :cloudUser => {}", currentCloudUser);
+        logger.info("下架文件 :cloudFileId => {}", cloudFileId);
+        CloudFile cloudFileByPrimaryKey = cloudFileService.findCloudFileByPrimaryKey(cloudFileId);
+        cloudFileByPrimaryKey.setCloudFileSellFlag(CloudConstants.STATUS_NO);
+        cloudFileByPrimaryKey.setCloudFileUpdateDate(new Date());
+        cloudFileService.editCloudFileByPrimaryKey(cloudFileByPrimaryKey);
+        //更新T_CLOUD_GOODS表中文件状态
+        CloudGoods cloudGoodsByCloudFileId = cloudGoodsService.findCloudGoodsByCloudFileId(cloudFileId);
+        cloudGoodsByCloudFileId.setCloudGoodsStatus(CloudConstants.STATUS_NO);
+        cloudGoodsByCloudFileId.setCloudGoodsUpdateDate(new Date());
+        cloudGoodsService.editCloudGoodsByPrimaryKey(cloudGoodsByCloudFileId);
+        logger.info("下架文件 :cloudFile <= {}", cloudFileByPrimaryKey);
+        logger.info("下架文件 :cloudGoods <= {}", cloudGoodsByCloudFileId);
+        return CloudResponseUtils.success();
+    }
 
     /**
      * 从SESSION中获取当前登录用户

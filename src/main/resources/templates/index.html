@@ -113,7 +113,7 @@
                     data-target="#uploadNewFileModal"
                     onclick="showUploadInput()">上传
             </button>
-            <button type="button" class="btn btn-primary navbar-btn" onclick="">下载</button>
+            <button type="button" class="btn btn-primary navbar-btn" onclick="jumpToResourceMarket()" style="float: right">资源商城</button>
             <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal"
                     data-target="#createNewDirModal">
                 新建文件夹
@@ -256,7 +256,7 @@
     </div>
 </div>
 
-<!--删除文件夹确认/取消弹窗-->
+<!--删除文件夹 确认/取消弹窗-->
 <div class="modal fade" id="confirmRemoveDirModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -277,7 +277,7 @@
     </div>
 </div>
 
-<!--删除文件夹确认/取消弹窗-->
+<!--删除文件 确认/取消弹窗-->
 <div class="modal fade" id="confirmRemoveFileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -293,6 +293,56 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 <button type="button" class="btn btn-primary" onclick="removeFileSubmit()">删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--文件上架-->
+<div class="modal fade" id="sellFileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel5">文件上架出售</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="sellFilePriceInput" class="col-sm-2 control-label"></label>
+                        <label for="sellFileId" class="col-sm-2 control-label"></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="sellFilePriceInput" placeholder="请输入文件出售价格，单位：元"
+                                   autocomplete="off">
+                            <input type="hidden" id="sellFileId">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="sellFileSubmit()">确定</button>
+            </div>
+        </div>i
+    </div>
+</div>
+
+<!--取消文件上架 确认/取消弹窗-->
+<div class="modal fade" id="confirmUnSellFileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align: center">
+                <span>确认下架该文件？</span>
+                <input type="hidden" id="unSellFileId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="unSellFileSubmit()">确定</button>
             </div>
         </div>
     </div>
@@ -496,8 +546,13 @@
                                 + dateFormater(new Date(cloudFile.cloudFileUpdateDate)) + "</td><td>"
                                 + "<button type='button' class='btn btn-default' aria-label='Edit' onclick='editFileName(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>"
                                 + "<button type='button' class='btn btn-default' aria-label='Remove' onclick='removeFile(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>"
-                                + "<button type='button' class='btn btn-default' aria-label='Download' onclick='downloadFile(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-download-alt' aria-hidden='true'></span></button>"
-                                + "</td></tr>"
+                                + "<button type='button' class='btn btn-default' aria-label='Download' onclick='downloadFile(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-download-alt' aria-hidden='true'></span></button>&nbsp;&nbsp;";
+                            if (cloudFile.cloudFileSellFlag == '1') {
+                                innerHtml2 += "<button type='button' class='btn btn-default' aria-label='OnSell' onclick='unSellFile(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-shopping-cart' aria-hidden='true'> UNSELL</span></button>";
+                            } else {
+                                innerHtml2 += "<button type='button' class='btn btn-default' aria-label='OffSell' onclick='sellFile(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-shopping-cart' aria-hidden='true'> SELL</span></button>";
+                            }
+                            innerHtml2 += "</td></tr>";
                         }
                         innerHtml = innerHtml1 + innerHtml2;
                     }
@@ -814,6 +869,88 @@
         $("#downloadFileId").val('');
     }
 
+    //出售文件
+    function sellFile(cloudFileId) {
+        $("#sellFileModal").modal();
+        $("#sellFileId").val(cloudFileId);
+    }
+
+    function sellFileSubmit() {
+        var currentCloudDirId = $("#currentDirId").text();
+        var currentCloudDirName = $("#currentDirName").text();
+
+        var cloudFileId = $("#sellFileId").val();
+        var cloudFilePrice = $("#sellFilePriceInput").val();
+        if (cloudFilePrice == null || cloudFilePrice === '') {
+            $("#tipsContent").text("价格不能为空");
+            $("#tipsModal").modal();
+            return;
+        }
+        //单位元转换成分
+        cloudFilePrice = cloudFilePrice * 100;
+        console.log("文件上架 cloudFileId=" + cloudFileId + "  cloudFilePrice=" + cloudFilePrice);
+
+        $("#sellFileModal").modal('toggle');
+        $("#sellFilePriceInput").val('');
+        $.ajax({
+            type: "POST",
+            url: "/cloudfile/sell",
+            data: {
+                "cloudFileId":cloudFileId,
+                "cloudFilePrice":cloudFilePrice
+            },
+            contentType: "application/x-www-form-urlencoded;chartset=utf-8",
+            success: function (result) {
+                console.log(result);
+                if (result.errCode === 7000) {
+                    $("#tipsContent").text("文件上架成功");
+                } else {
+                    $("#tipsContent").text("文件上架失败");
+                }
+                $("#tipsModal").modal();
+                setTimeout(function () {
+                    $("#tipsModal").modal('toggle');
+                }, 3000);
+                getDirChilds(currentCloudDirId, currentCloudDirName);
+            }
+        });
+    }
+
+    //取消出售文件
+    function unSellFile(cloudFileId) {
+        $("#confirmUnSellFileModal").modal();
+        $("#unSellFileId").val(cloudFileId);
+    }
+
+    function unSellFileSubmit() {
+        var currentCloudDirId = $("#currentDirId").text();
+        var currentCloudDirName = $("#currentDirName").text();
+
+        var cloudFileId = $("#unSellFileId").val();
+        $("#confirmUnSellFileModal").modal('toggle');
+        $.ajax({
+            type: "POST",
+            url: "/cloudfile/unsell",
+            data: {
+                "cloudFileId": cloudFileId
+            },
+            contentType: "application/x-www-form-urlencoded;chartset=utf-8",
+            success: function (result) {
+                console.log(result);
+                if (result.errCode === 7000) {
+                    $("#tipsContent").text("取消文件上架成功");
+                } else {
+                    $("#tipsContent").text("取消文件上架失败");
+                }
+                $("#tipsModal").modal();
+                setTimeout(function () {
+                    $("#tipsModal").modal('toggle');
+                }, 3000);
+                getDirChilds(currentCloudDirId, currentCloudDirName);
+            }
+        });
+    }
+
     //日期格式化
     function dateFormater(date) {
         var year = date.getFullYear();       //年
@@ -853,6 +990,11 @@
             number = number / 1024;
         }
         return number.toFixed(2);
+    }
+
+    //跳转到资源商城页面
+    function jumpToResourceMarket() {
+        window.location.href = "./market";
     }
 </script>
 </html>

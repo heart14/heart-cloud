@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heart.heartcloud.dao.CloudGoodsDao">
+    <resultMap id="BaseResultMap" type="com.heart.heartcloud.domain.CloudGoods">
+        <id column="cloud_goods_id" jdbcType="INTEGER" property="cloudGoodsId"/>
+        <result column="cloud_goods_file_id" jdbcType="INTEGER" property="cloudGoodsFileId"/>
+        <result column="cloud_goods_file_price" jdbcType="VARCHAR" property="cloudGoodsFilePrice"/>
+        <result column="cloud_goods_url" jdbcType="VARCHAR" property="cloudGoodsUrl"/>
+        <result column="cloud_goods_status" jdbcType="VARCHAR" property="cloudGoodsStatus"/>
+        <result column="cloud_goods_create_date" jdbcType="TIMESTAMP" property="cloudGoodsCreateDate"/>
+        <result column="cloud_goods_update_date" jdbcType="TIMESTAMP" property="cloudGoodsUpdateDate"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        cloud_goods_id, cloud_goods_file_id, cloud_goods_file_price, cloud_goods_url, cloud_goods_status,
+        cloud_goods_create_date, cloud_goods_update_date
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cloud_goods
+        where cloud_goods_id = #{cloudGoodsId,jdbcType=INTEGER}
+        and cloud_goods_status = '1'
+    </select>
+
+    <select id="selectByCloudFileId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cloud_goods
+        where cloud_goods_file_id = #{cloudFileId,jdbcType=INTEGER}
+        and cloud_goods_status = '1'
+    </select>
+
+    <select id="selectAllCloudGoods" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cloud_goods
+        where cloud_goods_status = '1'
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from t_cloud_goods
+        where cloud_goods_id = #{cloudGoodsId,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insertSelective" parameterType="com.heart.heartcloud.domain.CloudGoods">
+        insert into t_cloud_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cloudGoodsId != null">
+                cloud_goods_id,
+            </if>
+            <if test="cloudGoodsFileId != null">
+                cloud_goods_file_id,
+            </if>
+            <if test="cloudGoodsFilePrice != null">
+                cloud_goods_file_price,
+            </if>
+            <if test="cloudGoodsUrl != null">
+                cloud_goods_url,
+            </if>
+            <if test="cloudGoodsStatus != null">
+                cloud_goods_status,
+            </if>
+            <if test="cloudGoodsCreateDate != null">
+                cloud_goods_create_date,
+            </if>
+            <if test="cloudGoodsUpdateDate != null">
+                cloud_goods_update_date,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cloudGoodsId != null">
+                #{cloudGoodsId,jdbcType=INTEGER},
+            </if>
+            <if test="cloudGoodsFileId != null">
+                #{cloudGoodsFileId,jdbcType=INTEGER},
+            </if>
+            <if test="cloudGoodsFilePrice != null">
+                #{cloudGoodsFilePrice,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudGoodsUrl != null">
+                #{cloudGoodsUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudGoodsStatus != null">
+                #{cloudGoodsStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudGoodsCreateDate != null">
+                #{cloudGoodsCreateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cloudGoodsUpdateDate != null">
+                #{cloudGoodsUpdateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.heart.heartcloud.domain.CloudGoods">
+        update t_cloud_goods
+        <set>
+            <if test="cloudGoodsFileId != null">
+                cloud_goods_file_id = #{cloudGoodsFileId,jdbcType=INTEGER},
+            </if>
+            <if test="cloudGoodsFilePrice != null">
+                cloud_goods_file_price = #{cloudGoodsFilePrice,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudGoodsUrl != null">
+                cloud_goods_url = #{cloudGoodsUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudGoodsStatus != null">
+                cloud_goods_status = #{cloudGoodsStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudGoodsCreateDate != null">
+                cloud_goods_create_date = #{cloudGoodsCreateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cloudGoodsUpdateDate != null">
+                cloud_goods_update_date = #{cloudGoodsUpdateDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where cloud_goods_id = #{cloudGoodsId,jdbcType=INTEGER}
+    </update>
+
+</mapper>

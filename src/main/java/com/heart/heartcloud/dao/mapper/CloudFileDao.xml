@@ -10,13 +10,16 @@
         <result column="cloud_file_type" jdbcType="VARCHAR" property="cloudFileType"/>
         <result column="cloud_file_status" jdbcType="VARCHAR" property="cloudFileStatus"/>
         <result column="cloud_file_url" jdbcType="VARCHAR" property="cloudFileUrl"/>
+        <result column="cloud_file_sell_flag" jdbcType="VARCHAR" property="cloudFileSellFlag"/>
+        <result column="cloud_file_sell_price" jdbcType="VARCHAR" property="cloudFileSellPrice"/>
         <result column="cloud_file_dir_id" jdbcType="INTEGER" property="cloudFileDirId"/>
         <result column="cloud_file_user_id" jdbcType="INTEGER" property="cloudFileUserId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         cloud_file_id, cloud_file_name, cloud_file_size, cloud_file_create_date, cloud_file_update_date,
-        cloud_file_type, cloud_file_status, cloud_file_url, cloud_file_dir_id, cloud_file_user_id
+        cloud_file_type, cloud_file_status, cloud_file_url, cloud_file_sell_flag, cloud_file_sell_price,
+        cloud_file_dir_id, cloud_file_user_id
     </sql>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -92,6 +95,12 @@
             <if test="cloudFileUrl != null">
                 cloud_file_url,
             </if>
+            <if test="cloudFileSellFlag != null">
+                cloud_file_sell_flag,
+            </if>
+            <if test="cloudFileSellPrice != null">
+                cloud_file_sell_price,
+            </if>
             <if test="cloudFileDirId != null">
                 cloud_file_dir_id,
             </if>
@@ -123,6 +132,12 @@
             </if>
             <if test="cloudFileUrl != null">
                 #{cloudFileUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileSellFlag != null">
+                #{cloudFileSellFlag,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileSellPrice != null">
+                #{cloudFileSellPrice,jdbcType=VARCHAR},
             </if>
             <if test="cloudFileDirId != null">
                 #{cloudFileDirId,jdbcType=INTEGER},
@@ -156,6 +171,12 @@
             </if>
             <if test="cloudFileUrl != null">
                 cloud_file_url = #{cloudFileUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileSellFlag != null">
+                cloud_file_sell_flag = #{cloudFileSellFlag,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudFileSellPrice != null">
+                cloud_file_sell_price = #{cloudFileSellPrice,jdbcType=VARCHAR},
             </if>
             <if test="cloudFileDirId != null">
                 cloud_file_dir_id = #{cloudFileDirId,jdbcType=INTEGER},

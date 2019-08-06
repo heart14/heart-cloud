@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>HEART CLOUD MARKET</title>
+    <script th:src="@{/js/jquery-3.4.1.js}" type="text/javascript"></script>
+    <script th:src="@{/js/bootstrap.js}" type="text/javascript"></script>
+    <link th:href="@{/css/bootstrap.css}" type="text/css" rel="stylesheet"/>
+    <link th:href="@{/css/bootstrap-theme.css}" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" th:inline="javascript">
+        $(function () {
+
+            var cloudUser = [[${cloudUser}]];
+            console.log(cloudUser);
+
+            initGoodsTable();
+        });
+
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        img {
+            width: 314px;
+            padding: 1px;
+            position: absolute;
+        }
+
+        table tbody tr td{
+            width: 314px;
+        }
+    </style>
+</head>
+<body>
+<div style="text-align: center">
+    <h1>HEART CLOUD MARKET</h1>
+</div>
+<hr>
+<div>
+    <table>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+
+</body>
+<script>
+    function initGoodsTable() {
+        $.ajax({
+            type: "POST",
+            url: "/cloudgoods/findall",
+            contentType: "application/x-www-form-urlencoded;chartset=utf-8",
+            success: function (result) {
+                console.log(result);
+                if (result.errCode === 7000) {
+
+                    var cloudGoodsList = result.data;
+
+                    var $cloudGoodsTable = $("table tbody");
+                    var innerHtml = "<tr>";
+
+                    for (var i = 0; i < cloudGoodsList.length; i++) {
+                        var cloudGoods = cloudGoodsList[i];
+                        var cloudGoodsUrl = cloudGoods.cloudGoodsUrl.replace("E:\\HEARTCLOUD\\", "");
+                        innerHtml += "<td><div><div><img src='/local/"+cloudGoodsUrl+"'></div><div><button type='button' class='btn btn-default'><span>BUY IT</span></button></div></div></td>";
+
+                        if ((i+1) % 5 == 0) {
+                            innerHtml += "</tr><tr>";
+                        }
+                    }
+
+                    innerHtml += "</tr>";
+
+                    $cloudGoodsTable.html(innerHtml);
+                } else {
+                }
+            }
+        });
+    }
+</script>
+</html>

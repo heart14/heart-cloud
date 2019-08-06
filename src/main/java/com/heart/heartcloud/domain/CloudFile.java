@@ -20,6 +20,10 @@ public class CloudFile {
 
     private String cloudFileUrl;
 
+    private String cloudFileSellFlag = "0";
+
+    private String cloudFileSellPrice;
+
     private Integer cloudFileDirId;
 
     private Integer cloudFileUserId;
@@ -88,6 +92,24 @@ public class CloudFile {
         this.cloudFileUrl = cloudFileUrl == null ? null : cloudFileUrl.trim();
     }
 
+    public String getCloudFileSellFlag() {
+        return cloudFileSellFlag;
+    }
+
+    public CloudFile setCloudFileSellFlag(String cloudFileSellFlag) {
+        this.cloudFileSellFlag = cloudFileSellFlag;
+        return this;
+    }
+
+    public String getCloudFileSellPrice() {
+        return cloudFileSellPrice;
+    }
+
+    public CloudFile setCloudFileSellPrice(String cloudFileSellPrice) {
+        this.cloudFileSellPrice = cloudFileSellPrice;
+        return this;
+    }
+
     public Integer getCloudFileDirId() {
         return cloudFileDirId;
     }
@@ -115,6 +137,8 @@ public class CloudFile {
                 ", cloudFileType='" + cloudFileType + '\'' +
                 ", cloudFileStatus='" + cloudFileStatus + '\'' +
                 ", cloudFileUrl='" + cloudFileUrl + '\'' +
+                ", cloudFileSellFlag='" + cloudFileSellFlag + '\'' +
+                ", cloudFileSellPrice='" + cloudFileSellPrice + '\'' +
                 ", cloudFileDirId=" + cloudFileDirId +
                 ", cloudFileUserId=" + cloudFileUserId +
                 '}';

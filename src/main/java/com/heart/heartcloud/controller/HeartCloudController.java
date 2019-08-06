@@ -108,6 +108,25 @@ public class HeartCloudController {
     }
 
     /**
+     * 资源商城页面
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/market", method = RequestMethod.GET)
+    public ModelAndView market(HttpServletRequest request) {
+        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
+        if (currentCloudUser == null) {
+            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+        }
+        logger.info("HEART CLOUD资源商城 :cloudUser => {}", currentCloudUser);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("market");
+        modelAndView.addObject("cloudUser", currentCloudUser);
+        return modelAndView;
+    }
+
+    /**
      * 系统用户登录
      *
      * @param cloudUser
