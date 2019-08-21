@@ -172,4 +172,17 @@ public class HeartCloudController {
         subject.logout();
         return new ModelAndView("login");
     }
+
+    @RequestMapping(value = "/manage", method = RequestMethod.GET)
+    public ModelAndView managePage(HttpServletRequest request) {
+        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
+        if (currentCloudUser == null) {
+            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+        }
+        logger.info("HEART CLOUD MANAGE :cloudUser => {}", currentCloudUser);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("common/index");
+        modelAndView.addObject("cloudUser", currentCloudUser);
+        return modelAndView;
+    }
 }

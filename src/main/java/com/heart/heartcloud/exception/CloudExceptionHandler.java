@@ -30,7 +30,7 @@ public class CloudExceptionHandler {
             return CloudResponseUtils.fail(cloudException.getCode(), cloudException.getMessage());
         } else {
             //如果是系统异常，如空指针，下标越界等
-            logger.error("系统异常 :{}", e);
+            logger.error("系统异常 :{}", e.getMessage(), e);
             return CloudResponseUtils.fail(CloudErrorCodeEnums.SystemException.getCode(), CloudErrorCodeEnums.SystemException.getMsg());
         }
     }

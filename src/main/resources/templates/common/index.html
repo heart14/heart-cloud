@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="~{common/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>HEART CLOUD MANAGE</title>
+</head>
+<body>
+<div th:include="~{common/navbar::navbar}" style="display: inline-block"></div>
+<div style="display: inline-block">
+    <div th:include="~{common/topbar::topbar}"></div>
+    <div>
+        <span>正文内容</span>
+    </div>
+    <div th:include="~{common/footbar::footbar}"></div>
+</div>
+</body>
+</html>
