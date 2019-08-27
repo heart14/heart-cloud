@@ -39,6 +39,11 @@ public enum CloudErrorCodeEnums {
     LoginExpiredException(7005, "用户登录已过期"),
 
     /**
+     * 管理员用户登录，ErrorCode :7006
+     */
+    ManagerLoginSuccess(7006, "管理员用户登录"),
+
+    /**
      * 注册失败，用户已存在，ErrorCode :7011
      */
     DuplicateUserException(7011, "注册失败，用户已存在"),

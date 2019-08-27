@@ -23,6 +23,14 @@ public class CloudResponseUtils {
         return cloudResponse;
     }
 
+    public static CloudResponse<Object> success(Integer code, String msg, Object object) {
+        CloudResponse<Object> cloudResponse = new CloudResponse<>();
+        cloudResponse.setErrCode(code);
+        cloudResponse.setErrMessage(msg);
+        cloudResponse.setData(object);
+        return cloudResponse;
+    }
+
     public static CloudResponse fail(Integer code, String msg) {
         return new CloudResponse(code, msg);
     }

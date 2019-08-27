@@ -148,6 +148,30 @@ public class HeartCloudController {
         return CloudResponseUtils.success();
     }
 
+    /**
+     * 系统管理员登录
+     *
+     * @param cloudUser
+     */
+    @RequestMapping(value = "/login/m", method = RequestMethod.POST)
+    @ResponseBody
+    public CloudResponse mUserLogin(@RequestBody CloudUser cloudUser, HttpServletRequest request) {
+
+        logger.info("管理员登录 :cloudUser => {}", cloudUser);
+
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken token = new UsernamePasswordToken(cloudUser.getUserName(), cloudUser.getUserPass());
+
+        //shiro进行登录验证
+        subject.login(token);
+        subject.checkRole("Manager");
+
+        HttpSession session = request.getSession();
+        session.setAttribute("CurrentCloudUser", cloudUserService.findCloudUserByUserName(cloudUser.getUserName()));
+
+        return CloudResponseUtils.success(CloudErrorCodeEnums.ManagerLoginSuccess.getCode(), CloudErrorCodeEnums.ManagerLoginSuccess.getMsg(), null);
+    }
+
     @RequestMapping(value = "/reg", method = RequestMethod.POST)
     @ResponseBody
     public CloudResponse userReg(@RequestBody CloudUser cloudUser) {
@@ -173,6 +197,12 @@ public class HeartCloudController {
         return new ModelAndView("login");
     }
 
+    /**
+     * 管理员系统页面
+     *
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/manage", method = RequestMethod.GET)
     public ModelAndView managePage(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");

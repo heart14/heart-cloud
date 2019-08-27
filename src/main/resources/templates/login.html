@@ -57,7 +57,50 @@
                 }
             });
         }
+
+        function managerLogin() {
+            var userName = "heart777";
+            var userPass = "123456";
+
+            console.log("manager loginName:" + userName + "/loginPass:" + userPass);
+            $.ajax({
+                "type": "post",
+                "url": "/login/m",
+                "data": "{\"userName\":\"" + userName + "\",\"userPass\":\"" + userPass + "\"}",
+                "contentType": "application/json;chartset=utf-8",
+                "success": function (result) {
+                    console.log(result);
+                    if (result.errCode === 7006) {
+                        window.location.href = "http://127.0.0.1:8081/manage";
+                        // window.location.href = "http://192.168.0.107:8081/index";
+                    } else {
+                        alert("登录失败，请重试。");
+                        location.reload();
+                    }
+                }
+            });
+        }
+
+        function changeLogin() {
+            var method = $("#changeHref").data('value');
+            console.log(method);
+            $("#changeHref").data('value', $("#loginHref").attr('href'));
+
+            if ($("#changeHref").text() === '用户登录') {
+                $("#changeHref").text('管理员登录');
+            } else {
+                $("#changeHref").text('用户登录');
+            }
+            $("#loginHref").attr('href', method);
+        }
     </script>
+    <style>
+        .change-login {
+            position: fixed;
+            right: 15px;
+            bottom: 15px;
+        }
+    </style>
 </head>
 <body>
 <div class="container demo-1">
@@ -74,11 +117,14 @@
                         <span class="us_uer"></span>
                         <input id="logpass" name="password" class="text" style="color: #FFFFFF !important; position:absolute; z-index:100;" value="" type="password" placeholder="请输入密码" autocomplete="off">
                     </div>
-                    <div class="mb2"><a class="act-but submit" href="javascript: login();" style="color: #FFFFFF">登录</a>
+                    <div class="mb2"><a id="loginHref" class="act-but submit" href="javascript: login();" style="color: #FFFFFF">登录</a>
                     </div>
-                    <div class="mb2"><a class="act-but submit" href="javascript: reg();" style="color: #FFFFFF">注册</a>
+                    <div class="mb2"><a id="regHref" class="act-but submit" href="javascript: reg();" style="color: #FFFFFF">注册</a>
                     </div>
                 </form>
+            </div>
+            <div class="change-login">
+                <a id="changeHref" href="javascript:changeLogin()" data-value="javascript:managerLogin();">管理员登录</a>
             </div>
         </div>
     </div>

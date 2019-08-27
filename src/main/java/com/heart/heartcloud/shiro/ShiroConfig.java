@@ -57,6 +57,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/js/**", "anon");
         //用户登录的请求接口不需要身份验证
         filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/login/m", "anon");
         //用户注册的请求接口不需要身份验证
         filterChainDefinitionMap.put("/reg", "anon");
         //用户登出的请求接口不需要身份验证
