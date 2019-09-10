@@ -7,6 +7,7 @@ import com.heart.heartcloud.domain.CloudFile;
 import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.entity.CloudDirFiles;
 import com.heart.heartcloud.exception.CloudException;
+import com.heart.heartcloud.redis.RedisUtils;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudDiskService;
@@ -67,14 +68,6 @@ public class CloudDirController {
         logger.info("parentPath :{}", parentDirPath);
         File file = new File(CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString());
         cloudDiskService.createDiskDir(file);
-
-        //Redis测试
-        String key1 = "heart";
-        String key2 = "cloud";
-        String value = (String) redisTemplate.opsForValue().get(key1);
-        List<CloudUser> userList = (List<CloudUser>) redisTemplate.opsForValue().get(key2);
-        System.out.println("Redis :Key = " + key1 + ", Value = " + value);
-        System.out.println("Redis :Key = " + key2 + ", Value = " + userList);
 
         return CloudResponseUtils.success();
     }

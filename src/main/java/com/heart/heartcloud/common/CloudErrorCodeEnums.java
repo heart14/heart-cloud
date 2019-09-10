@@ -44,6 +44,11 @@ public enum CloudErrorCodeEnums {
     ManagerLoginSuccess(7006, "管理员用户登录"),
 
     /**
+     * 图床用户登录，ErrorCode :7007
+     */
+    ImageBedLoginSuccess(7007, "图床用户登录"),
+
+    /**
      * 注册失败，用户已存在，ErrorCode :7011
      */
     DuplicateUserException(7011, "注册失败，用户已存在"),
