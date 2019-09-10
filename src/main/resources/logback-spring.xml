@@ -5,9 +5,11 @@
     <!--控制台打印日志-->
     <appender name="CONSOLE-LOG" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{yyyy-MM-dd' 'HH:mm:ss.sss}  %green(%-5p) %magenta(${PID:- }) --- [%15t] %cyan(%-48C{48}%4L) :%m%n</pattern>
+            <pattern>
+                %d{yyyy-MM-dd' 'HH:mm:ss.sss} %green(%-5p) %magenta(${PID:- }) --- [%15t] %cyan(%-48C{48}%4L) :%m%n
+            </pattern>
         </layout>
-    </appender>Y
+    </appender>
 
     <!--获取比info级别高(包括info级别)但除error级别的日志-->
     <appender name="INFO-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -18,8 +20,7 @@
         </filter>
 
         <encoder>
-<!--            <pattern>%d{yyyy-MM-dd' 'HH:mm:ss.sss} [%t] %-5p [%C %L] %m%n</pattern>-->
-            <pattern>%d{yyyy-MM-dd' 'HH:mm:ss.sss}  %-5p ${PID:- } --- [%15t] %-48C%4L :%m%n</pattern>
+            <pattern>%d{yyyy-MM-dd' 'HH:mm:ss.sss} %-5p ${PID:- } --- [%15t] %-48C%4L :%m%n</pattern>
         </encoder>
 
         <!--滚动策略-->
@@ -37,7 +38,7 @@
         </filter>
 
         <encoder>
-            <pattern>%d{yyyy-MM-dd' 'HH:mm:ss.sss}  %-5p ${PID:- } --- [%15t] %-48C%4L :%m%n</pattern>
+            <pattern>%d{yyyy-MM-dd' 'HH:mm:ss.sss} %-5p ${PID:- } --- [%15t] %-48C%4L :%m%n</pattern>
         </encoder>
 
         <!--滚动策略-->
@@ -68,8 +69,8 @@
         <appender-ref ref="ERROR-LOG"/>
     </appender>
 
+    <!--Mybatis SQL语句打印-->
     <logger name="com.heart.heartcloud.dao" level="DEBUG" additivity="false">
-        <!--        <appender-ref ref="file-debug"/>-->
         <appender-ref ref="CONSOLE-LOG"/>
     </logger>
 
