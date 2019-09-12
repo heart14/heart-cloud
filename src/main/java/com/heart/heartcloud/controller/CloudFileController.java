@@ -14,11 +14,14 @@ import com.heart.heartcloud.service.CloudFileService;
 import com.heart.heartcloud.service.CloudGoodsService;
 import com.heart.heartcloud.utils.CloudResponseUtils;
 import com.heart.heartcloud.utils.CloudStringUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +36,8 @@ import java.util.List;
  */
 @RequestMapping("/cloudfile")
 @RestController
+@EnableSwagger2
+@Api(tags = "网盘文件相关接口")
 public class CloudFileController {
 
     private static final Logger logger = LoggerFactory.getLogger(CloudFileController.class);
@@ -58,6 +63,7 @@ public class CloudFileController {
      * @return
      * @throws IOException
      */
+    @ApiOperation(value = "文件上传接口", response = CloudResponse.class)
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public CloudResponse uploadCloudFile(@RequestParam("multipartFiles") MultipartFile[] multipartFiles, @RequestParam("cloudDirId") Integer cloudDirId, HttpServletRequest request) throws IOException {
         CloudUser cloudUser = getCloudUserFromSession(request);
@@ -114,6 +120,7 @@ public class CloudFileController {
         return CloudResponseUtils.success();
     }
 
+    @ApiOperation(value = "文件下载接口")
     @RequestMapping(value = "/download", method = RequestMethod.POST)
     public void downloadFile(@RequestParam Integer cloudFileId, HttpServletRequest request, HttpServletResponse response) throws Exception {
         CloudUser cloudUser = getCloudUserFromSession(request);

@@ -7,23 +7,23 @@ import com.heart.heartcloud.domain.CloudFile;
 import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.entity.CloudDirFiles;
 import com.heart.heartcloud.exception.CloudException;
-import com.heart.heartcloud.redis.RedisUtils;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudDiskService;
 import com.heart.heartcloud.service.CloudFileService;
 import com.heart.heartcloud.utils.CloudResponseUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +34,7 @@ import java.util.List;
  */
 @RequestMapping("/clouddir")
 @RestController
+@Api(tags = "文件夹相关接口")
 public class CloudDirController {
 
     private static final Logger logger = LoggerFactory.getLogger(CloudDirController.class);
@@ -56,6 +57,7 @@ public class CloudDirController {
      * @param cloudDir
      * @return
      */
+    @ApiOperation(value = "新增文件夹")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public CloudResponse saveCloudDir(HttpServletRequest request, @RequestBody CloudDir cloudDir) {
         CloudUser cloudUser = getCloudUserFromSession(request);
@@ -78,6 +80,7 @@ public class CloudDirController {
      * @param cloudDirId
      * @return
      */
+    @ApiOperation(value = "删除文件夹(根据文件夹主键)")
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
     public CloudResponse removeCloudDir(HttpServletRequest request, Integer cloudDirId) {
         CloudUser cloudUser = getCloudUserFromSession(request);
@@ -88,7 +91,7 @@ public class CloudDirController {
         long cloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
         Integer cloudDirParentId = cloudDirByPrimaryKey.getCloudDirParentId();
 
-        if (cloudDirParentId!=0) {
+        if (cloudDirParentId != 0) {
             CloudDir parentDir = cloudDirService.findCloudDirByPrimaryKey(cloudDirParentId);
             long parentDirSize = Long.parseLong(parentDir.getCloudDirSize());
             parentDir.setCloudDirSize(String.valueOf(parentDirSize - cloudDirSize));
@@ -112,6 +115,7 @@ public class CloudDirController {
      * @param cloudUserId
      * @return
      */
+    @ApiOperation(value = "删除文件夹（根据用户ID）")
     @RequestMapping(value = "/removeAll", method = RequestMethod.POST)
     public CloudResponse removeCloudDirs(Integer cloudUserId) {
         return null;
@@ -123,6 +127,7 @@ public class CloudDirController {
      * @param cloudDir
      * @return
      */
+    @ApiOperation(value = "修改文件夹")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public CloudResponse editCloudDir(@RequestBody CloudDir cloudDir, HttpServletRequest request) {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
@@ -158,6 +163,7 @@ public class CloudDirController {
      * @param cloudDirId
      * @return
      */
+    @ApiIgnore
     @RequestMapping(value = "/find", method = RequestMethod.POST)
     public CloudResponse findCloudDir(Integer cloudDirId) {
         return null;
@@ -169,6 +175,7 @@ public class CloudDirController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "查询根文件夹（根据用户ID）")
     @RequestMapping(value = "/findall", method = RequestMethod.POST)
     public CloudResponse findCloudDirs(HttpServletRequest request) {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
@@ -185,6 +192,7 @@ public class CloudDirController {
      * @param cloudDirId
      * @return
      */
+    @ApiOperation(value = "查询子文件夹和文件（根据文件夹ID）")
     @RequestMapping(value = "/findchild", method = RequestMethod.POST)
     public CloudResponse findChildDirsAndFiles(HttpServletRequest request, Integer cloudDirId) {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
@@ -236,6 +244,56 @@ public class CloudDirController {
             }
         } else {
             return stringBuilder;
+        }
+    }
+
+    @GetMapping("/redis/{type}")
+    public CloudResponse redisTest(@PathVariable("type") int type) {
+
+        switch (type) {
+            //String
+            case 1:
+                logger.info("redis String test");
+                String stringkey1 = "s:k1:alphabet";
+                String stringValue1 = "english alphabet";
+                String stringkey2 = "s:k2:number";
+                String stringValue2 = "0123456789";
+                String stringkey3 = "s:k3:chinese";
+                String stringValue3 = "我是大哥大";
+                String stringkey4 = "s:k4:chinese value";
+                String stringValue4 = "中文测试值 ";
+                String stringkey5 = "s:k5:symbol";
+                String stringValue5 = "！@#￥%……&*（）——+!@#$%^&*()_+";
+                redisTemplate.opsForValue().set(stringkey1, stringValue1);
+                redisTemplate.opsForValue().set(stringkey2, stringValue2);
+                redisTemplate.opsForValue().set(stringkey3, stringValue3);
+                redisTemplate.opsForValue().set(stringkey4, stringValue4);
+                redisTemplate.opsForValue().set(stringkey5, stringValue5);
+
+                return CloudResponseUtils.success();
+            //hash
+            case 2:
+                logger.info("redis hash test");
+
+                return CloudResponseUtils.success();
+            //list
+            case 3:
+                logger.info("redis list test");
+
+                return CloudResponseUtils.success();
+            //set
+            case 4:
+                logger.info("redis set test");
+
+
+                return CloudResponseUtils.success();
+            //zset
+            case 5:
+                logger.info("redis zset test");
+
+                return CloudResponseUtils.success();
+            default:
+                return CloudResponseUtils.fail(CloudErrorCodeEnums.UnknownException.getCode(), CloudErrorCodeEnums.UnknownException.getMsg());
         }
     }
 }
