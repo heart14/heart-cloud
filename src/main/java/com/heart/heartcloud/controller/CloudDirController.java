@@ -17,15 +17,14 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Description:
@@ -254,26 +253,70 @@ public class CloudDirController {
             //String
             case 1:
                 logger.info("redis String test");
-                String stringkey1 = "s:k1:alphabet";
+
+                String stringkey1 = "s:1:alphabet";
                 String stringValue1 = "english alphabet";
-                String stringkey2 = "s:k2:number";
+                String stringkey2 = "s:2:number";
                 String stringValue2 = "0123456789";
-                String stringkey3 = "s:k3:chinese";
+                String stringkey3 = "s:3:chinese";
                 String stringValue3 = "我是大哥大";
-                String stringkey4 = "s:k4:chinese value";
+                String stringkey4 = "s:4:chineseValue";
                 String stringValue4 = "中文测试值 ";
-                String stringkey5 = "s:k5:symbol";
+                String stringkey5 = "s:5:symbol";
                 String stringValue5 = "！@#￥%……&*（）——+!@#$%^&*()_+";
+
                 redisTemplate.opsForValue().set(stringkey1, stringValue1);
                 redisTemplate.opsForValue().set(stringkey2, stringValue2);
                 redisTemplate.opsForValue().set(stringkey3, stringValue3);
                 redisTemplate.opsForValue().set(stringkey4, stringValue4);
                 redisTemplate.opsForValue().set(stringkey5, stringValue5);
 
+                logger.info("Query from Redis : key = {}, value = {}", stringkey1, redisTemplate.opsForValue().get(stringkey1));
+                logger.info("Query from Redis : key = {}, value = {}", stringkey2, redisTemplate.opsForValue().get(stringkey2));
+                logger.info("Query from Redis : key = {}, value = {}", stringkey3, redisTemplate.opsForValue().get(stringkey3));
+                logger.info("Query from Redis : key = {}, value = {}", stringkey4, redisTemplate.opsForValue().get(stringkey4));
+                logger.info("Query from Redis : key = {}, value = {}", stringkey5, redisTemplate.opsForValue().get(stringkey5));
+
+                logger.info("Delete from Redis : key = {}, result = {}", stringkey1, redisTemplate.delete(stringkey1));
+                logger.info("Delete from Redis : key = {}, result = {}", stringkey2, redisTemplate.delete(stringkey2));
+                logger.info("Delete from Redis : key = {}, result = {}", stringkey3, redisTemplate.delete(stringkey3));
+                logger.info("Delete from Redis : key = {}, result = {}", stringkey4, redisTemplate.delete(stringkey4));
+                logger.info("Delete from Redis : key = {}, result = {}", stringkey5, redisTemplate.delete(stringkey5));
+
+                logger.info("Query from Redis after delete : key = {}, value = {}", stringkey1, redisTemplate.opsForValue().get(stringkey1));
+                logger.info("Query from Redis after delete : key = {}, value = {}", stringkey2, redisTemplate.opsForValue().get(stringkey2));
+                logger.info("Query from Redis after delete : key = {}, value = {}", stringkey3, redisTemplate.opsForValue().get(stringkey3));
+                logger.info("Query from Redis after delete : key = {}, value = {}", stringkey4, redisTemplate.opsForValue().get(stringkey4));
+                logger.info("Query from Redis after delete : key = {}, value = {}", stringkey5, redisTemplate.opsForValue().get(stringkey5));
+
                 return CloudResponseUtils.success();
             //hash
             case 2:
                 logger.info("redis hash test");
+
+                HashOperations hashOperations = redisTemplate.opsForHash();
+
+                hashOperations.put("h:1:cloudUser", "userId", 1);
+                hashOperations.put("h:1:cloudUser", "userName", "liwenfei");
+                hashOperations.put("h:1:cloudUser", "userPass", "heart7");
+
+                Map<String, String> hMap = new HashMap<>();
+                hMap.put("userId", "1");
+                hMap.put("userName", "nini");
+                hMap.put("userPass", "caonidebi");
+                hashOperations.putAll("h:2:cloudUser", hMap);
+
+                logger.info("Redis hasKey(h:1:cloudUser)? {}",hashOperations.hasKey("h:1:cloudUser", "userName"));
+                logger.info("Redis hasKey(h:2:cloudUser)? {}",hashOperations.hasKey("h:2:cloudUser", "userName"));
+
+
+                logger.info("Query from Redis Hash : key = h:1:cloudUser, field = userId, value = {}", hashOperations.get("h:1:cloudUser", "userId"));
+                logger.info("Query from Redis Hash : key = h:1:cloudUser, field = userName, value = {}", hashOperations.get("h:1:cloudUser", "userName"));
+                logger.info("Query from Redis Hash : key = h:1:cloudUser, field = userPass, value = {}", hashOperations.get("h:1:cloudUser", "userPass"));
+
+                logger.info("Query from Redis Hash : key = h:2:cloudUser, field = userId, value = {}", hashOperations.get("h:2:cloudUser", "userId"));
+                logger.info("Query from Redis Hash : key = h:2:cloudUser, field = userName, value = {}", hashOperations.get("h:2:cloudUser", "userName"));
+                logger.info("Query from Redis Hash : key = h:2:cloudUser, field = userPass, value = {}", hashOperations.get("h:2:cloudUser", "userPass"));
 
                 return CloudResponseUtils.success();
             //list
