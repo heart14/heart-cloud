@@ -4,9 +4,8 @@ import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.utils.CloudResponseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * @ClassName:CloudExceptionHandler
@@ -14,24 +13,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @Author: Heart
  * @Date: 2019/7/12 13:05
  */
-@ControllerAdvice
+@RestControllerAdvice
 public class CloudExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(CloudExceptionHandler.class);
 
     private static final String DEFAULT_ERROR_VIEW = "error";
 
+    @ExceptionHandler({CloudException.class})
+    public Object cloudExceptionHandler(CloudException e) {
+        //自定异常
+        return CloudResponseUtils.fail(e.getCode(), e.getMessage());
+    }
+
     @ExceptionHandler({Exception.class})
-    @ResponseBody
     public Object exceptionHandler(Exception e) {
-        if (e instanceof CloudException) {
-            //自定异常
-            CloudException cloudException = (CloudException) e;
-            return CloudResponseUtils.fail(cloudException.getCode(), cloudException.getMessage());
-        } else {
-            //如果是系统异常，如空指针，下标越界等
-            logger.error("系统异常 :{}", e.getMessage(), e);
-            return CloudResponseUtils.fail(CloudErrorCodeEnums.SystemException.getCode(), CloudErrorCodeEnums.SystemException.getMsg());
-        }
+        //如果是系统异常，如空指针，下标越界等
+        logger.error("系统异常 :{}", e.getMessage(), e);
+        return CloudResponseUtils.fail(CloudErrorCodeEnums.SystemException.getCode(), CloudErrorCodeEnums.SystemException.getMsg());
     }
 }
