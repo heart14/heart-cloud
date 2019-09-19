@@ -25,19 +25,19 @@
         update_time
     </sql>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <select id="selectCloudQuartzJobByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_cloud_quartz_jobs
         where job_id = #{jobId,jdbcType=VARCHAR}
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <delete id="deleteCloudQuartzJobByPrimaryKey" parameterType="java.lang.String">
         delete from t_cloud_quartz_jobs
         where job_id = #{jobId,jdbcType=VARCHAR}
     </delete>
 
-    <insert id="insert" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
+    <insert id="insertCloudQuartzJob" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
         insert into t_cloud_quartz_jobs (job_id, job_name, job_group_name,
             trigger_name, trigger_group_name, job_params,
             execute_time, cron_expression, concurrent,
@@ -49,7 +49,7 @@
             #{jobStatus,jdbcType=INTEGER}, #{beanName,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR},
             #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
     </insert>
-    <insert id="insertSelective" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
+    <insert id="insertCloudQuartzJobSelective" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
         insert into t_cloud_quartz_jobs
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="jobId != null">
@@ -147,7 +147,7 @@
         </trim>
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
+    <update id="updateCloudQuartzJobByPrimaryKeySelective" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
         update t_cloud_quartz_jobs
         <set>
             <if test="jobName != null">
@@ -196,7 +196,7 @@
         where job_id = #{jobId,jdbcType=VARCHAR}
     </update>
 
-    <update id="updateByPrimaryKey" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
+    <update id="updateCloudQuartzJobByPrimaryKey" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
         update t_cloud_quartz_jobs
         set job_name = #{jobName,jdbcType=VARCHAR},
             job_group_name = #{jobGroupName,jdbcType=VARCHAR},

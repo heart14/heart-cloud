@@ -59,6 +59,11 @@ public enum CloudErrorCodeEnums {
     ParamException(7012, "参数异常"),
 
     /**
+     * 定时任务异常，SchedulerException :7014
+     */
+    SchedulerException(7014, "定时任务异常"),
+
+    /**
      * 文件不存在，ErrorCode :7013
      */
     UnknownFileException(7013, "文件不存在");

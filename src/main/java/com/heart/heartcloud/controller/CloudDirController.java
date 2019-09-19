@@ -6,12 +6,18 @@ import com.heart.heartcloud.domain.CloudDir;
 import com.heart.heartcloud.domain.CloudFile;
 import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.entity.CloudDirFiles;
+import com.heart.heartcloud.entity.CloudQuartzJob;
 import com.heart.heartcloud.exception.CloudException;
+import com.heart.heartcloud.quartz.QuartzJobService;
+import com.heart.heartcloud.quartz.job.QuartzTestJob;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudDiskService;
 import com.heart.heartcloud.service.CloudFileService;
+import com.heart.heartcloud.service.CloudQuartzJobService;
+import com.heart.heartcloud.utils.CloudDateUtils;
 import com.heart.heartcloud.utils.CloudResponseUtils;
+import com.heart.heartcloud.utils.CloudStringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -40,6 +46,12 @@ public class CloudDirController {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private QuartzJobService quartzJobService;
+
+    @Autowired
+    private CloudQuartzJobService cloudQuartzJobService;
 
     @Autowired
     private CloudDirService cloudDirService;
@@ -306,8 +318,8 @@ public class CloudDirController {
                 hMap.put("userPass", "caonidebi");
                 hashOperations.putAll("h:2:cloudUser", hMap);
 
-                logger.info("Redis hasKey(h:1:cloudUser)? {}",hashOperations.hasKey("h:1:cloudUser", "userName"));
-                logger.info("Redis hasKey(h:2:cloudUser)? {}",hashOperations.hasKey("h:2:cloudUser", "userName"));
+                logger.info("Redis hasKey(h:1:cloudUser)? {}", hashOperations.hasKey("h:1:cloudUser", "userName"));
+                logger.info("Redis hasKey(h:2:cloudUser)? {}", hashOperations.hasKey("h:2:cloudUser", "userName"));
 
 
                 logger.info("Query from Redis Hash : key = h:1:cloudUser, field = userId, value = {}", hashOperations.get("h:1:cloudUser", "userId"));
@@ -338,5 +350,49 @@ public class CloudDirController {
             default:
                 return CloudResponseUtils.fail(CloudErrorCodeEnums.UnknownException.getCode(), CloudErrorCodeEnums.UnknownException.getMsg());
         }
+    }
+
+    @GetMapping("/quartz/add/{id}")
+    public String quartzTest(@PathVariable("id") int id) {
+
+        CloudQuartzJob cloudQuartzJob = new CloudQuartzJob();
+        cloudQuartzJob.setJobId(CloudStringUtils.getShotUuid() + id);
+
+        cloudQuartzJob.setJobName("cloudQuartzJob:name:" + id);
+        cloudQuartzJob.setJobGroupName("cloudQuartzJob:group:name:" + id);
+        cloudQuartzJob.setTriggerName("cloudQuartzJob:trigger:name:" + id);
+        cloudQuartzJob.setTriggerGroupName("cloudQuartzJob:trigger:group:name:" + id);
+        cloudQuartzJob.setJob(QuartzTestJob.class);
+        cloudQuartzJob.setBeanName(QuartzTestJob.class.getName());
+        cloudQuartzJob.setMethodName("execute");
+        if (id < 10) {
+            //测试在指定时间执行 2分钟后执行一次
+            cloudQuartzJob.setExecuteTime(CloudDateUtils.addMinutes(new Date(), 2).getTime());
+        } else {
+            //测试按cron表达式执行 立即开始，每2秒执行一次
+            cloudQuartzJob.setCronExpression("*/2 * * * * ?");
+        }
+        cloudQuartzJob.setDescription("测试定时任务" + id);
+        cloudQuartzJob.setJobStatus(0);
+        cloudQuartzJob.setCreateTime(new Date());
+
+        List<String> paramList = new ArrayList<>();
+        paramList.add(cloudQuartzJob.getJobId());
+        paramList.add("heart" + id);
+        cloudQuartzJob.setJobParamsList(paramList);
+
+        cloudQuartzJobService.saveCloudQuartzJobSelective(cloudQuartzJob);
+        quartzJobService.addJob(cloudQuartzJob);
+
+        return "ok";
+    }
+
+    @GetMapping("/quartz/remove/{jobId}")
+    public String quartzTestRemove(@PathVariable("jobId") String jobId) {
+
+        CloudQuartzJob cloudQuartzJobByPrimaryKey = cloudQuartzJobService.findCloudQuartzJobByPrimaryKey(jobId);
+        quartzJobService.removeJob(cloudQuartzJobByPrimaryKey);
+
+        return "ok";
     }
 }

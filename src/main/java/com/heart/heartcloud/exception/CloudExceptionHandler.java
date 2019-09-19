@@ -23,6 +23,14 @@ public class CloudExceptionHandler {
     @ExceptionHandler({CloudException.class})
     public Object cloudExceptionHandler(CloudException e) {
         //自定异常
+        logger.error("自定义异常 :{}", e.getMessage(), e);
+        return CloudResponseUtils.fail(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler({CloudSchedulerException.class})
+    public Object cloudSchedulerExceptionHandler(CloudSchedulerException e) {
+        //Quartz异常
+        logger.error("Quartz Scheduler异常 :{}", e.getMessage(), e);
         return CloudResponseUtils.fail(e.getCode(), e.getMessage());
     }
 
