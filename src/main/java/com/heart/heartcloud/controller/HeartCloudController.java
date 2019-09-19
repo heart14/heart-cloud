@@ -6,6 +6,8 @@ import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudUserService;
 import com.heart.heartcloud.utils.CloudResponseUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -30,6 +33,7 @@ import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping
+@Api(tags = "系统相关接口")
 public class HeartCloudController {
 
     private static final Logger logger = LoggerFactory.getLogger(HeartCloudController.class);
@@ -42,6 +46,7 @@ public class HeartCloudController {
      *
      * @return
      */
+    @ApiIgnore
     @RequestMapping(value = "/loginpage", method = RequestMethod.GET)
     public ModelAndView loginPage() {
         logger.info("系统登陆页面");
@@ -53,6 +58,7 @@ public class HeartCloudController {
      *
      * @return
      */
+    @ApiIgnore
     @RequestMapping(value = "/regpage", method = RequestMethod.GET)
     public ModelAndView regPage() {
 
@@ -64,6 +70,7 @@ public class HeartCloudController {
      *
      * @return
      */
+    @ApiIgnore
     @RequestMapping(value = "/logoutpage", method = RequestMethod.GET)
     public ModelAndView logoutPage() {
 
@@ -75,6 +82,7 @@ public class HeartCloudController {
      *
      * @return
      */
+    @ApiIgnore
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public ModelAndView index(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
@@ -94,6 +102,7 @@ public class HeartCloudController {
      * @param request
      * @return
      */
+    @ApiIgnore
     @RequestMapping(value = "/vip", method = RequestMethod.GET)
     public ModelAndView vip(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
@@ -113,6 +122,7 @@ public class HeartCloudController {
      * @param request
      * @return
      */
+    @ApiIgnore
     @RequestMapping(value = "/market", method = RequestMethod.GET)
     public ModelAndView market(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
@@ -131,6 +141,7 @@ public class HeartCloudController {
      *
      * @param cloudUser
      */
+    @ApiOperation(value = "系统用户登录")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public CloudResponse userLogin(@RequestBody CloudUser cloudUser, HttpServletRequest request) {
@@ -153,6 +164,7 @@ public class HeartCloudController {
      *
      * @param cloudUser
      */
+    @ApiOperation(value = "系统管理员登录")
     @RequestMapping(value = "/login/m", method = RequestMethod.POST)
     @ResponseBody
     public CloudResponse mUserLogin(@RequestBody CloudUser cloudUser, HttpServletRequest request) {
@@ -172,8 +184,14 @@ public class HeartCloudController {
         return CloudResponseUtils.success(CloudErrorCodeEnums.ManagerLoginSuccess.getCode(), CloudErrorCodeEnums.ManagerLoginSuccess.getMsg(), null);
     }
 
+    /**
+     * 用户注册
+     * @param cloudUser
+     * @return
+     */
     @RequestMapping(value = "/reg", method = RequestMethod.POST)
     @ResponseBody
+    @ApiOperation(value = "用户注册")
     public CloudResponse userReg(@RequestBody CloudUser cloudUser) {
 
         logger.info("用户注册 :cloudUser => {}", cloudUser);
@@ -187,6 +205,7 @@ public class HeartCloudController {
      * @param request
      * @return
      */
+    @ApiIgnore
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public ModelAndView userLogout(HttpServletRequest request) {
 
@@ -203,6 +222,7 @@ public class HeartCloudController {
      * @param request
      * @return
      */
+    @ApiIgnore
     @RequestMapping(value = "/manage", method = RequestMethod.GET)
     public ModelAndView managePage(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");

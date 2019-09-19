@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RequestMapping("/clouddir")
 @RestController
-@Api(tags = "文件夹相关接口")
+@Api(tags = "文件夹操作相关接口")
 public class CloudDirController {
 
     private static final Logger logger = LoggerFactory.getLogger(CloudDirController.class);
@@ -259,6 +259,7 @@ public class CloudDirController {
         }
     }
 
+    @ApiOperation(value = "redis 测试")
     @GetMapping("/redis/{type}")
     public CloudResponse redisTest(@PathVariable("type") int type) {
 
@@ -353,6 +354,7 @@ public class CloudDirController {
         }
     }
 
+    @ApiOperation(value = "Quartz 新增定时任务测试")
     @GetMapping("/quartz/add/{id}")
     public String quartzTest(@PathVariable("id") int id) {
 
@@ -392,6 +394,7 @@ public class CloudDirController {
         return "ok";
     }
 
+    @ApiOperation(value = "Quartz 移除任务测试")
     @GetMapping("/quartz/remove/{jobId}")
     public String quartzTestRemove(@PathVariable("jobId") String jobId) {
 

@@ -36,7 +36,6 @@ import java.util.List;
  */
 @RequestMapping("/cloudfile")
 @RestController
-@EnableSwagger2
 @Api(tags = "网盘文件相关接口")
 public class CloudFileController {
 
@@ -165,6 +164,7 @@ public class CloudFileController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "删除文件（根据文件id）")
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
     public CloudResponse removeFile(@RequestParam Integer cloudFileId, HttpServletRequest request) {
         CloudUser cloudUser = getCloudUserFromSession(request);
@@ -204,6 +204,7 @@ public class CloudFileController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "更新文件信息")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public CloudResponse editCloudFile(@RequestBody CloudFile cloudFile, HttpServletRequest request) {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
@@ -237,6 +238,7 @@ public class CloudFileController {
      * @param searchFileName
      * @return
      */
+    @ApiOperation(value = "查询文件（根据文件名，模糊查询）")
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public CloudResponse searchFileByName(@RequestParam("searchFileName") String searchFileName, HttpServletRequest request) {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
@@ -255,6 +257,7 @@ public class CloudFileController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "上架出售文件")
     @RequestMapping(value = "/sell", method = RequestMethod.POST)
     public CloudResponse sellFile(@RequestParam("cloudFileId") Integer cloudFileId, @RequestParam("cloudFilePrice") String cloudFilePrice, HttpServletRequest request) {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
@@ -289,6 +292,7 @@ public class CloudFileController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "下架文件")
     @RequestMapping(value = "/unsell", method = RequestMethod.POST)
     public CloudResponse unSellFile(@RequestParam("cloudFileId") Integer cloudFileId, HttpServletRequest request) {
         CloudUser currentCloudUser = getCloudUserFromSession(request);

@@ -8,6 +8,8 @@ import com.heart.heartcloud.alipay.AlipayConfig;
 import com.heart.heartcloud.request.alipay.AlipayRequest;
 import com.heart.heartcloud.utils.CloudDoubleUtils;
 import com.heart.heartcloud.utils.CloudStringUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -27,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @RequestMapping("/cloudpay")
+@Api(tags = "支付宝支付相关接口")
 public class CloudPaymentController {
 
     private static final Logger logger = LoggerFactory.getLogger(CloudPaymentController.class);
@@ -41,6 +44,7 @@ public class CloudPaymentController {
      * @param response
      * @throws Exception
      */
+    @ApiOperation(value = "支付宝统一收单下单并支付页面接口")
     @RequestMapping(value = "/pay", method = RequestMethod.POST)
     public void alipay(@RequestParam("totalAmount") String totalAmount, @RequestParam("subject") String subject, @RequestParam("body") String body, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -74,6 +78,7 @@ public class CloudPaymentController {
      *
      * @param request
      */
+    @ApiOperation(value = "支付宝回调接口")
     @RequestMapping(value = "/return", method = RequestMethod.GET)
     public void alipayReturn(HttpServletRequest request) {
         logger.info("alipay return :{}", request.getParameterMap());
@@ -84,6 +89,7 @@ public class CloudPaymentController {
      *
      * @param request
      */
+    @ApiOperation(value = "支付宝通知接口")
     @RequestMapping(value = "/notify", method = RequestMethod.GET)
     public void alipayNotify(HttpServletRequest request) {
         logger.info("alipay notify :{}", request.getParameterMap());
