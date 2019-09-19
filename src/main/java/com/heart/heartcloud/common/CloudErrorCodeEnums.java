@@ -8,6 +8,12 @@ package com.heart.heartcloud.common;
  */
 public enum CloudErrorCodeEnums {
 
+
+    /**
+     * TODO 待重新整理该枚举类
+     */
+
+
     /**
      * 成功，ErrorCode :7000
      */
@@ -62,6 +68,11 @@ public enum CloudErrorCodeEnums {
      * 定时任务异常，SchedulerException :7014
      */
     SchedulerException(7014, "定时任务异常"),
+
+    /**
+     * 定时任务已存在异常，SchedulerException :8001
+     */
+    JobRepeatException(8001, "定时任务已存在"),
 
     /**
      * 文件不存在，ErrorCode :7013

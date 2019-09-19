@@ -33,16 +33,18 @@ public class QuartzTestJob implements Job {
         JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
         String p0 = (String) jobDataMap.get("p0");
         String p1 = (String) jobDataMap.get("p1");
-        logger.info("Quartz test job :params = [{},{}] {}", p0, p1, new Date());
+        logger.info(" -------- Quartz test job :params = [{},{}] {}", p0, p1, new Date());
 
         CloudQuartzJob cloudQuartzJobByPrimaryKey = cloudQuartzJobService.findCloudQuartzJobByPrimaryKey(p0);
-        cloudQuartzJobByPrimaryKey.setJobStatus(1);
-        cloudQuartzJobByPrimaryKey.setUpdateTime(new Date());
-        int i = cloudQuartzJobService.editCloudQuartzJobByPrimaryKeySelective(cloudQuartzJobByPrimaryKey);
-        if (i > 0) {
-            logger.info("Quartz Job Status has been changed. JobId = {}", p0);
-        } else {
-            throw new CloudException(CloudErrorCodeEnums.DBException.getCode(), CloudErrorCodeEnums.DBException.getMsg());
+        if (cloudQuartzJobByPrimaryKey != null && cloudQuartzJobByPrimaryKey.getJobStatus() == 0) {
+            cloudQuartzJobByPrimaryKey.setJobStatus(1);
+            cloudQuartzJobByPrimaryKey.setUpdateTime(new Date());
+            int i = cloudQuartzJobService.editCloudQuartzJobByPrimaryKeySelective(cloudQuartzJobByPrimaryKey);
+            if (i > 0) {
+                logger.info("Quartz Job Status has been changed. JobId = {}", p0);
+            } else {
+                throw new CloudException(CloudErrorCodeEnums.DBException.getCode(), CloudErrorCodeEnums.DBException.getMsg());
+            }
         }
     }
 }

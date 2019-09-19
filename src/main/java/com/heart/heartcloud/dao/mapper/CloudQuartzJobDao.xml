@@ -2,32 +2,36 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.heart.heartcloud.dao.CloudQuartzJobDao">
     <resultMap id="BaseResultMap" type="com.heart.heartcloud.entity.CloudQuartzJob">
-        <id column="job_id" jdbcType="VARCHAR" property="jobId"/>
-        <result column="job_name" jdbcType="VARCHAR" property="jobName"/>
-        <result column="job_group_name" jdbcType="VARCHAR" property="jobGroupName"/>
-        <result column="trigger_name" jdbcType="VARCHAR" property="triggerName"/>
-        <result column="trigger_group_name" jdbcType="VARCHAR" property="triggerGroupName"/>
-        <result column="job_params" jdbcType="VARCHAR" property="jobParams"/>
-        <result column="execute_time" jdbcType="VARCHAR" property="executeTime"/>
-        <result column="cron_expression" jdbcType="VARCHAR" property="cronExpression"/>
-        <result column="concurrent" jdbcType="INTEGER" property="concurrent"/>
-        <result column="job_status" jdbcType="INTEGER" property="jobStatus"/>
-        <result column="bean_name" jdbcType="VARCHAR" property="beanName"/>
-        <result column="method_name" jdbcType="VARCHAR" property="methodName"/>
-        <result column="description" jdbcType="VARCHAR" property="description"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <id column="job_id" jdbcType="VARCHAR" property="jobId" />
+        <result column="job_name" jdbcType="VARCHAR" property="jobName" />
+        <result column="job_group_name" jdbcType="VARCHAR" property="jobGroupName" />
+        <result column="trigger_name" jdbcType="VARCHAR" property="triggerName" />
+        <result column="trigger_group_name" jdbcType="VARCHAR" property="triggerGroupName" />
+        <result column="job_params" jdbcType="VARCHAR" property="jobParams" />
+        <result column="execute_type" jdbcType="VARCHAR" property="executeType" />
+        <result column="cron_expression" jdbcType="VARCHAR" property="cronExpression" />
+        <result column="start_time" jdbcType="INTEGER" property="startTime" />
+        <result column="end_time" jdbcType="INTEGER" property="endTime" />
+        <result column="internal_time" jdbcType="INTEGER" property="internalTime" />
+        <result column="internal_unit" jdbcType="VARCHAR" property="internalUnit" />
+        <result column="repeat_time" jdbcType="INTEGER" property="repeatTime" />
+        <result column="bean_name" jdbcType="VARCHAR" property="beanName" />
+        <result column="method_name" jdbcType="VARCHAR" property="methodName" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="job_status" jdbcType="INTEGER" property="jobStatus" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        job_id, job_name, job_group_name, trigger_name, trigger_group_name, job_params, execute_time,
-        cron_expression, concurrent, job_status, bean_name, method_name, description, create_time,
-        update_time
+    job_id, job_name, job_group_name, trigger_name, trigger_group_name, job_params, execute_type,
+    cron_expression, start_time, end_time, internal_time, internal_unit, repeat_time,
+    bean_name, method_name, description, job_status, create_time, update_time
     </sql>
 
     <select id="selectCloudQuartzJobByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from t_cloud_quartz_jobs
         where job_id = #{jobId,jdbcType=VARCHAR}
     </select>
@@ -38,17 +42,22 @@
     </delete>
 
     <insert id="insertCloudQuartzJob" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
-        insert into t_cloud_quartz_jobs (job_id, job_name, job_group_name,
-            trigger_name, trigger_group_name, job_params,
-            execute_time, cron_expression, concurrent,
-            job_status, bean_name, method_name,
-            description, create_time, update_time)
-        values (#{jobId,jdbcType=VARCHAR}, #{jobName,jdbcType=VARCHAR}, #{jobGroupName,jdbcType=VARCHAR},
-            #{triggerName,jdbcType=VARCHAR}, #{triggerGroupName,jdbcType=VARCHAR}, #{jobParams,jdbcType=VARCHAR},
-            #{executeTime,jdbcType=VARCHAR}, #{cronExpression,jdbcType=VARCHAR}, #{concurrent,jdbcType=INTEGER},
-            #{jobStatus,jdbcType=INTEGER}, #{beanName,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR},
-            #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    insert into t_cloud_quartz_jobs (job_id, job_name, job_group_name,
+        trigger_name, trigger_group_name, job_params,
+        execute_type, cron_expression, start_time,
+        end_time, internal_time, internal_unit,
+        repeat_time, bean_name, method_name,
+        description, job_status, create_time,
+        update_time)
+    values (#{jobId,jdbcType=VARCHAR}, #{jobName,jdbcType=VARCHAR}, #{jobGroupName,jdbcType=VARCHAR},
+        #{triggerName,jdbcType=VARCHAR}, #{triggerGroupName,jdbcType=VARCHAR}, #{jobParams,jdbcType=VARCHAR},
+        #{executeType,jdbcType=VARCHAR}, #{cronExpression,jdbcType=VARCHAR}, #{startTime,jdbcType=INTEGER},
+        #{endTime,jdbcType=INTEGER}, #{internalTime,jdbcType=INTEGER}, #{internalUnit,jdbcType=VARCHAR},
+        #{repeatTime,jdbcType=INTEGER}, #{beanName,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR},
+        #{description,jdbcType=VARCHAR}, #{jobStatus,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=TIMESTAMP})
     </insert>
+
     <insert id="insertCloudQuartzJobSelective" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
         insert into t_cloud_quartz_jobs
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -70,17 +79,26 @@
             <if test="jobParams != null">
                 job_params,
             </if>
-            <if test="executeTime != null">
-                execute_time,
+            <if test="executeType != null">
+                execute_type,
             </if>
             <if test="cronExpression != null">
                 cron_expression,
             </if>
-            <if test="concurrent != null">
-                concurrent,
+            <if test="startTime != null">
+                start_time,
             </if>
-            <if test="jobStatus != null">
-                job_status,
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="internalTime != null">
+                internal_time,
+            </if>
+            <if test="internalUnit != null">
+                internal_unit,
+            </if>
+            <if test="repeatTime != null">
+                repeat_time,
             </if>
             <if test="beanName != null">
                 bean_name,
@@ -90,6 +108,9 @@
             </if>
             <if test="description != null">
                 description,
+            </if>
+            <if test="jobStatus != null">
+                job_status,
             </if>
             <if test="createTime != null">
                 create_time,
@@ -117,17 +138,26 @@
             <if test="jobParams != null">
                 #{jobParams,jdbcType=VARCHAR},
             </if>
-            <if test="executeTime != null">
-                #{executeTime,jdbcType=VARCHAR},
+            <if test="executeType != null">
+                #{executeType,jdbcType=VARCHAR},
             </if>
             <if test="cronExpression != null">
                 #{cronExpression,jdbcType=VARCHAR},
             </if>
-            <if test="concurrent != null">
-                #{concurrent,jdbcType=INTEGER},
+            <if test="startTime != null">
+                #{startTime,jdbcType=INTEGER},
             </if>
-            <if test="jobStatus != null">
-                #{jobStatus,jdbcType=INTEGER},
+            <if test="endTime != null">
+                #{endTime,jdbcType=INTEGER},
+            </if>
+            <if test="internalTime != null">
+                #{internalTime,jdbcType=INTEGER},
+            </if>
+            <if test="internalUnit != null">
+                #{internalUnit,jdbcType=VARCHAR},
+            </if>
+            <if test="repeatTime != null">
+                #{repeatTime,jdbcType=INTEGER},
             </if>
             <if test="beanName != null">
                 #{beanName,jdbcType=VARCHAR},
@@ -137,6 +167,9 @@
             </if>
             <if test="description != null">
                 #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="jobStatus != null">
+                #{jobStatus,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
@@ -165,17 +198,26 @@
             <if test="jobParams != null">
                 job_params = #{jobParams,jdbcType=VARCHAR},
             </if>
-            <if test="executeTime != null">
-                execute_time = #{executeTime,jdbcType=VARCHAR},
+            <if test="executeType != null">
+                execute_type = #{executeType,jdbcType=VARCHAR},
             </if>
             <if test="cronExpression != null">
                 cron_expression = #{cronExpression,jdbcType=VARCHAR},
             </if>
-            <if test="concurrent != null">
-                concurrent = #{concurrent,jdbcType=INTEGER},
+            <if test="startTime != null">
+                start_time = #{startTime,jdbcType=INTEGER},
             </if>
-            <if test="jobStatus != null">
-                job_status = #{jobStatus,jdbcType=INTEGER},
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=INTEGER},
+            </if>
+            <if test="internalTime != null">
+                internal_time = #{internalTime,jdbcType=INTEGER},
+            </if>
+            <if test="internalUnit != null">
+                internal_unit = #{internalUnit,jdbcType=VARCHAR},
+            </if>
+            <if test="repeatTime != null">
+                repeat_time = #{repeatTime,jdbcType=INTEGER},
             </if>
             <if test="beanName != null">
                 bean_name = #{beanName,jdbcType=VARCHAR},
@@ -185,6 +227,9 @@
             </if>
             <if test="description != null">
                 description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="jobStatus != null">
+                job_status = #{jobStatus,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -203,13 +248,17 @@
             trigger_name = #{triggerName,jdbcType=VARCHAR},
             trigger_group_name = #{triggerGroupName,jdbcType=VARCHAR},
             job_params = #{jobParams,jdbcType=VARCHAR},
-            execute_time = #{executeTime,jdbcType=VARCHAR},
+            execute_type = #{executeType,jdbcType=VARCHAR},
             cron_expression = #{cronExpression,jdbcType=VARCHAR},
-            concurrent = #{concurrent,jdbcType=INTEGER},
-            job_status = #{jobStatus,jdbcType=INTEGER},
+            start_time = #{startTime,jdbcType=INTEGER},
+            end_time = #{endTime,jdbcType=INTEGER},
+            internal_time = #{internalTime,jdbcType=INTEGER},
+            internal_unit = #{internalUnit,jdbcType=VARCHAR},
+            repeat_time = #{repeatTime,jdbcType=INTEGER},
             bean_name = #{beanName,jdbcType=VARCHAR},
             method_name = #{methodName,jdbcType=VARCHAR},
             description = #{description,jdbcType=VARCHAR},
+            job_status = #{jobStatus,jdbcType=INTEGER},
             create_time = #{createTime,jdbcType=TIMESTAMP},
             update_time = #{updateTime,jdbcType=TIMESTAMP}
         where job_id = #{jobId,jdbcType=VARCHAR}

@@ -13,7 +13,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * @ClassName: SwaggerConfig
- * @Description: TODO
+ * @Description: Swagger2配置
  * @Author: jayhe
  * @Date: 2019/9/11 14:00
  * @Version: v1.0
@@ -36,11 +36,11 @@ public class SwaggerConfig {
         Contact contact = new Contact("heart14", "https://github.com/heart14", "lwf14@qq.com");
         return new ApiInfoBuilder()
                 // 标题
-                .title("演示Swagger基本用法")
+                .title("HEART-CLOUD 接口说明")
                 // 描述信息
                 .description("演示Spring Boot中Swagger基本用法")
                 //版本
-                .version("2.9.2")
+                .version("v1.0")
                 .license("Apache 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
                 .contact(contact)

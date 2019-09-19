@@ -1,9 +1,11 @@
 package com.heart.heartcloud.entity;
 
+import org.apache.tomcat.jni.Time;
 import org.quartz.Job;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class CloudQuartzJob {
 
@@ -38,14 +40,39 @@ public class CloudQuartzJob {
     private String jobParams;
 
     /**
-     * 任务执行时间
+     * 触发器类型 "TIME" "CRON"
      */
-    private long executeTime;
+    private String executeType;
 
     /**
      * 任务执行cron表达式
      */
     private String cronExpression;
+
+    /**
+     * 任务开始时间
+     */
+    private long startTime;
+
+    /**
+     * 任务结束时间
+     */
+    private long endTime;
+
+    /**
+     * 任务执行间隔
+     */
+    private long internalTime;
+
+    /**
+     * 任务执行间隔 TimeUnit类常量
+     */
+    private String internalUnit;
+
+    /**
+     * 任务重复次数
+     */
+    private int repeatTime;
 
     /**
      * 任务并发状态
@@ -140,14 +167,6 @@ public class CloudQuartzJob {
         this.jobParams = jobParams;
     }
 
-    public long getExecuteTime() {
-        return executeTime;
-    }
-
-    public void setExecuteTime(long executeTime) {
-        this.executeTime = executeTime;
-    }
-
     public String getCronExpression() {
         return cronExpression;
     }
@@ -218,6 +237,7 @@ public class CloudQuartzJob {
 
     public void setJob(Class<? extends Job> job) {
         this.job = job;
+        this.beanName = job.getName();
     }
 
     public List<String> getJobParamsList() {
@@ -226,6 +246,61 @@ public class CloudQuartzJob {
 
     public void setJobParamsList(List<String> jobParamsList) {
         this.jobParamsList = jobParamsList;
+        this.jobParams = jobParamsList.toString();
+    }
+
+    public String getExecuteType() {
+        return executeType;
+    }
+
+    public CloudQuartzJob setExecuteType(String executeType) {
+        this.executeType = executeType;
+        return this;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public CloudQuartzJob setStartTime(long startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public CloudQuartzJob setEndTime(long endTime) {
+        this.endTime = endTime;
+        return this;
+    }
+
+    public long getInternalTime() {
+        return internalTime;
+    }
+
+    public CloudQuartzJob setInternalTime(long internalTime) {
+        this.internalTime = internalTime;
+        return this;
+    }
+
+    public int getRepeatTime() {
+        return repeatTime;
+    }
+
+    public CloudQuartzJob setRepeatTime(int repeatTime) {
+        this.repeatTime = repeatTime;
+        return this;
+    }
+
+    public String getInternalUnit() {
+        return internalUnit;
+    }
+
+    public CloudQuartzJob setInternalUnit(String internalUnit) {
+        this.internalUnit = internalUnit;
+        return this;
     }
 
     @Override
@@ -237,8 +312,13 @@ public class CloudQuartzJob {
                 ", triggerName='" + triggerName + '\'' +
                 ", triggerGroupName='" + triggerGroupName + '\'' +
                 ", jobParams='" + jobParams + '\'' +
-                ", executeTime=" + executeTime +
+                ", executeType='" + executeType + '\'' +
                 ", cronExpression='" + cronExpression + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", internalTime=" + internalTime +
+                ", internalUnit=" + internalUnit +
+                ", repeatTime=" + repeatTime +
                 ", concurrent=" + concurrent +
                 ", beanName='" + beanName + '\'' +
                 ", methodName='" + methodName + '\'' +

@@ -31,6 +31,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description:
@@ -363,12 +364,16 @@ public class CloudDirController {
         cloudQuartzJob.setTriggerName("cloudQuartzJob:trigger:name:" + id);
         cloudQuartzJob.setTriggerGroupName("cloudQuartzJob:trigger:group:name:" + id);
         cloudQuartzJob.setJob(QuartzTestJob.class);
-        cloudQuartzJob.setBeanName(QuartzTestJob.class.getName());
         cloudQuartzJob.setMethodName("execute");
         if (id < 10) {
-            //测试在指定时间执行 2分钟后执行一次
-            cloudQuartzJob.setExecuteTime(CloudDateUtils.addMinutes(new Date(), 2).getTime());
+            cloudQuartzJob.setExecuteType("TIME");
+            //测试在指定时间执行 1分钟后开始执行 重复3次 每次间隔5秒
+            cloudQuartzJob.setStartTime(CloudDateUtils.addMinutes(new Date(), 1).getTime());
+            cloudQuartzJob.setRepeatTime(8);
+            cloudQuartzJob.setInternalTime(5);
+            cloudQuartzJob.setInternalUnit(TimeUnit.SECONDS.name());
         } else {
+            cloudQuartzJob.setExecuteType("CRON");
             //测试按cron表达式执行 立即开始，每2秒执行一次
             cloudQuartzJob.setCronExpression("*/2 * * * * ?");
         }
@@ -381,8 +386,8 @@ public class CloudDirController {
         paramList.add("heart" + id);
         cloudQuartzJob.setJobParamsList(paramList);
 
-        cloudQuartzJobService.saveCloudQuartzJobSelective(cloudQuartzJob);
         quartzJobService.addJob(cloudQuartzJob);
+        cloudQuartzJobService.saveCloudQuartzJobSelective(cloudQuartzJob);
 
         return "ok";
     }
@@ -392,6 +397,7 @@ public class CloudDirController {
 
         CloudQuartzJob cloudQuartzJobByPrimaryKey = cloudQuartzJobService.findCloudQuartzJobByPrimaryKey(jobId);
         quartzJobService.removeJob(cloudQuartzJobByPrimaryKey);
+        cloudQuartzJobService.removeCloudQuartzJobByPrimaryKey(cloudQuartzJobByPrimaryKey.getJobId());
 
         return "ok";
     }
