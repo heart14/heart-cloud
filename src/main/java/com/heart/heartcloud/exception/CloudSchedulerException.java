@@ -2,7 +2,7 @@ package com.heart.heartcloud.exception;
 
 /**
  * @ClassName: CloudSchedulerException
- * @Description: TODO
+ * @Description: 定时任务异常类
  * @Author: jayhe
  * @Date: 2019/9/19 11:21
  * @Version: v1.0

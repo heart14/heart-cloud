@@ -1,7 +1,7 @@
 package com.heart.heartcloud.utils;
 
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
-import com.heart.heartcloud.exception.CloudException;
+import com.heart.heartcloud.exception.CloudSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class CloudDoubleUtils {
     public static Double String2Double(String amount) {
         logger.info("待转化金额 :{}", amount);
         if (amount == null) {
-            throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
         }
 
         if (!amount.contains(DOT)) {
@@ -48,6 +48,6 @@ public class CloudDoubleUtils {
             amount = amount.substring(0, amount.lastIndexOf(DOT)) + s;
             return Double.valueOf(amount);
         }
-        throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
+        throw new CloudSystemException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
     }
 }

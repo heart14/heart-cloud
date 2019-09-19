@@ -6,7 +6,7 @@ import com.heart.heartcloud.domain.CloudDir;
 import com.heart.heartcloud.domain.CloudFile;
 import com.heart.heartcloud.domain.CloudGoods;
 import com.heart.heartcloud.domain.CloudUser;
-import com.heart.heartcloud.exception.CloudException;
+import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudDiskService;
@@ -128,7 +128,7 @@ public class CloudFileController {
 
         CloudFile cloudFileByPrimaryKey = cloudFileService.findCloudFileByPrimaryKey(cloudFileId);
         if (cloudFileByPrimaryKey == null || CloudStringUtils.isBlank(cloudFileByPrimaryKey.getCloudFileUrl())) {
-            throw new CloudException(CloudErrorCodeEnums.UnknownFileException.getCode(), CloudErrorCodeEnums.UnknownFileException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.UnknownFileException.getCode(), CloudErrorCodeEnums.UnknownFileException.getMsg());
         }
 
         String cloudFileUrl = cloudFileByPrimaryKey.getCloudFileUrl();
@@ -151,7 +151,7 @@ public class CloudFileController {
             bis.close();
             os.close();
         } else {
-            throw new CloudException(CloudErrorCodeEnums.UnknownFileException.getCode(), CloudErrorCodeEnums.UnknownFileException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.UnknownFileException.getCode(), CloudErrorCodeEnums.UnknownFileException.getMsg());
         }
     }
 
@@ -317,7 +317,7 @@ public class CloudFileController {
     private CloudUser getCloudUserFromSession(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
         if (currentCloudUser == null) {
-            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
         }
         return currentCloudUser;
     }

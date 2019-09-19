@@ -2,7 +2,7 @@ package com.heart.heartcloud.quartz.job;
 
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.entity.CloudQuartzJob;
-import com.heart.heartcloud.exception.CloudException;
+import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.service.CloudQuartzJobService;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -43,7 +43,7 @@ public class QuartzTestJob implements Job {
             if (i > 0) {
                 logger.info("Quartz Job Status has been changed. JobId = {}", p0);
             } else {
-                throw new CloudException(CloudErrorCodeEnums.DBException.getCode(), CloudErrorCodeEnums.DBException.getMsg());
+                throw new CloudSystemException(CloudErrorCodeEnums.DBException.getCode(), CloudErrorCodeEnums.DBException.getMsg());
             }
         }
     }

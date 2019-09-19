@@ -7,7 +7,7 @@ import com.heart.heartcloud.domain.CloudFile;
 import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.entity.CloudDirFiles;
 import com.heart.heartcloud.entity.CloudQuartzJob;
-import com.heart.heartcloud.exception.CloudException;
+import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.quartz.QuartzJobService;
 import com.heart.heartcloud.quartz.job.QuartzTestJob;
 import com.heart.heartcloud.response.CloudResponse;
@@ -226,7 +226,7 @@ public class CloudDirController {
     private CloudUser getCloudUserFromSession(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
         if (currentCloudUser == null) {
-            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
         }
         return currentCloudUser;
     }

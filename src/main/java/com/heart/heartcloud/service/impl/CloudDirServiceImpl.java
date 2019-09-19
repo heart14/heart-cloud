@@ -5,7 +5,7 @@ import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.dao.CloudDirDao;
 import com.heart.heartcloud.dao.CloudFileDao;
 import com.heart.heartcloud.domain.CloudDir;
-import com.heart.heartcloud.exception.CloudException;
+import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.utils.CloudStringUtils;
 import org.slf4j.Logger;
@@ -38,11 +38,11 @@ public class CloudDirServiceImpl implements CloudDirService {
     public int saveCloudDir(CloudDir cloudDir) {
         if (null == cloudDir.getCloudDirParentId() || CloudStringUtils.isBlank(cloudDir.getCloudDirName())) {
             logger.error("保存失败 :参数异常");
-            throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
         }
         if (cloudDirDao.selectByDirName(cloudDir.getCloudDirName()) != null) {
             logger.error("保存失败 :文件夹已存在");
-            throw new CloudException(CloudErrorCodeEnums.ServiceException.getCode(), CloudErrorCodeEnums.ServiceException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.ServiceException.getCode(), CloudErrorCodeEnums.ServiceException.getMsg());
         }
         cloudDir.setCloudDirId(CloudStringUtils.getId());
         cloudDir.setCloudDirStatus(CloudConstants.STATUS_YES);
@@ -77,7 +77,7 @@ public class CloudDirServiceImpl implements CloudDirService {
     public CloudDir findCloudDirByPrimaryKey(Integer cloudDirId) {
         if (null == cloudDirId || CloudStringUtils.isBlank(cloudDirId.toString())) {
             logger.error("查询失败 :参数异常");
-            throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
         }
         return cloudDirDao.selectByPrimaryKey(cloudDirId);
     }
@@ -86,7 +86,7 @@ public class CloudDirServiceImpl implements CloudDirService {
     public List<CloudDir> findCloudDirByParentId(Integer cloudDirParentId, Integer cloudUserId) {
         if (null == cloudDirParentId || CloudStringUtils.isBlank(cloudDirParentId.toString())) {
             logger.error("查询失败 :参数异常");
-            throw new CloudException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.ParamException.getCode(), CloudErrorCodeEnums.ParamException.getMsg());
         }
         return cloudDirDao.selectByParentId(cloudDirParentId, cloudUserId);
     }

@@ -2,7 +2,7 @@ package com.heart.heartcloud.controller;
 
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.domain.CloudUser;
-import com.heart.heartcloud.exception.CloudException;
+import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudUserService;
 import com.heart.heartcloud.utils.CloudResponseUtils;
@@ -79,7 +79,7 @@ public class HeartCloudController {
     public ModelAndView index(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
         if (currentCloudUser == null) {
-            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
         }
         logger.info("HEART CLOUD首页 :cloudUser => {}", currentCloudUser);
         ModelAndView modelAndView = new ModelAndView();
@@ -98,7 +98,7 @@ public class HeartCloudController {
     public ModelAndView vip(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
         if (currentCloudUser == null) {
-            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
         }
         logger.info("HEART CLOUD会员中心 :cloudUser => {}", currentCloudUser);
         ModelAndView modelAndView = new ModelAndView();
@@ -117,7 +117,7 @@ public class HeartCloudController {
     public ModelAndView market(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
         if (currentCloudUser == null) {
-            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
         }
         logger.info("HEART CLOUD资源商城 :cloudUser => {}", currentCloudUser);
         ModelAndView modelAndView = new ModelAndView();
@@ -207,7 +207,7 @@ public class HeartCloudController {
     public ModelAndView managePage(HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
         if (currentCloudUser == null) {
-            throw new CloudException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
         }
         logger.info("HEART CLOUD MANAGE :cloudUser => {}", currentCloudUser);
         ModelAndView modelAndView = new ModelAndView();
