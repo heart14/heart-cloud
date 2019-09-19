@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @ClassName:CloudDoubleUtils
- * @Description:
+ * @ClassName: CloudDoubleUtils
+ * @Description: double数值工具类，用于金额相关
  * @Author: Heart
  * @Date: 2019/7/25 16:28
  */

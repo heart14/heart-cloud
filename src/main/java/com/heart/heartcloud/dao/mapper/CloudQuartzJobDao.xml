@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heart.heartcloud.dao.CloudQuartzJobDao">
+    <resultMap id="BaseResultMap" type="com.heart.heartcloud.entity.CloudQuartzJob">
+        <id column="job_id" jdbcType="VARCHAR" property="jobId"/>
+        <result column="job_name" jdbcType="VARCHAR" property="jobName"/>
+        <result column="job_group_name" jdbcType="VARCHAR" property="jobGroupName"/>
+        <result column="trigger_name" jdbcType="VARCHAR" property="triggerName"/>
+        <result column="trigger_group_name" jdbcType="VARCHAR" property="triggerGroupName"/>
+        <result column="job_params" jdbcType="VARCHAR" property="jobParams"/>
+        <result column="execute_time" jdbcType="VARCHAR" property="executeTime"/>
+        <result column="cron_expression" jdbcType="VARCHAR" property="cronExpression"/>
+        <result column="concurrent" jdbcType="INTEGER" property="concurrent"/>
+        <result column="job_status" jdbcType="INTEGER" property="jobStatus"/>
+        <result column="bean_name" jdbcType="VARCHAR" property="beanName"/>
+        <result column="method_name" jdbcType="VARCHAR" property="methodName"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        job_id, job_name, job_group_name, trigger_name, trigger_group_name, job_params, execute_time,
+        cron_expression, concurrent, job_status, bean_name, method_name, description, create_time,
+        update_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cloud_quartz_jobs
+        where job_id = #{jobId,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from t_cloud_quartz_jobs
+        where job_id = #{jobId,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
+        insert into t_cloud_quartz_jobs (job_id, job_name, job_group_name,
+            trigger_name, trigger_group_name, job_params,
+            execute_time, cron_expression, concurrent,
+            job_status, bean_name, method_name,
+            description, create_time, update_time)
+        values (#{jobId,jdbcType=VARCHAR}, #{jobName,jdbcType=VARCHAR}, #{jobGroupName,jdbcType=VARCHAR},
+            #{triggerName,jdbcType=VARCHAR}, #{triggerGroupName,jdbcType=VARCHAR}, #{jobParams,jdbcType=VARCHAR},
+            #{executeTime,jdbcType=VARCHAR}, #{cronExpression,jdbcType=VARCHAR}, #{concurrent,jdbcType=INTEGER},
+            #{jobStatus,jdbcType=INTEGER}, #{beanName,jdbcType=VARCHAR}, #{methodName,jdbcType=VARCHAR},
+            #{description,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
+        insert into t_cloud_quartz_jobs
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">
+                job_id,
+            </if>
+            <if test="jobName != null">
+                job_name,
+            </if>
+            <if test="jobGroupName != null">
+                job_group_name,
+            </if>
+            <if test="triggerName != null">
+                trigger_name,
+            </if>
+            <if test="triggerGroupName != null">
+                trigger_group_name,
+            </if>
+            <if test="jobParams != null">
+                job_params,
+            </if>
+            <if test="executeTime != null">
+                execute_time,
+            </if>
+            <if test="cronExpression != null">
+                cron_expression,
+            </if>
+            <if test="concurrent != null">
+                concurrent,
+            </if>
+            <if test="jobStatus != null">
+                job_status,
+            </if>
+            <if test="beanName != null">
+                bean_name,
+            </if>
+            <if test="methodName != null">
+                method_name,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">
+                #{jobId,jdbcType=VARCHAR},
+            </if>
+            <if test="jobName != null">
+                #{jobName,jdbcType=VARCHAR},
+            </if>
+            <if test="jobGroupName != null">
+                #{jobGroupName,jdbcType=VARCHAR},
+            </if>
+            <if test="triggerName != null">
+                #{triggerName,jdbcType=VARCHAR},
+            </if>
+            <if test="triggerGroupName != null">
+                #{triggerGroupName,jdbcType=VARCHAR},
+            </if>
+            <if test="jobParams != null">
+                #{jobParams,jdbcType=VARCHAR},
+            </if>
+            <if test="executeTime != null">
+                #{executeTime,jdbcType=VARCHAR},
+            </if>
+            <if test="cronExpression != null">
+                #{cronExpression,jdbcType=VARCHAR},
+            </if>
+            <if test="concurrent != null">
+                #{concurrent,jdbcType=INTEGER},
+            </if>
+            <if test="jobStatus != null">
+                #{jobStatus,jdbcType=INTEGER},
+            </if>
+            <if test="beanName != null">
+                #{beanName,jdbcType=VARCHAR},
+            </if>
+            <if test="methodName != null">
+                #{methodName,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
+        update t_cloud_quartz_jobs
+        <set>
+            <if test="jobName != null">
+                job_name = #{jobName,jdbcType=VARCHAR},
+            </if>
+            <if test="jobGroupName != null">
+                job_group_name = #{jobGroupName,jdbcType=VARCHAR},
+            </if>
+            <if test="triggerName != null">
+                trigger_name = #{triggerName,jdbcType=VARCHAR},
+            </if>
+            <if test="triggerGroupName != null">
+                trigger_group_name = #{triggerGroupName,jdbcType=VARCHAR},
+            </if>
+            <if test="jobParams != null">
+                job_params = #{jobParams,jdbcType=VARCHAR},
+            </if>
+            <if test="executeTime != null">
+                execute_time = #{executeTime,jdbcType=VARCHAR},
+            </if>
+            <if test="cronExpression != null">
+                cron_expression = #{cronExpression,jdbcType=VARCHAR},
+            </if>
+            <if test="concurrent != null">
+                concurrent = #{concurrent,jdbcType=INTEGER},
+            </if>
+            <if test="jobStatus != null">
+                job_status = #{jobStatus,jdbcType=INTEGER},
+            </if>
+            <if test="beanName != null">
+                bean_name = #{beanName,jdbcType=VARCHAR},
+            </if>
+            <if test="methodName != null">
+                method_name = #{methodName,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where job_id = #{jobId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.heart.heartcloud.entity.CloudQuartzJob">
+        update t_cloud_quartz_jobs
+        set job_name = #{jobName,jdbcType=VARCHAR},
+            job_group_name = #{jobGroupName,jdbcType=VARCHAR},
+            trigger_name = #{triggerName,jdbcType=VARCHAR},
+            trigger_group_name = #{triggerGroupName,jdbcType=VARCHAR},
+            job_params = #{jobParams,jdbcType=VARCHAR},
+            execute_time = #{executeTime,jdbcType=VARCHAR},
+            cron_expression = #{cronExpression,jdbcType=VARCHAR},
+            concurrent = #{concurrent,jdbcType=INTEGER},
+            job_status = #{jobStatus,jdbcType=INTEGER},
+            bean_name = #{beanName,jdbcType=VARCHAR},
+            method_name = #{methodName,jdbcType=VARCHAR},
+            description = #{description,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where job_id = #{jobId,jdbcType=VARCHAR}
+    </update>
+</mapper>
