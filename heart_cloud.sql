@@ -11,7 +11,7 @@
  Target Server Version : 50722
  File Encoding         : 65001
 
- Date: 19/09/2019 10:47:57
+ Date: 19/09/2019 17:01:30
 */
 
 SET NAMES utf8mb4;
@@ -285,15 +285,19 @@ CREATE TABLE `t_cloud_quartz_jobs`  (
   `trigger_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `trigger_group_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `job_params` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `execute_time` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `execute_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'TIME CRON',
   `cron_expression` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `concurrent` int(1) NULL DEFAULT NULL,
-  `job_status` int(1) NULL DEFAULT NULL,
+  `start_time` bigint(32) NULL DEFAULT NULL,
+  `end_time` bigint(32) NULL DEFAULT NULL,
+  `internal_time` bigint(32) NULL DEFAULT NULL,
+  `internal_unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `repeat_time` int(32) NULL DEFAULT NULL,
   `bean_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `method_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `create_time` timestamp(6) NULL DEFAULT NULL,
-  `update_time` timestamp(6) NULL DEFAULT NULL,
+  `job_status` int(1) NULL DEFAULT NULL,
+  `create_time` timestamp(0) NULL DEFAULT NULL,
+  `update_time` timestamp(0) NULL DEFAULT NULL,
   PRIMARY KEY (`job_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
