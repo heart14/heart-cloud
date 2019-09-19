@@ -68,32 +68,41 @@ public class QuartzJobService {
      * 立即执行任务
      *
      * @param quartzJob
-     * @throws SchedulerException
      */
-    public void startJobNow(CloudQuartzJob quartzJob) throws SchedulerException {
-        JobKey jobKey = JobKey.jobKey(quartzJob.getJobName());
-        scheduler.triggerJob(jobKey);
+    public void startJobNow(CloudQuartzJob quartzJob) {
+        try {
+            JobKey jobKey = JobKey.jobKey(quartzJob.getJobName());
+            scheduler.triggerJob(jobKey);
+        } catch (SchedulerException e) {
+            throw new CloudSchedulerException(CloudErrorCodeEnums.SchedulerException.getCode(), CloudErrorCodeEnums.SchedulerException.getMsg());
+        }
     }
 
     /**
      * 暂停任务
      *
      * @param quartzJob
-     * @throws SchedulerException
      */
-    public void pauseJob(CloudQuartzJob quartzJob) throws SchedulerException {
-        JobKey jobKey = JobKey.jobKey(quartzJob.getJobName());
-        scheduler.pauseJob(jobKey);
+    public void pauseJob(CloudQuartzJob quartzJob) {
+        try {
+            JobKey jobKey = JobKey.jobKey(quartzJob.getJobName());
+            scheduler.pauseJob(jobKey);
+        } catch (SchedulerException e) {
+            throw new CloudSchedulerException(CloudErrorCodeEnums.SchedulerException.getCode(), CloudErrorCodeEnums.SchedulerException.getMsg());
+        }
     }
 
     /**
      * 恢复任务
      *
      * @param quartzJob
-     * @throws SchedulerException
      */
-    public void resumeJob(CloudQuartzJob quartzJob) throws SchedulerException {
-        JobKey jobKey = JobKey.jobKey(quartzJob.getJobName());
-        scheduler.resumeJob(jobKey);
+    public void resumeJob(CloudQuartzJob quartzJob) {
+        try {
+            JobKey jobKey = JobKey.jobKey(quartzJob.getJobName());
+            scheduler.resumeJob(jobKey);
+        } catch (SchedulerException e) {
+            throw new CloudSchedulerException(CloudErrorCodeEnums.SchedulerException.getCode(), CloudErrorCodeEnums.SchedulerException.getMsg());
+        }
     }
 }

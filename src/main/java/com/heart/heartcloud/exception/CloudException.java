@@ -8,6 +8,8 @@ package com.heart.heartcloud.exception;
  */
 public class CloudException extends RuntimeException {
 
+    private static final long serialVersionUID = -4668969916089794000L;
+
     private Integer code;
 
     public CloudException(Integer code) {

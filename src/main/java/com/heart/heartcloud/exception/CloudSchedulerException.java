@@ -9,6 +9,8 @@ package com.heart.heartcloud.exception;
  */
 public class CloudSchedulerException extends RuntimeException {
 
+    private static final long serialVersionUID = 8844183338465234266L;
+
     private Integer code;
 
     public CloudSchedulerException(Integer code) {
