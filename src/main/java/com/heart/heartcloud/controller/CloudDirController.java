@@ -11,10 +11,7 @@ import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.quartz.QuartzJobService;
 import com.heart.heartcloud.quartz.job.QuartzTestJob;
 import com.heart.heartcloud.response.CloudResponse;
-import com.heart.heartcloud.service.CloudDirService;
-import com.heart.heartcloud.service.CloudDiskService;
-import com.heart.heartcloud.service.CloudFileService;
-import com.heart.heartcloud.service.CloudQuartzJobService;
+import com.heart.heartcloud.service.*;
 import com.heart.heartcloud.utils.CloudDateUtils;
 import com.heart.heartcloud.utils.CloudResponseUtils;
 import com.heart.heartcloud.utils.CloudStringUtils;
@@ -38,6 +35,7 @@ import java.util.concurrent.TimeUnit;
  * @Author: Heart
  * @Date: 2019/3/11 14:21
  */
+@SuppressWarnings("ALL")
 @RequestMapping("/clouddir")
 @RestController
 @Api(tags = "文件夹操作相关接口")
@@ -62,6 +60,9 @@ public class CloudDirController {
 
     @Autowired
     private CloudDiskService cloudDiskService;
+
+    @Autowired
+    private CloudUserService cloudUserService;
 
     /**
      * 新增文件夹
@@ -331,6 +332,12 @@ public class CloudDirController {
                 logger.info("Query from Redis Hash : key = h:2:cloudUser, field = userId, value = {}", hashOperations.get("h:2:cloudUser", "userId"));
                 logger.info("Query from Redis Hash : key = h:2:cloudUser, field = userName, value = {}", hashOperations.get("h:2:cloudUser", "userName"));
                 logger.info("Query from Redis Hash : key = h:2:cloudUser, field = userPass, value = {}", hashOperations.get("h:2:cloudUser", "userPass"));
+
+                CloudUser cloudUser = cloudUserService.findCloudUserByUserName("heart777");
+                hashOperations.put("clouduser:heart777", cloudUser.getUserName(), cloudUser);
+
+                CloudUser  hashUserObj = (CloudUser) hashOperations.get("clouduser:heart777", cloudUser.getUserName());
+                logger.info("Query from Redis Hash : key = clouduser:heart777, value = {}", hashUserObj);
 
                 return CloudResponseUtils.success();
             //list

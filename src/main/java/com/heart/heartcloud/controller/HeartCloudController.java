@@ -6,14 +6,17 @@ import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudUserService;
 import com.heart.heartcloud.utils.CloudResponseUtils;
+import com.heart.heartcloud.utils.CloudStringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description:
@@ -40,6 +44,9 @@ public class HeartCloudController {
 
     @Autowired
     private CloudUserService cloudUserService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 系统登陆页面
@@ -144,15 +151,47 @@ public class HeartCloudController {
     @ApiOperation(value = "系统用户登录")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
+    @SuppressWarnings("all")
     public CloudResponse userLogin(@RequestBody CloudUser cloudUser, HttpServletRequest request) {
 
         logger.info("用户登录 :cloudUser => {}", cloudUser);
+
+        CloudUser cloudUserByUserName = cloudUserService.findCloudUserByUserName(cloudUser.getUserName());
+        if (cloudUserByUserName == null) {
+            logger.error("用户不存在 :{}", cloudUser.getUserName());
+            throw new CloudSystemException(CloudErrorCodeEnums.UnKnownUserException.getCode(), CloudErrorCodeEnums.UnKnownUserException.getMsg());
+        }
+
+        if (redisTemplate.hasKey(CloudStringUtils.getRedisLoginLockKey(cloudUser.getUserName()))) {
+            logger.info("用户已锁定，{} 秒后重试！", redisTemplate.getExpire(CloudStringUtils.getRedisLoginLockKey(cloudUser.getUserName()), TimeUnit.SECONDS));
+            throw new CloudSystemException(CloudErrorCodeEnums.LoginLockException.getCode(), CloudErrorCodeEnums.LoginLockException.getMsg());
+        }
 
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(cloudUser.getUserName(), cloudUser.getUserPass());
 
         //shiro进行登录验证
-        subject.login(token);
+        try {
+            subject.login(token);
+        } catch (AuthenticationException e) {
+            if (redisTemplate.hasKey(CloudStringUtils.getRedisLoginFailCountKey(cloudUser.getUserName()))) {
+                int loginFailCount = (int) redisTemplate.opsForValue().get(CloudStringUtils.getRedisLoginFailCountKey(cloudUser.getUserName()));
+                if (loginFailCount == 4) {
+                    logger.info("登录失败5次，用户已锁定，2分钟后解除锁定 :{}", cloudUser.getUserName());
+                    redisTemplate.opsForValue().set(CloudStringUtils.getRedisLoginLockKey(cloudUser.getUserName()), "用户已锁定", 120, TimeUnit.SECONDS);
+                    redisTemplate.delete(CloudStringUtils.getRedisLoginFailCountKey(cloudUser.getUserName()));
+                    throw new CloudSystemException(CloudErrorCodeEnums.LoginLockException.getCode(), CloudErrorCodeEnums.LoginLockException.getMsg());
+                } else {
+                    logger.info("登录失败 :{}", cloudUser.getUserName());
+                    redisTemplate.opsForValue().set(CloudStringUtils.getRedisLoginFailCountKey(cloudUser.getUserName()), loginFailCount + 1);
+                    throw new CloudSystemException(CloudErrorCodeEnums.LoginFailException.getCode(), CloudErrorCodeEnums.LoginFailException.getMsg());
+                }
+            } else {
+                logger.info("登录失败 :{}", cloudUser.getUserName());
+                redisTemplate.opsForValue().set(CloudStringUtils.getRedisLoginFailCountKey(cloudUser.getUserName()), 1);
+                throw new CloudSystemException(CloudErrorCodeEnums.LoginFailException.getCode(), CloudErrorCodeEnums.LoginFailException.getMsg());
+            }
+        }
 
         HttpSession session = request.getSession();
         session.setAttribute("CurrentCloudUser", cloudUserService.findCloudUserByUserName(cloudUser.getUserName()));
@@ -186,6 +225,7 @@ public class HeartCloudController {
 
     /**
      * 用户注册
+     *
      * @param cloudUser
      * @return
      */
@@ -231,7 +271,26 @@ public class HeartCloudController {
         }
         logger.info("HEART CLOUD MANAGE :cloudUser => {}", currentCloudUser);
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("common/index");
+        modelAndView.setViewName("manager/index");
+        modelAndView.addObject("cloudUser", currentCloudUser);
+        return modelAndView;
+    }
+
+    /**
+     * 管理员页面 图表页
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "charts", method = RequestMethod.GET)
+    public ModelAndView chartsPage(HttpServletRequest request) {
+        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
+        if (currentCloudUser == null) {
+            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
+        }
+        logger.info("Current CloudUser :{}", currentCloudUser);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("manager/charts");
         modelAndView.addObject("cloudUser", currentCloudUser);
         return modelAndView;
     }

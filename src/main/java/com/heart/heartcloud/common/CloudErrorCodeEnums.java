@@ -8,12 +8,6 @@ package com.heart.heartcloud.common;
  */
 public enum CloudErrorCodeEnums {
 
-
-    /**
-     * TODO 待重新整理该枚举类
-     */
-
-
     /**
      * 成功，ErrorCode :7000
      */
@@ -58,6 +52,21 @@ public enum CloudErrorCodeEnums {
      * 注册失败，用户已存在，ErrorCode :7011
      */
     DuplicateUserException(7011, "注册失败，用户已存在"),
+
+    /**
+     * 登录失败，用户不存在，ErrorCode :7016
+     */
+    UnKnownUserException(7016, "登录失败，用户不存在"),
+
+    /**
+     * 登录失败，用户已锁定，ErrorCode :7014
+     */
+    LoginLockException(7014, "登录失败，用户已锁定"),
+
+    /**
+     * 登录失败，用户名或密码错误，ErrorCode :7015
+     */
+    LoginFailException(7015, "登录失败，用户名或密码错误"),
 
     /**
      * 参数异常，ErrorCode :7012

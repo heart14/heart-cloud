@@ -12,10 +12,14 @@
     <script th:src="@{/js/jquery.min.js}" type="text/javascript"></script>
     <script>
         function login() {
-            // var userName = $("#logname").val();
-            // var userPass = $("#logpass").val();
-            var userName = "heart777";
-            var userPass = "123456";
+            var userName = $("#logname").val();
+            var userPass = $("#logpass").val();
+            // var userName = "heart777";
+            // var userPass = "123456";
+            if (userName == '' || userPass == '') {
+                alert("用户名/密码 不能为空！");
+                return;
+            }
 
             console.log("loginName:" + userName + "/loginPass:" + userPass);
             $.ajax({

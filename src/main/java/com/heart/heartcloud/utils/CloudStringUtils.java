@@ -71,4 +71,23 @@ public class CloudStringUtils extends StringUtils {
         return "alipaytradeno" + System.currentTimeMillis();
     }
 
+    /**
+     * 获取用户登录锁定Redis Key
+     *
+     * @param username
+     * @return
+     */
+    public static String getRedisLoginLockKey(String username) {
+        return "login:lock:" + username;
+    }
+
+    /**
+     * 获取用户登录失败Redis Key
+     *
+     * @param username
+     * @return
+     */
+    public static String getRedisLoginFailCountKey(String username) {
+        return "login:fail:" + username;
+    }
 }

@@ -60,7 +60,7 @@ public class AlipayConfig {
     /**
      * 日志保存路径
      */
-    public static String log_path = " C:/Users/jayhe/Documents/AliPayLogs/";
+    public static String log_path = " /logs/AliPayLogs/";
 
 
     /**
