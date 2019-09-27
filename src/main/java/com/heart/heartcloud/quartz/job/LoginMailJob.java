@@ -13,6 +13,8 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import java.net.UnknownHostException;
+
 /**
  * @ClassName: LoginMailJob
  * @Description: TODO
@@ -34,7 +36,7 @@ public class LoginMailJob implements Job {
         String recipient = (String) jobDataMap.get("p1");
         String subject = (String) jobDataMap.get("p2");
         String text = (String) jobDataMap.get("p3");
-        logger.info("登录提醒邮件定时发送任务 :sender = {}, recipient = {}, subject = {}, text = {}", sender, recipient, subject, text);
+        logger.info("登录提醒邮件定时发送任务开始执行 :sender = {}, recipient = {}, subject = {}, text = {}", sender, recipient, subject, text);
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(sender);
@@ -44,9 +46,9 @@ public class LoginMailJob implements Job {
 
         try {
             javaMailSender.send(simpleMailMessage);
+            logger.info("登录提醒邮件定时发送任务执行完毕");
         } catch (MailException e) {
-            logger.error("邮件发送失败 :{}", e.getMessage());
-            throw new CloudMailException(CloudErrorCodeEnums.MailSendException.getCode(), CloudErrorCodeEnums.MailSendException.getMsg());
+            logger.error("登录提醒邮件定时发送任务执行失败 :{}", e.getMessage());
         }
     }
 }

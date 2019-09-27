@@ -27,7 +27,7 @@ public class QuartzJobService {
      * @param quartzJob
      */
     public void addJob(CloudQuartzJob quartzJob) {
-        logger.info("新增定时任务 :{}", quartzJob);
+        logger.info("新建定时任务 :{}", quartzJob);
         try {
             //创建JobDetail
             JobDetail jobDetail = JobBuilder.newJob(quartzJob.getJob()).withIdentity(quartzJob.getJobName(), quartzJob.getJobGroupName()).build();

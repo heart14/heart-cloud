@@ -2,9 +2,12 @@ package com.heart.heartcloud.controller;
 
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.domain.CloudUser;
-import com.heart.heartcloud.exception.CloudMailException;
+import com.heart.heartcloud.entity.CloudQuartzJob;
 import com.heart.heartcloud.exception.CloudSystemException;
+import com.heart.heartcloud.quartz.QuartzJobService;
+import com.heart.heartcloud.quartz.job.LoginMailJob;
 import com.heart.heartcloud.response.CloudResponse;
+import com.heart.heartcloud.service.CloudQuartzJobService;
 import com.heart.heartcloud.service.CloudUserService;
 import com.heart.heartcloud.utils.CloudDateUtils;
 import com.heart.heartcloud.utils.CloudIpUtils;
@@ -33,7 +36,9 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -61,6 +66,12 @@ public class HeartCloudController {
 
     @Autowired
     private ThreadPoolExecutor threadPoolExecutor;
+
+    @Autowired
+    private QuartzJobService quartzJobService;
+
+    @Autowired
+    private CloudQuartzJobService cloudQuartzJobService;
 
     /**
      * 系统登陆页面
@@ -210,28 +221,53 @@ public class HeartCloudController {
         HttpSession session = request.getSession();
         session.setAttribute("CurrentCloudUser", cloudUserService.findCloudUserByUserName(cloudUser.getUserName()));
 
+        //java mail
         String ipAddr = CloudIpUtils.getIpAddr(request);
         String sender = "lwf14@qq.com";
         String recipient = "jayhei14@163.com";
         String mailSubject = "JavaMailSender test mail.";
         String mailText = cloudUser.getUserName() + "于" + CloudDateUtils.formatDateToString(new Date()) + "在" + ipAddr + "登录了 HEART CLOUD。";
 
-        threadPoolExecutor.execute(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-                simpleMailMessage.setFrom(sender);
-                simpleMailMessage.setTo(recipient);
-                simpleMailMessage.setSubject(mailSubject);
-                simpleMailMessage.setText(mailText);
+        threadPoolExecutor.execute(new Thread(() -> {
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+            simpleMailMessage.setFrom(sender);
+            simpleMailMessage.setTo(recipient);
+            simpleMailMessage.setSubject(mailSubject);
+            simpleMailMessage.setText(mailText);
 
-                try {
-                    javaMailSender.send(simpleMailMessage);
-                } catch (MailException e) {
-                    logger.error("邮件发送失败 :{}", e.getMessage());
-                    throw new CloudMailException(CloudErrorCodeEnums.MailSendException.getCode(), CloudErrorCodeEnums.MailSendException.getMsg());
-                }
+            try {
+                javaMailSender.send(simpleMailMessage);
                 logger.info("登录提醒邮件已发送 :{}", simpleMailMessage);
+            } catch (MailException e) {
+                logger.error("登录提醒邮件发送失败 :{}", e.getMessage());
+                //throw new CloudMailException(CloudErrorCodeEnums.MailSendException.getCode(), CloudErrorCodeEnums.MailSendException.getMsg());
+                //邮件发送失败不要对程序造成影响，可以放到定时任务重发
+                CloudQuartzJob cloudQuartzJob = new CloudQuartzJob();
+
+                String jobId = CloudStringUtils.getShotUuid();
+                cloudQuartzJob.setJobId(jobId);
+                cloudQuartzJob.setJobName("loginMailJob:name:" + jobId);
+                cloudQuartzJob.setJobGroupName("loginMailJob:group:name:" + jobId);
+                cloudQuartzJob.setTriggerName("loginMailJob:trigger:name:" + jobId);
+                cloudQuartzJob.setTriggerGroupName("loginMailJob:trigger:group:name:" + jobId);
+                cloudQuartzJob.setJob(LoginMailJob.class);
+                cloudQuartzJob.setMethodName("execute");
+                cloudQuartzJob.setExecuteType("TIME");
+                //测试在指定时间执行 1分钟后开始执行 重复3次 每次间隔5秒
+                cloudQuartzJob.setStartTime(CloudDateUtils.addMinutes(new Date(), 1).getTime());
+                cloudQuartzJob.setDescription("Heart cloud 登录提醒邮件定时任务 :" + jobId);
+                cloudQuartzJob.setJobStatus(0);
+                cloudQuartzJob.setCreateTime(new Date());
+
+                List<String> paramList = new ArrayList<>();
+                paramList.add(sender);
+                paramList.add(recipient);
+                paramList.add(mailSubject);
+                paramList.add(mailText);
+                cloudQuartzJob.setJobParamsList(paramList);
+
+                quartzJobService.addJob(cloudQuartzJob);
+                cloudQuartzJobService.saveCloudQuartzJobSelective(cloudQuartzJob);
             }
         }));
 
