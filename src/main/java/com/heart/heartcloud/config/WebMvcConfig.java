@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * @ClassName:WebMvcConfig
+ * @ClassName: WebMvcConfig
  * @Description:
  * @Author: Heart
  * @Date: 2019/7/23 17:17

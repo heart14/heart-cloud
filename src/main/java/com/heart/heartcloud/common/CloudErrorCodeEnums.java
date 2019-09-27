@@ -14,6 +14,11 @@ public enum CloudErrorCodeEnums {
     SUCCESS(7000, "成功"),
 
     /**
+     * 邮件发送失败，ErrorCode :9001
+     */
+    MailSendException(9001, "邮件发送失败"),
+
+    /**
      * 系统异常，ErrorCode :7001
      */
     SystemException(7001, "系统异常"),

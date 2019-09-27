@@ -2,9 +2,12 @@ package com.heart.heartcloud.controller;
 
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.domain.CloudUser;
+import com.heart.heartcloud.exception.CloudMailException;
 import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.CloudUserService;
+import com.heart.heartcloud.utils.CloudDateUtils;
+import com.heart.heartcloud.utils.CloudIpUtils;
 import com.heart.heartcloud.utils.CloudResponseUtils;
 import com.heart.heartcloud.utils.CloudStringUtils;
 import io.swagger.annotations.Api;
@@ -17,6 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +33,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,6 +55,12 @@ public class HeartCloudController {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Autowired
+    private ThreadPoolExecutor threadPoolExecutor;
 
     /**
      * 系统登陆页面
@@ -195,6 +209,32 @@ public class HeartCloudController {
 
         HttpSession session = request.getSession();
         session.setAttribute("CurrentCloudUser", cloudUserService.findCloudUserByUserName(cloudUser.getUserName()));
+
+        String ipAddr = CloudIpUtils.getIpAddr(request);
+        String sender = "lwf14@qq.com";
+        String recipient = "jayhei14@163.com";
+        String mailSubject = "JavaMailSender test mail.";
+        String mailText = cloudUser.getUserName() + "于" + CloudDateUtils.formatDateToString(new Date()) + "在" + ipAddr + "登录了 HEART CLOUD。";
+
+        threadPoolExecutor.execute(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+                simpleMailMessage.setFrom(sender);
+                simpleMailMessage.setTo(recipient);
+                simpleMailMessage.setSubject(mailSubject);
+                simpleMailMessage.setText(mailText);
+
+                try {
+                    javaMailSender.send(simpleMailMessage);
+                } catch (MailException e) {
+                    logger.error("邮件发送失败 :{}", e.getMessage());
+                    throw new CloudMailException(CloudErrorCodeEnums.MailSendException.getCode(), CloudErrorCodeEnums.MailSendException.getMsg());
+                }
+                logger.info("登录提醒邮件已发送 :{}", simpleMailMessage);
+            }
+        }));
+
         return CloudResponseUtils.success();
     }
 

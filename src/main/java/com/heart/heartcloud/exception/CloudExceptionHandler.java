@@ -34,6 +34,13 @@ public class CloudExceptionHandler {
         return CloudResponseUtils.fail(e.getCode(), e.getMessage());
     }
 
+    @ExceptionHandler({CloudMailException.class})
+    public Object cloudMailExceptionHandler(CloudMailException e) {
+        //JavaMailSender异常
+        logger.error("JavaMailSender异常 :{}", e.getMessage());
+        return CloudResponseUtils.fail(e.getCode(), e.getMessage());
+    }
+
     @ExceptionHandler({Exception.class})
     public Object exceptionHandler(Exception e) {
         //如果是系统异常，如空指针，下标越界等
