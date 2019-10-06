@@ -198,6 +198,9 @@ public class HeartCloudController {
         //shiro进行登录验证
         try {
             subject.login(token);
+            if (redisTemplate.hasKey(CloudStringUtils.getRedisLoginFailCountKey(cloudUser.getUserName()))) {
+                redisTemplate.delete(CloudStringUtils.getRedisLoginFailCountKey(cloudUser.getUserName()));
+            }
         } catch (AuthenticationException e) {
             if (redisTemplate.hasKey(CloudStringUtils.getRedisLoginFailCountKey(cloudUser.getUserName()))) {
                 int loginFailCount = (int) redisTemplate.opsForValue().get(CloudStringUtils.getRedisLoginFailCountKey(cloudUser.getUserName()));
