@@ -378,8 +378,8 @@ public class CloudDirController {
             cloudQuartzJob.setExecuteType("TIME");
             //测试在指定时间执行 1分钟后开始执行 重复3次 每次间隔5秒
             cloudQuartzJob.setStartTime(CloudDateUtils.addMinutes(new Date(), 1).getTime());
-            cloudQuartzJob.setRepeatTime(8);
-            cloudQuartzJob.setInternalTime(5);
+            cloudQuartzJob.setRepeatTime(5);
+            cloudQuartzJob.setInternalTime(3);
             cloudQuartzJob.setInternalUnit(TimeUnit.SECONDS.name());
         } else {
             cloudQuartzJob.setExecuteType("CRON");

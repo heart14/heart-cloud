@@ -4,10 +4,7 @@ import com.heart.heartcloud.common.CloudErrorCodeEnums;
 import com.heart.heartcloud.entity.CloudQuartzJob;
 import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.service.CloudQuartzJobService;
-import org.quartz.Job;
-import org.quartz.JobDataMap;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,7 @@ import java.util.Date;
  * @Date: 2019/9/19 10:49
  * @Version: v1.0
  */
+@PersistJobDataAfterExecution
 public class QuartzTestJob implements Job {
 
     public static final Logger logger = LoggerFactory.getLogger(QuartzTestJob.class);
@@ -30,9 +28,8 @@ public class QuartzTestJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
-        String p0 = (String) jobDataMap.get("p0");
-        String p1 = (String) jobDataMap.get("p1");
+        String p0 = jobExecutionContext.getJobDetail().getJobDataMap().getString("p0");
+        String p1 = jobExecutionContext.getJobDetail().getJobDataMap().getString("p1");
         logger.info(" -------- Quartz test job :params = [{},{}] {}", p0, p1, new Date());
 
         CloudQuartzJob cloudQuartzJobByPrimaryKey = cloudQuartzJobService.findCloudQuartzJobByPrimaryKey(p0);
@@ -46,5 +43,7 @@ public class QuartzTestJob implements Job {
                 throw new CloudSystemException(CloudErrorCodeEnums.DBException.getCode(), CloudErrorCodeEnums.DBException.getMsg());
             }
         }
+        jobExecutionContext.getJobDetail().getJobDataMap().put("p1", p1 + "77");
+        logger.info("-------- After process, p1 = {}", jobExecutionContext.getJobDetail().getJobDataMap().getString("p1"));
     }
 }
