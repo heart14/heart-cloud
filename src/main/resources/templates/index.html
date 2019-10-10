@@ -64,13 +64,13 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">网盘 <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">图片</a></li>
-                        <li><a href="#">文档</a></li>
-                        <li><a href="#">视频</a></li>
+                        <li><a href="#" onclick="searchAllFileByType('图片')">图片</a></li>
+                        <li><a href="#" onclick="searchAllFileByType('文档')">文档</a></li>
+                        <li><a href="#" onclick="searchAllFileByType('视频')">视频</a></li>
                         <!--<li role="separator" class="divider"></li>-->
-                        <li><a href="#">种子</a></li>
+                        <li><a href="#" onclick="searchAllFileByType('种子')">种子</a></li>
                         <!--<li role="separator" class="divider"></li>-->
-                        <li><a href="#">音乐</a></li>
+                        <li><a href="#" onclick="searchAllFileByType('音乐')">音乐</a></li>
                         <li><a th:href="@{/manage}">嘘...</a></li>
                     </ul>
                 </li>
@@ -445,6 +445,50 @@
                     navBarItems.splice(0, navBarItems.length);
                     navBarItems.push("0_HOME");
                     var navBarItemsHtmls = "<li class='active'><a onclick='returnIndexPage()'>返回</a></li><li><span>文件搜索：\"" + searchAllFileByName + "\"</span></li>";
+                    $("#dirNavBar").html(navBarItemsHtmls);
+                }
+            }
+        });
+    }
+
+    //文件分类查询
+    function searchAllFileByType(type) {
+        $.ajax({
+            type: "GET",
+            url: "/cloudfile/searchbytype",
+            data: {
+                "searchFileType": type
+            },
+            contentType: "application/x-www-form-urlencoded;chartset=utf-8",
+            success: function (result) {
+                console.log(result);
+                if (result.errCode === 7000) {
+                    var cloudFiles = result.data;
+
+                    var $table = $("table tbody");
+                    var innerHtml = "";
+                    if (cloudFiles.length == 0) {
+                        innerHtml = "<tr style='text-align: center'><td colspan='4'>空空如也</td></tr>";
+                    } else {
+                        for (var j = 0; j < cloudFiles.length; j++) {
+                            var cloudFile = cloudFiles[j];
+                            var cloudFileUrl = cloudFile.cloudFileUrl.replace("E:\\HEARTCLOUD\\", "");
+                            innerHtml += "<tr><td><span class='glyphicon glyphicon-file'></span> "
+                                + "<a href='/image/" + cloudFileUrl + "' target='_blank'>"
+                                + cloudFile.cloudFileName + "</a></td><td>"
+                                + cloudFile.cloudFileSize + "</td><td>"
+                                + dateFormater(new Date(cloudFile.cloudFileUpdateDate)) + "</td><td>"
+                                + "<button type='button' class='btn btn-default' aria-label='Edit' onclick='editFileName(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>"
+                                + "<button type='button' class='btn btn-default' aria-label='Remove' onclick='removeFile(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>"
+                                + "<button type='button' class='btn btn-default' aria-label='Download' onclick='downloadFile(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-download-alt' aria-hidden='true'></span></button>"
+                                + "</td></tr>"
+                        }
+                    }
+                    $table.html(innerHtml);
+                    $("#currentItemCount").text(cloudFiles.length);
+                    navBarItems.splice(0, navBarItems.length);
+                    navBarItems.push("0_HOME");
+                    var navBarItemsHtmls = "<li class='active'><a onclick='returnIndexPage()'>返回</a></li><li><span>文件搜索：\"" + type + "\"</span></li>";
                     $("#dirNavBar").html(navBarItemsHtmls);
                 }
             }

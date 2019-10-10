@@ -67,4 +67,12 @@ public interface CloudFileService {
      * @return
      */
     List<CloudFile> findCloudFileLikeName(String searchFileName, Integer cloudUserId);
+
+    /**
+     * 查询文件（根据文件类型）
+     * @param searchFileType
+     * @param cloudUserId
+     * @return
+     */
+    List<CloudFile> findCloudFileByType(String searchFileType, Integer cloudUserId);
 }

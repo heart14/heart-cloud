@@ -75,4 +75,9 @@ public class CloudFileServiceImpl implements CloudFileService {
         String cloudFileName = "%" + searchFileName + "%";
         return cloudFileDao.selectByCloudFileNameLike(cloudFileName,cloudUserId);
     }
+
+    @Override
+    public List<CloudFile> findCloudFileByType(String searchFileType, Integer cloudUserId) {
+        return cloudFileDao.selectByCloudFileType(searchFileType, cloudUserId);
+    }
 }

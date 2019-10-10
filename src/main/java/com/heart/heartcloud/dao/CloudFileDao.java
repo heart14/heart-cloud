@@ -82,4 +82,12 @@ public interface CloudFileDao {
      * @return
      */
     List<CloudFile> selectByCloudFileNameLike(@Param("cloudFileName") String cloudFileName, @Param("cloudUserId") Integer cloudUserId);
+
+    /**
+     * 查询文件（根据文件类型）
+     * @param cloudFileType
+     * @param cloudUserId
+     * @return
+     */
+    List<CloudFile> selectByCloudFileType(@Param("cloudFileType") String cloudFileType, @Param("cloudUserId") Integer cloudUserId);
 }

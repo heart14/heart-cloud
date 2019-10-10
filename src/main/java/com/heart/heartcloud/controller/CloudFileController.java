@@ -70,7 +70,6 @@ public class CloudFileController {
 
         StringBuilder stringBuilder = new StringBuilder();
         StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudDirId);
-        logger.info("parentPath :{}", parentDirPath);
         String filePath = CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString();
 
         for (MultipartFile multipartFile : multipartFiles) {
@@ -242,11 +241,22 @@ public class CloudFileController {
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public CloudResponse searchFileByName(@RequestParam("searchFileName") String searchFileName, HttpServletRequest request) {
         CloudUser currentCloudUser = getCloudUserFromSession(request);
-        logger.info("搜索文件 :cloudUser => {}", currentCloudUser);
-        logger.info("搜索文件 :searchFileName => {}", searchFileName);
+        logger.info("搜索文件(文件名) :cloudUser => {}", currentCloudUser);
+        logger.info("搜索文件(文件名) :searchFileName => {}", searchFileName);
         List<CloudFile> cloudFileLikeName = cloudFileService.findCloudFileLikeName(searchFileName, currentCloudUser.getUserId());
-        logger.info("搜索文件 :cloudFile <= {}", cloudFileLikeName);
+        logger.info("搜索文件(文件名) :cloudFile <= {}", cloudFileLikeName);
         return CloudResponseUtils.success(cloudFileLikeName);
+    }
+
+    @ApiOperation(value = "查询文件（根据文件类型）")
+    @RequestMapping(value = "/searchbytype", method = RequestMethod.GET)
+    public CloudResponse searchFileByType(@RequestParam("searchFileType") String searchFileType, HttpServletRequest request) {
+        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        logger.info("搜索文件(类型) :cloudUser => {}", currentCloudUser);
+        logger.info("搜索文件(类型) :searchFileType => {}", searchFileType);
+        List<CloudFile> cloudFileByType = cloudFileService.findCloudFileByType(searchFileType, currentCloudUser.getUserId());
+        logger.info("搜索文件(类型) :cloudFile <= {}", cloudFileByType);
+        return CloudResponseUtils.success(cloudFileByType);
     }
 
     /**
@@ -333,7 +343,6 @@ public class CloudFileController {
      * @return
      */
     private String getCloudFileType(String filePrefix) {
-        logger.info("filePrefix :{}", filePrefix);
         switch (filePrefix.toLowerCase()) {
             case ".jpg":
                 return "图片";
@@ -344,6 +353,8 @@ public class CloudFileController {
             case ".bmp":
                 return "图片";
             case ".gif":
+                return "图片";
+            case ".heic":
                 return "图片";
             case ".mp3":
                 return "音乐";

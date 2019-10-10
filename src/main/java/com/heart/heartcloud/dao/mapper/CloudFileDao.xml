@@ -52,6 +52,14 @@
         and cloud_file_name like #{cloudFileName,jdbcType=VARCHAR}
     </select>
 
+    <select id="selectByCloudFileType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cloud_file
+        where cloud_file_user_id = #{cloudUserId,jdbcType=INTEGER}
+        and cloud_file_type = #{cloudFileType,jdbcType=VARCHAR}
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete from t_cloud_file
         where cloud_file_id = #{cloudFileId,jdbcType=INTEGER}
