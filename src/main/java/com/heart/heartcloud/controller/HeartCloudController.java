@@ -302,6 +302,7 @@ public class HeartCloudController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("manager/index");
         return modelAndView;
+        //TODO 登录信息提交方式待研究
 //        return CloudResponseUtils.success(CloudErrorCodeEnums.ManagerLoginSuccess.getCode(), CloudErrorCodeEnums.ManagerLoginSuccess.getMsg(), null);
     }
 
