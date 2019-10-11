@@ -337,22 +337,4 @@ public class HeartCloudController {
         return new ModelAndView("login");
     }
 
-    /**
-     * 管理员页面 图表页
-     *
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "charts", method = RequestMethod.GET)
-    public ModelAndView chartsPage(HttpServletRequest request) {
-        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
-        if (currentCloudUser == null) {
-            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
-        }
-        logger.info("Current CloudUser :{}", currentCloudUser);
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("manager/charts");
-        modelAndView.addObject("cloudUser", currentCloudUser);
-        return modelAndView;
-    }
 }
