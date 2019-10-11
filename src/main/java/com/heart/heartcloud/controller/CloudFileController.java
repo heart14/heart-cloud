@@ -12,6 +12,7 @@ import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudDiskService;
 import com.heart.heartcloud.service.CloudFileService;
 import com.heart.heartcloud.service.CloudGoodsService;
+import com.heart.heartcloud.utils.CloudDirSizeUpdateUtil;
 import com.heart.heartcloud.utils.CloudResponseUtils;
 import com.heart.heartcloud.utils.CloudStringUtils;
 import io.swagger.annotations.Api;
@@ -21,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,6 +52,9 @@ public class CloudFileController {
 
     @Autowired
     private CloudGoodsService cloudGoodsService;
+
+    @Autowired
+    private CloudDirSizeUpdateUtil cloudDirSizeUpdateUtil;
 
     /**
      * 上传文件
@@ -106,13 +109,9 @@ public class CloudFileController {
             cloudFile.setCloudFileUpdateDate(new Date());
             cloudFileService.saveCloudFile(cloudFile);
 
-            CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
-            if (cloudDirByPrimaryKey != null) {
-                long cloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
-                cloudDirByPrimaryKey.setCloudDirSize(String.valueOf(cloudDirSize + multipartFile.getSize()));
-                cloudDirByPrimaryKey.setCloudDirUpdateDate(new Date());
-                cloudDirService.editCloudDirByPrimaryKey(cloudDirByPrimaryKey);
-            }
+            //递归更新父文件夹大小
+            cloudDirSizeUpdateUtil.recursiveUpdateParentDirSize(cloudDirId, multipartFile.getSize());
+            logger.info("文件上传 :递归更新父文件夹大小完成");
         }
 
         return CloudResponseUtils.success();
@@ -173,15 +172,11 @@ public class CloudFileController {
         if (cloudFileByPrimaryKey != null) {
             Integer cloudFileDirId = cloudFileByPrimaryKey.getCloudFileDirId();
 
-            CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudFileDirId);
-            if (cloudDirByPrimaryKey != null) {
-                long oldCloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
-                long cloudFileSize = Long.parseLong(cloudFileByPrimaryKey.getCloudFileSize());
-                cloudDirByPrimaryKey.setCloudDirSize(String.valueOf(oldCloudDirSize - cloudFileSize));
-                cloudDirByPrimaryKey.setCloudDirUpdateDate(new Date());
-                cloudDirService.editCloudDirByPrimaryKey(cloudDirByPrimaryKey);
-            }
+            //递归更新父文件夹大小
+            cloudDirSizeUpdateUtil.recursiveUpdateParentDirSize(cloudFileDirId, -Long.parseLong(cloudFileByPrimaryKey.getCloudFileSize()));
+            logger.info("删除文件 :递归更新父文件夹大小完成");
 
+            //删除物理存储上的文件
             StringBuilder stringBuilder = new StringBuilder();
             StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudFileDirId);
             logger.info("parentPath :{}", parentDirPath);
@@ -189,7 +184,9 @@ public class CloudFileController {
             File file = new File(filePath + cloudFileByPrimaryKey.getCloudFileName());
             cloudDiskService.removeDiskDir(file);
 
+            //删除数据库中记录
             cloudFileService.removeCloudFileByPrimaryKey(cloudFileId);
+
             return CloudResponseUtils.success();
         } else {
             return CloudResponseUtils.success();
@@ -384,10 +381,26 @@ public class CloudFileController {
                 return "文档";
             case ".docx":
                 return "文档";
+            case ".xls":
+                return "文档";
+            case ".xlsx":
+                return "文档";
+            case ".ppt":
+                return "文档";
+            case ".pptx":
+                return "文档";
             case ".pdf":
                 return "文档";
             case ".exe":
                 return "应用程序";
+            case ".msi":
+                return "应用程序";
+            case ".rar":
+                return "压缩文件";
+            case ".zip":
+                return "压缩文件";
+            case ".7z":
+                return "压缩文件";
             default:
                 return "其它";
         }

@@ -14,11 +14,6 @@ public enum CloudErrorCodeEnums {
     SUCCESS(7000, "成功"),
 
     /**
-     * 邮件发送失败，ErrorCode :9001
-     */
-    MailSendException(9001, "邮件发送失败"),
-
-    /**
      * 系统异常，ErrorCode :7001
      */
     SystemException(7001, "系统异常"),
@@ -59,9 +54,14 @@ public enum CloudErrorCodeEnums {
     DuplicateUserException(7011, "注册失败，用户已存在"),
 
     /**
-     * 登录失败，用户不存在，ErrorCode :7016
+     * 参数异常，ErrorCode :7012
      */
-    UnKnownUserException(7016, "登录失败，用户不存在"),
+    ParamException(7012, "参数异常"),
+
+    /**
+     * 文件不存在，ErrorCode :7013
+     */
+    UnknownFileException(7013, "文件不存在"),
 
     /**
      * 登录失败，用户已锁定，ErrorCode :7014
@@ -74,14 +74,14 @@ public enum CloudErrorCodeEnums {
     LoginFailException(7015, "登录失败，用户名或密码错误"),
 
     /**
-     * 参数异常，ErrorCode :7012
+     * 登录失败，用户不存在，ErrorCode :7016
      */
-    ParamException(7012, "参数异常"),
+    UnKnownUserException(7016, "登录失败，用户不存在"),
 
     /**
-     * 定时任务异常，SchedulerException :7014
+     * 定时任务异常，SchedulerException :8000
      */
-    SchedulerException(7014, "定时任务异常"),
+    SchedulerException(8000, "定时任务异常"),
 
     /**
      * 定时任务已存在异常，SchedulerException :8001
@@ -89,9 +89,9 @@ public enum CloudErrorCodeEnums {
     JobRepeatException(8001, "定时任务已存在"),
 
     /**
-     * 文件不存在，ErrorCode :7013
+     * 邮件发送失败，ErrorCode :9001
      */
-    UnknownFileException(7013, "文件不存在");
+    MailSendException(9001, "邮件发送失败");
 
     private Integer code;
 

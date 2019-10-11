@@ -109,9 +109,15 @@
 <div id="pageContainer">
     <nav class="navbar navbar-default" style="margin-bottom: 0">
         <div class="container-fluid features-btn">
-            <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#uploadNewFileModal" onclick="showUploadInput()">上传</button>
-            <button type="button" class="btn btn-primary navbar-btn" onclick="jumpToResourceMarket()" style="float: right">资源商城</button>
-            <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#createNewDirModal">新建文件夹</button>
+            <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal"
+                    data-target="#uploadNewFileModal" onclick="showUploadInput()">上传
+            </button>
+            <button type="button" class="btn btn-primary navbar-btn" onclick="jumpToResourceMarket()"
+                    style="float: right">资源商城
+            </button>
+            <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal"
+                    data-target="#createNewDirModal">新建文件夹
+            </button>
         </div><!-- /.container-fluid -->
     </nav>
     <div class="content-container">
@@ -318,7 +324,8 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 <button type="button" class="btn btn-primary" onclick="sellFileSubmit()">确定</button>
             </div>
-        </div>i
+        </div>
+        i
     </div>
 </div>
 
@@ -432,7 +439,7 @@
                             innerHtml += "<tr><td><span class='glyphicon glyphicon-file'></span> "
                                 + "<a href='/image/" + cloudFileUrl + "' target='_blank'>"
                                 + cloudFile.cloudFileName + "</a></td><td>"
-                                + cloudFile.cloudFileSize + "</td><td>"
+                                + fileSizeFormater(cloudFile.cloudFileSize) + "</td><td>"
                                 + dateFormater(new Date(cloudFile.cloudFileUpdateDate)) + "</td><td>"
                                 + "<button type='button' class='btn btn-default' aria-label='Edit' onclick='editFileName(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>"
                                 + "<button type='button' class='btn btn-default' aria-label='Remove' onclick='removeFile(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>"
@@ -476,7 +483,7 @@
                             innerHtml += "<tr><td><span class='glyphicon glyphicon-file'></span> "
                                 + "<a href='/image/" + cloudFileUrl + "' target='_blank'>"
                                 + cloudFile.cloudFileName + "</a></td><td>"
-                                + cloudFile.cloudFileSize + "</td><td>"
+                                + fileSizeFormater(cloudFile.cloudFileSize) + "</td><td>"
                                 + dateFormater(new Date(cloudFile.cloudFileUpdateDate)) + "</td><td>"
                                 + "<button type='button' class='btn btn-default' aria-label='Edit' onclick='editFileName(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>"
                                 + "<button type='button' class='btn btn-default' aria-label='Remove' onclick='removeFile(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>"
@@ -567,7 +574,7 @@
                             innerHtml1 += "<tr><td><span class='glyphicon glyphicon-folder-open'></span> "
                                 + "<a onclick='getDirChilds(" + cloudDir.cloudDirId + ",\"" + cloudDir.cloudDirName + "\")'>"
                                 + cloudDir.cloudDirName + "</a></td><td>"
-                                + cloudDir.cloudDirSize + "</td><td>"
+                                + fileSizeFormater(cloudDir.cloudDirSize) + "</td><td>"
                                 + dateFormater(new Date(cloudDir.cloudDirUpdateDate)) + "</td><td>"
                                 + "<button type='button' class='btn btn-default' aria-label='Edit' onclick='editDirName(" + cloudDir.cloudDirId + ")'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>"
                                 + "<button type='button' class='btn btn-default' aria-label='Remove' onclick='removeDir(" + cloudDir.cloudDirId + ")'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>"
@@ -580,7 +587,7 @@
                             innerHtml2 += "<tr><td><span class='glyphicon glyphicon-file'></span> "
                                 + "<a href='/local/" + cloudFileUrl + "' target='_blank'>"
                                 + cloudFile.cloudFileName + "</a></td><td>"
-                                + cloudFile.cloudFileSize + "</td><td>"
+                                + fileSizeFormater(cloudFile.cloudFileSize) + "</td><td>"
                                 + dateFormater(new Date(cloudFile.cloudFileUpdateDate)) + "</td><td>"
                                 + "<button type='button' class='btn btn-default' aria-label='Edit' onclick='editFileName(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>"
                                 + "<button type='button' class='btn btn-default' aria-label='Remove' onclick='removeFile(" + cloudFile.cloudFileId + ")'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>"
@@ -934,8 +941,8 @@
             type: "POST",
             url: "/cloudfile/sell",
             data: {
-                "cloudFileId":cloudFileId,
-                "cloudFilePrice":cloudFilePrice
+                "cloudFileId": cloudFileId,
+                "cloudFilePrice": cloudFilePrice
             },
             contentType: "application/x-www-form-urlencoded;chartset=utf-8",
             success: function (result) {
@@ -1023,11 +1030,54 @@
 
     //文件夹大小格式化
     function fileSizeFormater(size) {
-        var number = size / 1024;
+        var count = 0;
+        var number = size;
         while (number >= 1024) {
             number = number / 1024;
+            count++;
         }
-        return number.toFixed(2);
+        var formatSize;
+        switch (count) {
+            case 0:
+                formatSize = number + " byte";
+                break;
+            case 1:
+                formatSize = number.toFixed(2) + " KB";
+                break;
+            case 2:
+                formatSize = number.toFixed(2) + " MB";
+                break;
+            case 3:
+                formatSize = number.toFixed(2) + " GB";
+                break;
+            case 4:
+                formatSize = number.toFixed(2) + " TB";
+                break;
+            case 5:
+                formatSize = number.toFixed(2) + " PB";
+                break;
+            case 6:
+                formatSize = number.toFixed(2) + " EB";
+                break;
+            case 7:
+                formatSize = number.toFixed(2) + " ZB";
+                break;
+            case 8:
+                formatSize = number.toFixed(2) + " YB";
+                break;
+            case 9:
+                formatSize = number.toFixed(2) + " BB";
+                break;
+            case 10:
+                formatSize = number.toFixed(2) + " NB";
+                break;
+            case 11:
+                formatSize = number.toFixed(2) + " DB";
+                break;
+            default:
+                formatSize = size + " byte";
+        }
+        return formatSize;
     }
 
     //跳转到资源商城页面

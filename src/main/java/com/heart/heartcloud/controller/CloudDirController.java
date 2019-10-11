@@ -13,6 +13,7 @@ import com.heart.heartcloud.quartz.job.QuartzTestJob;
 import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.service.*;
 import com.heart.heartcloud.utils.CloudDateUtils;
+import com.heart.heartcloud.utils.CloudDirSizeUpdateUtil;
 import com.heart.heartcloud.utils.CloudResponseUtils;
 import com.heart.heartcloud.utils.CloudStringUtils;
 import io.swagger.annotations.Api;
@@ -64,6 +65,9 @@ public class CloudDirController {
     @Autowired
     private CloudUserService cloudUserService;
 
+    @Autowired
+    private CloudDirSizeUpdateUtil cloudDirSizeUpdateUtil;
+
     /**
      * 新增文件夹
      *
@@ -100,24 +104,20 @@ public class CloudDirController {
         logger.info("删除文件夹 :cloudUser => {}", cloudUser);
         logger.info("删除文件夹 :cloudDirId => {}", cloudDirId);
 
+        //递归更新父文件夹大小
         CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
         long cloudDirSize = Long.parseLong(cloudDirByPrimaryKey.getCloudDirSize());
-        Integer cloudDirParentId = cloudDirByPrimaryKey.getCloudDirParentId();
+        cloudDirSizeUpdateUtil.recursiveUpdateParentDirSize(cloudDirByPrimaryKey.getCloudDirParentId(), -cloudDirSize);
+        logger.info("删除文件夹 :递归更新父文件夹大小完成");
 
-        if (cloudDirParentId != 0) {
-            CloudDir parentDir = cloudDirService.findCloudDirByPrimaryKey(cloudDirParentId);
-            long parentDirSize = Long.parseLong(parentDir.getCloudDirSize());
-            parentDir.setCloudDirSize(String.valueOf(parentDirSize - cloudDirSize));
-            parentDir.setCloudDirUpdateDate(new Date());
-            cloudDirService.editCloudDirByPrimaryKey(parentDir);
-        }
-
+        //递归删除物理存储上文件夹及子文件夹
         StringBuilder stringBuilder = new StringBuilder();
         StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudDirId);
         logger.info("parentPath :{}", parentDirPath);
         File targetFile = new File(CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString());
         cloudDiskService.removeDiskDir(targetFile);
 
+        //删除数据库记录
         cloudDirService.removeCloudDirByPrimaryKey(cloudDirId, cloudUser.getUserId());
         return CloudResponseUtils.success();
     }
