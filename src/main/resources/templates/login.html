@@ -12,10 +12,10 @@
     <script th:src="@{/js/jquery.min.js}" type="text/javascript"></script>
     <script>
         function login() {
-            var userName = $("#logname").val();
-            var userPass = $("#logpass").val();
-            // var userName = "heart777";
-            // var userPass = "123456";
+            // var userName = $("#logname").val();
+            // var userPass = $("#logpass").val();
+            var userName = "heart777";
+            var userPass = "123456";
             if (userName == '' || userPass == '') {
                 alert("用户名/密码 不能为空！");
                 return;
@@ -75,8 +75,7 @@
                 "success": function (result) {
                     console.log(result);
                     if (result.errCode === 7006) {
-                        window.location.href = "http://127.0.0.1:8081/manage";
-                        // window.location.href = "http://192.168.0.107:8081/index";
+                        window.location.href = "http://127.0.0.1:8081/manager/index";
                     } else {
                         alert("登录失败，请重试。");
                         location.reload();

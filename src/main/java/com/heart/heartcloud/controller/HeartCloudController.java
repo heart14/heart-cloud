@@ -338,26 +338,6 @@ public class HeartCloudController {
     }
 
     /**
-     * 管理员系统页面
-     *
-     * @param request
-     * @return
-     */
-    @ApiIgnore
-    @RequestMapping(value = "/manage", method = RequestMethod.GET)
-    public ModelAndView managePage(HttpServletRequest request) {
-        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
-        if (currentCloudUser == null) {
-            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
-        }
-        logger.info("HEART CLOUD MANAGE :cloudUser => {}", currentCloudUser);
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("manager/index");
-        modelAndView.addObject("cloudUser", currentCloudUser);
-        return modelAndView;
-    }
-
-    /**
      * 管理员页面 图表页
      *
      * @param request
