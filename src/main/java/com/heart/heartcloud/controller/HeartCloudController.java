@@ -284,8 +284,8 @@ public class HeartCloudController {
      */
     @ApiOperation(value = "系统管理员登录")
     @RequestMapping(value = "/login/m", method = RequestMethod.POST)
-//    @ResponseBody
-    public ModelAndView mUserLogin(@RequestBody CloudUser cloudUser, HttpServletRequest request) {
+    @ResponseBody
+    public CloudResponse mUserLogin(@RequestBody CloudUser cloudUser, HttpServletRequest request) {
 
         logger.info("管理员登录 :cloudUser => {}", cloudUser);
 
@@ -301,9 +301,7 @@ public class HeartCloudController {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("manager/index");
-        return modelAndView;
-        //TODO 登录信息提交方式待研究
-//        return CloudResponseUtils.success(CloudErrorCodeEnums.ManagerLoginSuccess.getCode(), CloudErrorCodeEnums.ManagerLoginSuccess.getMsg(), null);
+        return CloudResponseUtils.success(CloudErrorCodeEnums.ManagerLoginSuccess.getCode(), CloudErrorCodeEnums.ManagerLoginSuccess.getMsg(), null);
     }
 
     /**
