@@ -7,7 +7,6 @@ import com.heart.heartcloud.domain.CloudGoods;
 import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.exception.CloudSystemException;
 import com.heart.heartcloud.response.CloudResponse;
-import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudDiskService;
 import com.heart.heartcloud.service.CloudFileService;
 import com.heart.heartcloud.service.CloudGoodsService;
@@ -42,9 +41,6 @@ public class CloudFileController {
 
     @Autowired
     private CloudFileService cloudFileService;
-
-    @Autowired
-    private CloudDirService cloudDirService;
 
     @Autowired
     private CloudDiskService cloudDiskService;
@@ -151,7 +147,6 @@ public class CloudFileController {
         }
     }
 
-    //TODO 上传、删除文件和删除文件夹（包含文件夹内文件）时，没有递归更新父父...文件夹的大小
     //TODO 文件上传后丢失位置、设备等Exif信息（https://www.jianshu.com/p/c6b413cea2dd）
 
     /**
