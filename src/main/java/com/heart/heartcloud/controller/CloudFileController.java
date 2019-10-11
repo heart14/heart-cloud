@@ -2,7 +2,6 @@ package com.heart.heartcloud.controller;
 
 import com.heart.heartcloud.common.CloudConstants;
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
-import com.heart.heartcloud.domain.CloudDir;
 import com.heart.heartcloud.domain.CloudFile;
 import com.heart.heartcloud.domain.CloudGoods;
 import com.heart.heartcloud.domain.CloudUser;
@@ -12,9 +11,9 @@ import com.heart.heartcloud.service.CloudDirService;
 import com.heart.heartcloud.service.CloudDiskService;
 import com.heart.heartcloud.service.CloudFileService;
 import com.heart.heartcloud.service.CloudGoodsService;
-import com.heart.heartcloud.utils.CloudDirSizeUpdateUtil;
 import com.heart.heartcloud.utils.CloudResponseUtils;
 import com.heart.heartcloud.utils.CloudStringUtils;
+import com.heart.heartcloud.utils.CloudUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -54,7 +53,7 @@ public class CloudFileController {
     private CloudGoodsService cloudGoodsService;
 
     @Autowired
-    private CloudDirSizeUpdateUtil cloudDirSizeUpdateUtil;
+    private CloudUtils cloudUtils;
 
     /**
      * 上传文件
@@ -68,11 +67,11 @@ public class CloudFileController {
     @ApiOperation(value = "文件上传接口", response = CloudResponse.class)
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public CloudResponse uploadCloudFile(@RequestParam("multipartFiles") MultipartFile[] multipartFiles, @RequestParam("cloudDirId") Integer cloudDirId, HttpServletRequest request) throws IOException {
-        CloudUser cloudUser = getCloudUserFromSession(request);
+        CloudUser cloudUser = cloudUtils.getCloudUserFromSession(request);
         logger.info("文件上传 :cloudDirId => {}", cloudDirId);
 
         StringBuilder stringBuilder = new StringBuilder();
-        StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudDirId);
+        StringBuilder parentDirPath = cloudUtils.recursiveGetParentDirPath(stringBuilder, cloudDirId);
         String filePath = CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString();
 
         for (MultipartFile multipartFile : multipartFiles) {
@@ -110,7 +109,7 @@ public class CloudFileController {
             cloudFileService.saveCloudFile(cloudFile);
 
             //递归更新父文件夹大小
-            cloudDirSizeUpdateUtil.recursiveUpdateParentDirSize(cloudDirId, multipartFile.getSize());
+            cloudUtils.recursiveUpdateParentDirSize(cloudDirId, multipartFile.getSize());
             logger.info("文件上传 :递归更新父文件夹大小完成");
         }
 
@@ -120,7 +119,7 @@ public class CloudFileController {
     @ApiOperation(value = "文件下载接口")
     @RequestMapping(value = "/download", method = RequestMethod.POST)
     public void downloadFile(@RequestParam Integer cloudFileId, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        CloudUser cloudUser = getCloudUserFromSession(request);
+        CloudUser cloudUser = cloudUtils.getCloudUserFromSession(request);
         logger.info("文件下载 :cloudFileId => {}", cloudFileId);
 
         CloudFile cloudFileByPrimaryKey = cloudFileService.findCloudFileByPrimaryKey(cloudFileId);
@@ -165,7 +164,7 @@ public class CloudFileController {
     @ApiOperation(value = "删除文件（根据文件id）")
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
     public CloudResponse removeFile(@RequestParam Integer cloudFileId, HttpServletRequest request) {
-        CloudUser cloudUser = getCloudUserFromSession(request);
+        CloudUser cloudUser = cloudUtils.getCloudUserFromSession(request);
         logger.info("文件删除 :cloudDirId => {}", cloudFileId);
 
         CloudFile cloudFileByPrimaryKey = cloudFileService.findCloudFileByPrimaryKey(cloudFileId);
@@ -173,12 +172,12 @@ public class CloudFileController {
             Integer cloudFileDirId = cloudFileByPrimaryKey.getCloudFileDirId();
 
             //递归更新父文件夹大小
-            cloudDirSizeUpdateUtil.recursiveUpdateParentDirSize(cloudFileDirId, -Long.parseLong(cloudFileByPrimaryKey.getCloudFileSize()));
+            cloudUtils.recursiveUpdateParentDirSize(cloudFileDirId, -Long.parseLong(cloudFileByPrimaryKey.getCloudFileSize()));
             logger.info("删除文件 :递归更新父文件夹大小完成");
 
             //删除物理存储上的文件
             StringBuilder stringBuilder = new StringBuilder();
-            StringBuilder parentDirPath = getParentDirPath(stringBuilder, cloudFileDirId);
+            StringBuilder parentDirPath = cloudUtils.recursiveGetParentDirPath(stringBuilder, cloudFileDirId);
             logger.info("parentPath :{}", parentDirPath);
             String filePath = CloudConstants.ROOT_DIR + cloudUser.getUserName() + "\\" + parentDirPath.toString();
             File file = new File(filePath + cloudFileByPrimaryKey.getCloudFileName());
@@ -203,7 +202,7 @@ public class CloudFileController {
     @ApiOperation(value = "更新文件信息")
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public CloudResponse editCloudFile(@RequestBody CloudFile cloudFile, HttpServletRequest request) {
-        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        CloudUser currentCloudUser = cloudUtils.getCloudUserFromSession(request);
         logger.info("修改文件 :cloudUser => {}", currentCloudUser);
         logger.info("修改文件 :cloudFile => {}", cloudFile);
 
@@ -237,7 +236,7 @@ public class CloudFileController {
     @ApiOperation(value = "查询文件（根据文件名，模糊查询）")
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public CloudResponse searchFileByName(@RequestParam("searchFileName") String searchFileName, HttpServletRequest request) {
-        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        CloudUser currentCloudUser = cloudUtils.getCloudUserFromSession(request);
         logger.info("搜索文件(文件名) :cloudUser => {}", currentCloudUser);
         logger.info("搜索文件(文件名) :searchFileName => {}", searchFileName);
         List<CloudFile> cloudFileLikeName = cloudFileService.findCloudFileLikeName(searchFileName, currentCloudUser.getUserId());
@@ -248,7 +247,7 @@ public class CloudFileController {
     @ApiOperation(value = "查询文件（根据文件类型）")
     @RequestMapping(value = "/searchbytype", method = RequestMethod.GET)
     public CloudResponse searchFileByType(@RequestParam("searchFileType") String searchFileType, HttpServletRequest request) {
-        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        CloudUser currentCloudUser = cloudUtils.getCloudUserFromSession(request);
         logger.info("搜索文件(类型) :cloudUser => {}", currentCloudUser);
         logger.info("搜索文件(类型) :searchFileType => {}", searchFileType);
         List<CloudFile> cloudFileByType = cloudFileService.findCloudFileByType(searchFileType, currentCloudUser.getUserId());
@@ -267,7 +266,7 @@ public class CloudFileController {
     @ApiOperation(value = "上架出售文件")
     @RequestMapping(value = "/sell", method = RequestMethod.POST)
     public CloudResponse sellFile(@RequestParam("cloudFileId") Integer cloudFileId, @RequestParam("cloudFilePrice") String cloudFilePrice, HttpServletRequest request) {
-        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        CloudUser currentCloudUser = cloudUtils.getCloudUserFromSession(request);
         logger.info("上架文件 :cloudUser => {}", currentCloudUser);
         logger.info("上架文件 :cloudFileId => {}, cloudFilePrice => {}", cloudFileId, cloudFilePrice);
 
@@ -302,7 +301,7 @@ public class CloudFileController {
     @ApiOperation(value = "下架文件")
     @RequestMapping(value = "/unsell", method = RequestMethod.POST)
     public CloudResponse unSellFile(@RequestParam("cloudFileId") Integer cloudFileId, HttpServletRequest request) {
-        CloudUser currentCloudUser = getCloudUserFromSession(request);
+        CloudUser currentCloudUser = cloudUtils.getCloudUserFromSession(request);
         logger.info("下架文件 :cloudUser => {}", currentCloudUser);
         logger.info("下架文件 :cloudFileId => {}", cloudFileId);
         CloudFile cloudFileByPrimaryKey = cloudFileService.findCloudFileByPrimaryKey(cloudFileId);
@@ -317,20 +316,6 @@ public class CloudFileController {
         logger.info("下架文件 :cloudFile <= {}", cloudFileByPrimaryKey);
         logger.info("下架文件 :cloudGoods <= {}", cloudGoodsByCloudFileId);
         return CloudResponseUtils.success();
-    }
-
-    /**
-     * 从SESSION中获取当前登录用户
-     *
-     * @param request
-     * @return
-     */
-    private CloudUser getCloudUserFromSession(HttpServletRequest request) {
-        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
-        if (currentCloudUser == null) {
-            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
-        }
-        return currentCloudUser;
     }
 
     /**
@@ -403,34 +388,6 @@ public class CloudFileController {
                 return "压缩文件";
             default:
                 return "其它";
-        }
-    }
-
-    /**
-     * 根据文件夹ID，获取当前文件夹及所有父文件夹目录路径
-     *
-     * @param stringBuilder
-     * @param cloudDirId
-     * @return
-     */
-    private StringBuilder getParentDirPath(StringBuilder stringBuilder, Integer cloudDirId) {
-        CloudDir cloudDirByPrimaryKey = cloudDirService.findCloudDirByPrimaryKey(cloudDirId);
-        if (cloudDirByPrimaryKey != null) {
-            stringBuilder.append(cloudDirByPrimaryKey.getCloudDirName());
-            stringBuilder.append("_");
-            if (cloudDirByPrimaryKey.getCloudDirParentId() != 0) {
-                return getParentDirPath(stringBuilder, cloudDirByPrimaryKey.getCloudDirParentId());
-            } else {
-                String[] split = stringBuilder.toString().split("_");
-                StringBuilder sb = new StringBuilder();
-                for (int i = split.length - 1; i >= 0; i--) {
-                    sb.append(split[i]);
-                    sb.append("\\");
-                }
-                return sb;
-            }
-        } else {
-            return stringBuilder;
         }
     }
 }
