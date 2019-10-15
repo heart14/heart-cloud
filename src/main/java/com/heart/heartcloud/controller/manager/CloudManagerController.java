@@ -5,11 +5,11 @@ import com.heart.heartcloud.domain.CloudUser;
 import com.heart.heartcloud.exception.CloudSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,44 +27,21 @@ public class CloudManagerController {
     private static final Logger logger = LoggerFactory.getLogger(CloudManagerController.class);
 
     /**
-     * 管理员系统页面
-     *
+     * @param viewName
      * @param request
      * @return
      */
-    @ApiIgnore
-    @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public ModelAndView managePage(HttpServletRequest request) {
-        CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
-        if (currentCloudUser == null) {
-            throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
-        }
-        logger.info("HEART CLOUD MANAGER :cloudUser => {}", currentCloudUser);
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("manager/index");
-        modelAndView.addObject("cloudUser", currentCloudUser);
-        return modelAndView;
-    }
-
-    /**
-     * 管理员页面 图表页
-     *
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "/charts", method = RequestMethod.GET)
-    public ModelAndView chartsPage(HttpServletRequest request) {
+    @RequestMapping(value = "/{viewName}", method = RequestMethod.GET)
+    public ModelAndView chartsPage(@PathVariable("viewName") String viewName, HttpServletRequest request) {
         CloudUser currentCloudUser = (CloudUser) request.getSession().getAttribute("CurrentCloudUser");
         if (currentCloudUser == null) {
             throw new CloudSystemException(CloudErrorCodeEnums.LoginExpiredException.getCode(), CloudErrorCodeEnums.LoginExpiredException.getMsg());
         }
         logger.info("Current CloudUser :{}", currentCloudUser);
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("manager/charts");
+        modelAndView.setViewName("manager/" + viewName);
         modelAndView.addObject("cloudUser", currentCloudUser);
         return modelAndView;
     }
-
-    //TODO 所有页面的a链接都换成controller返回view形式
 
 }
