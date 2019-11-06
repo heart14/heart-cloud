@@ -1,6 +1,7 @@
 package com.heart.heartcloud.exception;
 
 import com.heart.heartcloud.common.CloudErrorCodeEnums;
+import com.heart.heartcloud.response.CloudResponse;
 import com.heart.heartcloud.utils.CloudResponseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,28 +22,28 @@ public class CloudExceptionHandler {
     private static final String DEFAULT_ERROR_VIEW = "error";
 
     @ExceptionHandler({CloudSystemException.class})
-    public Object cloudExceptionHandler(CloudSystemException e) {
+    public CloudResponse cloudExceptionHandler(CloudSystemException e) {
         //自定异常
         logger.error("自定义异常 :{}", e.getMessage());
         return CloudResponseUtils.fail(e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler({CloudSchedulerException.class})
-    public Object cloudSchedulerExceptionHandler(CloudSchedulerException e) {
+    public CloudResponse cloudSchedulerExceptionHandler(CloudSchedulerException e) {
         //Quartz异常
         logger.error("Quartz Scheduler异常 :{}", e.getMessage());
         return CloudResponseUtils.fail(e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler({CloudMailException.class})
-    public Object cloudMailExceptionHandler(CloudMailException e) {
+    public CloudResponse cloudMailExceptionHandler(CloudMailException e) {
         //JavaMailSender异常
         logger.error("JavaMailSender异常 :{}", e.getMessage());
         return CloudResponseUtils.fail(e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler({Exception.class})
-    public Object exceptionHandler(Exception e) {
+    public CloudResponse exceptionHandler(Exception e) {
         //如果是系统异常，如空指针，下标越界等
         logger.error("系统异常 :{}", e.getMessage(), e);
         return CloudResponseUtils.fail(CloudErrorCodeEnums.SystemException.getCode(), CloudErrorCodeEnums.SystemException.getMsg());
