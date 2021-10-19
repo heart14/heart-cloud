@@ -44,6 +44,12 @@ public class RedisConfig {
         redisTemplate.setHashValueSerializer(serializer);
         redisTemplate.afterPropertiesSet();
 
+        //使用StringRedisSerializer来序列化和反序列化redis的key值
+//        redisTemplate.setKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setHashValueSerializer(serializer);
+//        redisTemplate.afterPropertiesSet();
+
         return redisTemplate;
     }
 }
