@@ -8,7 +8,10 @@ package com.heart.mavendl.mvndl.common;
  */
 public class Configs {
 
-    public static final String ARCHIVES_ROOT_URL = "http://localhost:80/";
-    public static final String ARCHIVES_ROOT_PATH = "C:/Heart/Apache/repository/";
+//    public static final String ARCHIVES_ROOT_URL = "http://172.30.252.132:8081/nexus/content/groups/security/";
+    public static final String ARCHIVES_ROOT_PATH = "C:/Heart/Apache/repository2/";
     public static final boolean IS_OVERRIDE = true;
+
+    public static final String DOMAIN_NAME_SEPERATOR = "://";
+    public static final String DOMAIN_URL_SEPERATOR = "/";
 }
